@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import './question.dart';
-import './answer.dart';
-import './quiz.dart';
-import './result.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -59,13 +55,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('noa best app'),
-      ),
-      body: i < questiones.length
-          ? Quiz(questiones, press, i)
-          : Result(totalScore),
-    );
+    return Scaffold();
   }
 }

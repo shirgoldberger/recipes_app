@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "774825854938",
-    "project_id": "video-7c240",
-    "storage_bucket": "video-7c240.appspot.com"
+    "project_number": "720690416863",
+    "project_id": "shir-c10d7",
+    "storage_bucket": "shir-c10d7.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:774825854938:android:e310889d5856a37eca22e3",
+        "mobilesdk_app_id": "1:720690416863:android:c50d1e8c8e6f0da2932d6a",
         "android_client_info": {
           "package_name": "com.example.recipes_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "774825854938-tmhj4gqn88lkrl23rff7pg9u7chpoc5k.apps.googleusercontent.com",
+          "client_id": "720690416863-4v6d7g4hln84v1hbujtattgplc8t8uur.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB9ZvzDtRowPrJA1BwT3Luye4XfGeEMYvY"
+          "current_key": "AIzaSyDDYdoEPl0oXos5ivwLpShpjuUgOR_mgmQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "774825854938-tmhj4gqn88lkrl23rff7pg9u7chpoc5k.apps.googleusercontent.com",
+              "client_id": "720690416863-4v6d7g4hln84v1hbujtattgplc8t8uur.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
