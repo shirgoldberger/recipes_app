@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipes_app/personal/wrapper.dart';
 import 'personal/login_page.dart';
 import 'personal/personal_page.dart';
 
@@ -191,7 +192,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
 class Personal extends StatelessWidget {
   final routes = <String, WidgetBuilder>{
-    LoginPage.tag: (context) => LoginPage(),
+    LoginPage.tag: (context) => Wrapper(),
     PersonalPage.tag: (context) => PersonalPage(),
   };
 
@@ -204,7 +205,7 @@ class Personal extends StatelessWidget {
         primarySwatch: Colors.lightBlue,
         fontFamily: 'Nunito',
       ),
-      home: LoginPage(),
+      home: Wrapper(),
       routes: routes,
     );
   }
