@@ -24,15 +24,6 @@ class _RegisterState extends State<Register> {
         backgroundColor: Colors.brown[400],
         elevation: 0.0,
         title: Text('sign up to recipe app'),
-        actions: <Widget>[
-          FlatButton.icon(
-            icon: Icon(Icons.person),
-            label: Text('sign in'),
-            onPressed: () {
-              widget.toggleView();
-            },
-          )
-        ],
       ),
       body: Container(
           padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
@@ -40,6 +31,15 @@ class _RegisterState extends State<Register> {
             key: _formKey,
             child: Column(
               children: <Widget>[
+                Container(
+                  child: Align(
+                    alignment: Alignment(-0.9, -0.1),
+                    child: Text(
+                      'Email:',
+                      style: TextStyle(fontSize: 14.0),
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 20.0,
                 ),
@@ -51,6 +51,15 @@ class _RegisterState extends State<Register> {
                 ),
                 SizedBox(
                   height: 20.0,
+                ),
+                Container(
+                  child: Align(
+                    alignment: Alignment(-0.9, -0.1),
+                    child: Text(
+                      'Password:',
+                      style: TextStyle(fontSize: 14.0),
+                    ),
+                  ),
                 ),
                 TextFormField(
                   obscureText: true,
@@ -87,6 +96,17 @@ class _RegisterState extends State<Register> {
                   error,
                   style: TextStyle(color: Colors.red, fontSize: 14.0),
                 ),
+                SizedBox(height: 20.0),
+                Text(
+                  'If you already have an account in the app, enter it from here',
+                  style: TextStyle(color: Colors.grey[800], fontSize: 14.0),
+                ),
+                OutlineButton(
+                  onPressed: () {
+                    widget.toggleView();
+                  },
+                  child: Text('Sign-in to cook-book app'),
+                ),
               ],
             ),
           )),
@@ -94,3 +114,14 @@ class _RegisterState extends State<Register> {
     );
   }
 }
+
+//
+// actions: <Widget>[
+//   FlatButton.icon(
+//     icon: Icon(Icons.person),
+//     label: Text('sign in'),
+//     onPressed: () {
+//       widget.toggleView();
+//     },
+//   )
+// ],
