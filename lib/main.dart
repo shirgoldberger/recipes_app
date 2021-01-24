@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:recipes_app/personal/wrapper.dart';
+import 'package:recipes_app/personal/log_in_wrapper.dart';
+
 import 'personal/login_page.dart';
 import 'personal/personal_page.dart';
 
@@ -171,24 +172,36 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.search, color: Color.fromARGB(255, 0, 0, 0)),
-            label: 'Search',
-          ),
+              icon: Icon(Icons.search, color: Colors.grey),
+              label: 'Search',
+              activeIcon: Icon(
+                Icons.search,
+                color: Colors.cyan,
+              )),
           BottomNavigationBarItem(
-              icon: Icon(Icons.home, color: Color.fromARGB(255, 0, 0, 0)),
+              icon: Icon(Icons.home_outlined, color: Colors.grey),
               label: 'Home',
-              activeIcon: Icon(Icons.home_outlined)),
+              activeIcon: Icon(
+                Icons.home,
+                color: Colors.cyan,
+              )),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person, color: Color.fromARGB(255, 0, 0, 0)),
+              icon: Icon(Icons.account_circle_outlined, color: Colors.grey),
               label: 'Personal',
-              activeIcon: Icon(Icons.person_outline)),
+              activeIcon: Icon(
+                Icons.account_circle_rounded,
+                color: Colors.cyan,
+              )),
           BottomNavigationBarItem(
-              icon: Icon(Icons.book, color: Color.fromARGB(255, 0, 0, 0)),
+              icon: Icon(Icons.book_outlined, color: Colors.grey),
               label: 'Book',
-              activeIcon: Icon(Icons.book_outlined)),
+              activeIcon: Icon(
+                Icons.book,
+                color: Colors.cyan,
+              )),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Colors.cyan,
         onTap: _onItemTapped,
       ),
     );
@@ -197,7 +210,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
 class Personal extends StatelessWidget {
   final routes = <String, WidgetBuilder>{
-    LoginPage.tag: (context) => Wrapper(),
+    LoginPage.tag: (context) => LogInWrapper(),
     PersonalPage.tag: (context) => PersonalPage(),
   };
 
@@ -210,7 +223,7 @@ class Personal extends StatelessWidget {
         primarySwatch: Colors.lightBlue,
         fontFamily: 'Nunito',
       ),
-      home: Wrapper(),
+      home: LogInWrapper(),
       routes: routes,
     );
   }
