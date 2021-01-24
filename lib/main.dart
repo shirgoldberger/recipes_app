@@ -151,6 +151,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     pageList.add(Search());
     pageList.add(Home());
     pageList.add(Personal());
+    pageList.add(Book());
     super.initState();
   }
 
@@ -170,17 +171,21 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.search, color: Color.fromARGB(255, 0, 0, 0)),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.home, color: Color.fromARGB(255, 0, 0, 0)),
               label: 'Home',
               activeIcon: Icon(Icons.home_outlined)),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: Icon(Icons.person, color: Color.fromARGB(255, 0, 0, 0)),
               label: 'Personal',
               activeIcon: Icon(Icons.person_outline)),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.book, color: Color.fromARGB(255, 0, 0, 0)),
+              label: 'Book',
+              activeIcon: Icon(Icons.book_outlined)),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
@@ -225,6 +230,15 @@ class Search extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Text("Search Page"),
+    );
+  }
+}
+
+class Book extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Text("Book Page"),
     );
   }
 }
