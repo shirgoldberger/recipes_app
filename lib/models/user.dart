@@ -3,3 +3,20 @@ class User {
 
   User({this.uid});
 }
+
+class UserData {
+  final String uid;
+  final String firstName;
+  final String lastName;
+  final String phone;
+  final int age;
+  final String email;
+
+  UserData(
+      {this.uid,
+      this.firstName,
+      this.lastName,
+      this.email,
+      this.age,
+      this.phone});
+}
