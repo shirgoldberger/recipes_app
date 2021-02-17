@@ -27,9 +27,7 @@ class HomeLogIn extends StatelessWidget {
     }
 
     // ignore: missing_required_param
-    return StreamProvider<List<UserInformation>>.value(
-      value: DataBaseService().users,
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.brown[50],
         appBar: AppBar(
           title: Text('cook book'),
@@ -49,9 +47,6 @@ class HomeLogIn extends StatelessWidget {
               onPressed: () => _showSettingPannel(),
             )
           ],
-        ),
-        body: UserInfoList(),
-      ),
-    );
+        ));
   }
 }

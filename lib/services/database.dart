@@ -19,19 +19,6 @@ class DataBaseService {
       'phone': phone
     });
   }
-
-//userInfo from a snapshot
-  List<UserInformation> _userListFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.documents.map((doc) {
-      return UserInformation(
-          firstName: doc.data['firstName'] ?? '',
-          lastName: doc.data['lastName'] ?? '',
-          email: doc.data['email'] ?? '',
-          age: doc.data['age'] ?? 0,
-          phone: doc.data['phone'] ?? '');
-    }).toList();
-  }
-
   //user data from snapshot
 
   UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
@@ -39,14 +26,9 @@ class DataBaseService {
         uid: uid,
         firstName: snapshot.data['firstName'],
         lastName: snapshot.data['lastName'],
-        email: snapshot.data['email'],
+        email: snapshot.data['Email'],
         age: snapshot.data['age'],
         phone: snapshot.data['phone']);
-  }
-
-//get user stream
-  Stream<List<UserInformation>> get users {
-    return userCollection.snapshots().map(_userListFromSnapshot);
   }
 
   //get user doc stream

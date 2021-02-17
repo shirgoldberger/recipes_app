@@ -54,9 +54,9 @@ class _SettingFormState extends State<SettingForm> {
                     SizedBox(height: 20),
                     TextFormField(
                       initialValue: userData.email,
-                      decoration: InputDecoration(labelText: 'Email'),
+                      decoration: InputDecoration(labelText: 'email'),
                       validator: (val) =>
-                          val.isEmpty ? 'Please enter a email' : null,
+                          val.isEmpty ? 'Please enter an email' : null,
                       onChanged: (val) => setState(() => _cuttentEmail = val),
                     ),
                     SizedBox(height: 20),
