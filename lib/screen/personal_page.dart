@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recipes_app/personal/book_page.dart';
+import 'package:recipes_app/screen/book_page.dart';
 
 class PersonalPage extends StatelessWidget {
   static String tag = 'home-page';

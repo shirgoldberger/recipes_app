@@ -24,7 +24,7 @@ class _SettingFormState extends State<SettingForm> {
     final user = Provider.of<User>(context);
 
     return StreamBuilder<UserData>(
-        stream: DataBaseService(uid: user.uid).userData,
+        stream: DataBaseService(user.uid).userData,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             UserData userData = snapshot.data;
@@ -85,7 +85,7 @@ class _SettingFormState extends State<SettingForm> {
                         ),
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {
-                            await DataBaseService(uid: user.uid).updateUserData(
+                            await DataBaseService(user.uid).updateUserData(
                                 _cuttentFirstName ?? userData.firstName,
                                 _cuttentLastName ?? userData.lastName,
                                 _cuttentPhone ?? userData.phone,

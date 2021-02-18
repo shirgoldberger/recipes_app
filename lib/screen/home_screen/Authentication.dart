@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:recipes_app/personal/register.dart';
-import 'package:recipes_app/personal/sigh_in.dart';
+import 'package:recipes_app/screen/home_screen/sigh_in.dart';
+
+import 'package:recipes_app/screen/home_screen/register.dart';
 
 class Authentication extends StatefulWidget {
   @override

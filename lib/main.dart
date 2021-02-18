@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:recipes_app/personal/log_in_wrapper.dart';
-
-import 'personal/login_page.dart';
-import 'personal/personal_page.dart';
+import 'package:recipes_app/personal/home_screen/login_page.dart';
+import 'package:recipes_app/screen/home_screen/log_in_wrapper.dart';
+import 'screen/personal_page.dart';
 
 void main() {
   runApp(MyApp2());

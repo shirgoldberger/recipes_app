@@ -1,10 +1,22 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recipes_app/models/user.dart';
-import 'package:recipes_app/models/userInformation.dart';
+import 'package:recipes_app/models/recipe.dart';
 
 class DataBaseService {
-  final String uid;
-  DataBaseService({this.uid});
+  String uid;
+  CollectionReference recipeCollection;
+  DataBaseService(String u) {
+    this.uid = u;
+    recipeCollection = Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('recipes');
+  }
+
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   //collection redernce
   final CollectionReference userCollection =
       Firestore.instance.collection('users');
@@ -18,6 +30,11 @@ class DataBaseService {
       'age': age,
       'phone': phone
     });
+  }
+
+  Future<String> getCurrentUID() async {
+    print("noaaaaaa");
+    return (await _firebaseAuth.currentUser()).uid;
   }
   //user data from snapshot
 
@@ -34,5 +51,17 @@ class DataBaseService {
   //get user doc stream
   Stream<UserData> get userData {
     return userCollection.document(uid).snapshots().map(_userDataFromSnapshot);
+  }
+
+  //get recipe list
+  Stream<List<Recipe>> get recipe {
+    return recipeCollection.snapshots().map(_recipeListFromSnapshot);
+  }
+
+  //get recipe list
+  List<Recipe> _recipeListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      return Recipe(doc.data['name'] ?? '', doc.data['description'] ?? '');
+    }).toList();
   }
 }
