@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recipes_app/models/ingresients.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/screen/home_screen/ingredients.dart';
 
 class DataBaseService {
   String uid;
@@ -60,8 +62,12 @@ class DataBaseService {
 
   //get recipe list
   List<Recipe> _recipeListFromSnapshot(QuerySnapshot snapshot) {
+    List<String> o;
     return snapshot.documents.map((doc) {
-      return Recipe(doc.data['name'] ?? '', doc.data['description'] ?? '');
+      String n = doc.data['name'] ?? '';
+      String de = doc.data['description'] ?? '';
+
+      return Recipe(n, de);
     }).toList();
   }
 }
