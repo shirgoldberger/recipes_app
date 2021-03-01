@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/models/ingresients.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/models/stages.dart';
 import 'package:recipes_app/models/user.dart';
+import 'package:recipes_app/screen/home_screen/editRecipe.dart';
 import 'package:recipes_app/screen/home_screen/ingredients.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
@@ -12,6 +14,7 @@ class WatchRecipe extends StatefulWidget {
     this.current = r;
   }
   List<IngredientsModel> ing = [];
+  List<Stages> stages = [];
   Recipe current;
   bool done = false;
   int count = 0;
@@ -24,7 +27,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
     makeList();
     if (!widget.done) {
       return Loading();
@@ -36,10 +38,21 @@ class _WatchRecipeState extends State<WatchRecipe> {
               child: Scaffold(
                   backgroundColor: Colors.brown[100],
                   appBar: AppBar(
-                    backgroundColor: Colors.brown[400],
-                    elevation: 0.0,
-                    title: Text('add new recipe'),
-                  ),
+                      backgroundColor: Colors.brown[400],
+                      elevation: 0.0,
+                      title: Text('watch this recipe'),
+                      actions: <Widget>[
+                        FlatButton.icon(
+                            icon: Icon(Icons.edit),
+                            label: Text('edit this recipe'),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditRecipe(widget.current)));
+                            })
+                      ]),
                   body: Container(
                       child: new Column(children: [
                     Center(
@@ -88,17 +101,57 @@ class _WatchRecipeState extends State<WatchRecipe> {
                                 color: Colors.brown, fontSize: 25.0),
                           ),
                       ],
+                    ),
+                    new Padding(padding: EdgeInsets.only(top: 15.0)),
+                    new Text(
+                      'stages for the recipe:',
+                      style: new TextStyle(color: Colors.brown, fontSize: 25.0),
+                    ),
+                    new Padding(padding: EdgeInsets.only(top: 10.0)),
+                    Column(
+                      children: <Widget>[
+                        for (var j = 0; j < widget.stages.length; j++)
+                          Text(
+                            (j + 1).toString() +
+                                "." +
+                                "  " +
+                                widget.stages[j].s,
+                            textAlign: TextAlign.left,
+                            style: new TextStyle(
+                                color: Colors.brown, fontSize: 25.0),
+                          ),
+                      ],
                     )
                   ])))));
     }
   }
 
   void a() {}
+  Future<void> makeList2() async {
+    final user = Provider.of<User>(context);
+    QuerySnapshot snap2 = await Firestore.instance
+        .collection('users')
+        .document(user.uid)
+        .collection('recipes')
+        .document(widget.current.id.toString())
+        .collection('stages')
+        .getDocuments();
+    snap2.documents.forEach((element1) {
+      print(element1.data.toString());
+      setState(() {
+        widget.stages
+            .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
+      });
+    });
+    setState(() {
+      widget.done = true;
+    });
+  }
 
   Future<void> makeList() async {
     if (!widget.done) {
       final user = Provider.of<User>(context);
-      List<IngredientsModel> ingredients = [];
+
       QuerySnapshot snap = await Firestore.instance
           .collection('users')
           .document(user.uid)
@@ -113,6 +166,20 @@ class _WatchRecipeState extends State<WatchRecipe> {
               element.data['name'] ?? '',
               element.data['count'] ?? 0,
               element.data['unit'] ?? ''));
+        });
+      });
+      QuerySnapshot snap2 = await Firestore.instance
+          .collection('users')
+          .document(user.uid)
+          .collection('recipes')
+          .document(widget.current.id.toString())
+          .collection('stages')
+          .getDocuments();
+      snap2.documents.forEach((element1) {
+        print(element1.data.toString());
+        setState(() {
+          widget.stages
+              .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
         });
       });
 

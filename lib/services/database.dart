@@ -71,21 +71,4 @@ class DataBaseService {
       return r;
     }).toList();
   }
-
-  List<IngredientsModel> _ingredientFromRecipe(QuerySnapshot snapshot) {
-    return snapshot.documents.map((doc) {
-      return IngredientsModel.antherConstactor(doc.data['count'] ?? '',
-          doc.data['name'] ?? '', doc.data['unit'] ?? '');
-    }).toList();
-  }
-
-  Stream<List<IngredientsModel>> getRecipeIngredientsList(String id) {
-    CollectionReference ingCollection = Firestore.instance
-        .collection('users')
-        .document(uid)
-        .collection('recipes')
-        .document(id)
-        .collection('ingredients');
-    return ingCollection.snapshots().map(_ingredientFromRecipe);
-  }
 }
