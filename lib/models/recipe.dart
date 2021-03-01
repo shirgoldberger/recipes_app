@@ -5,11 +5,15 @@ class Recipe {
   String name;
   String description;
   List<IngredientsModel> ingredients;
+  var id;
 
   Recipe(String n, String desc) {
     this.name = n;
     this.description = desc;
     //this.ingredients = ing;
+  }
+  void setId(var id) {
+    this.id = id;
   }
 
   Map<String, dynamic> toJson() => {'name': name, 'description': description};

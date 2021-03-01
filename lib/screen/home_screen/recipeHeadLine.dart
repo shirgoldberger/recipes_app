@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/screen/home_screen/watchRecipe.dart';
 
 class RecipeHeadLine extends StatelessWidget {
   Recipe recipe;
@@ -11,7 +12,13 @@ class RecipeHeadLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(top: 8),
-        child: Card(
+        child: InkWell(
+          onTap: () {
+            print("Card Clicked");
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => WatchRecipe(recipe)));
+          },
+          child: new Card(
             margin: EdgeInsets.fromLTRB(20, 6, 20, 0),
             child: ListTile(
               leading: CircleAvatar(
@@ -19,7 +26,9 @@ class RecipeHeadLine extends StatelessWidget {
                 backgroundColor: Colors.brown[800],
               ),
               title: Text(recipe.name),
-              subtitle: Text(recipe.description),
-            )));
+              subtitle: Text(recipe.id),
+            ),
+          ),
+        ));
   }
 }
