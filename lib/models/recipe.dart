@@ -7,11 +7,13 @@ class Recipe {
   List<IngredientsModel> ingredients;
   var id;
   List<String> myTag;
+  int level;
 
-  Recipe(String n, String desc, List<String> tags) {
+  Recipe(String n, String desc, List<String> tags, int level) {
     this.name = n;
     this.description = desc;
     this.myTag = tags;
+    this.level = level;
     //this.ingredients = ing;
   }
   void setId(var id) {
@@ -21,6 +23,7 @@ class Recipe {
   Map<String, dynamic> toJson() => {
         'name': name,
         'description': description,
+        'level': level.toString(),
         'tags': (myTag.map((e) => e).toList())
       };
 }

@@ -36,7 +36,6 @@ class DataBaseService {
   }
 
   Future<String> getCurrentUID() async {
-    print("noaaaaaa");
     return (await _firebaseAuth.currentUser()).uid;
   }
   //user data from snapshot
@@ -67,7 +66,8 @@ class DataBaseService {
       var id = doc.documentID;
       String n = doc.data['name'] ?? '';
       String de = doc.data['description'] ?? '';
-
+      String level = doc.data['level'] ?? 0;
+      int levlelInt = int.parse(level);
       var tags = doc.data['tags'];
       String tagString = tags.toString();
       List<String> l = [];
@@ -81,7 +81,7 @@ class DataBaseService {
         }
       }
 
-      Recipe r = Recipe(n, de, l);
+      Recipe r = Recipe(n, de, l, levlelInt);
       r.setId(id);
       return r;
     }).toList();

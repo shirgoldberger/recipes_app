@@ -21,6 +21,7 @@ class WatchRecipe extends StatefulWidget {
   int count = 0;
   String tags = '';
   final db = Firestore.instance;
+  Color levelColor;
 
   @override
   _WatchRecipeState createState() => _WatchRecipeState();
@@ -31,6 +32,15 @@ class _WatchRecipeState extends State<WatchRecipe> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.current.level == 1) {
+      widget.levelColor = Colors.green[900];
+    }
+    if (widget.current.level == 2) {
+      widget.levelColor = Colors.red[900];
+    }
+    if (widget.current.level == 3) {
+      widget.levelColor = Colors.blue[900];
+    }
     makeList();
     final user = Provider.of<User>(context);
     final db = Firestore.instance;
@@ -107,6 +117,14 @@ class _WatchRecipeState extends State<WatchRecipe> {
                   'ingredients for the recipe:',
                   style: new TextStyle(color: Colors.brown, fontSize: 25.0),
                 ),
+                new Padding(padding: EdgeInsets.only(top: 10.0)),
+                RaisedButton(
+                    color: widget.levelColor,
+                    child: Text(
+                      'hard',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () {}),
                 new Padding(padding: EdgeInsets.only(top: 10.0)),
                 Column(
                   children: <Widget>[

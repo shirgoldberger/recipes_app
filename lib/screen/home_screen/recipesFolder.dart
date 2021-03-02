@@ -23,6 +23,9 @@ class _RecipeFolderState extends State<RecipeFolder> {
     List<Recipe> choose = [];
     List<Recipe> childern = [];
     for (int i = 0; i < recipeList.length; i++) {
+      if (recipeList[i].myTag.length == 0) {
+        other.add(recipeList[i]);
+      }
       for (int j = 0; j < recipeList[i].myTag.length; j++) {
         switch (recipeList[i].myTag[j]) {
           case "fish":
@@ -44,7 +47,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
             other.add(recipeList[i]);
             break;
           case "choose recipe tag":
-            choose.add(recipeList[i]);
+            other.add(recipeList[i]);
             break;
         }
       }

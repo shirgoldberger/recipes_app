@@ -42,6 +42,10 @@ class _PlusRecipeState extends State<PlusRecipe> {
   List<IngredientsModel> ingredients = [];
   List<Stages> stages = [];
   List<String> myTags = [];
+  int level = 0;
+  Color easyColor = Colors.green[200];
+  Color midColor = Colors.red[200];
+  Color hardColor = Colors.blue[200];
 
   @override
   Widget build(BuildContext context) {
@@ -282,6 +286,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                             )
                                           ]))
                             ])),
+
                             //plus tag
                             Row(children: <Widget>[
                               Expanded(
@@ -344,7 +349,57 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                           padding: EdgeInsets.all(5.0),
                                           shape: CircleBorder(),
                                         )
-                                      ]))
+                                      ])),
+                              SizedBox(
+                                  height: 37.0,
+                                  child: Text("push on the + to add tags")),
+                              Row(children: <Widget>[
+                                Expanded(
+                                    child: RaisedButton(
+                                        color: easyColor,
+                                        child: Text(
+                                          'easy',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            level = 1;
+                                            easyColor = Colors.green[900];
+                                            midColor = Colors.red[200];
+                                            hardColor = Colors.blue[200];
+                                          });
+                                        })),
+                                Expanded(
+                                    child: RaisedButton(
+                                        color: midColor,
+                                        child: Text(
+                                          'medium',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            level = 2;
+                                            easyColor = Colors.green[200];
+                                            midColor = Colors.red[900];
+                                            hardColor = Colors.blue[200];
+                                          });
+                                        })),
+                                Expanded(
+                                    child: RaisedButton(
+                                        color: hardColor,
+                                        child: Text(
+                                          'hard',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            level = 3;
+                                            easyColor = Colors.green[200];
+                                            midColor = Colors.red[200];
+                                            hardColor = Colors.blue[900];
+                                          });
+                                        }))
+                              ])
                             ]))
                           ]))
                         ]),
@@ -397,7 +452,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
   void saveThisRecipe() async {
     final db = Firestore.instance;
     final user = Provider.of<User>(context);
-    Recipe recipe = Recipe(recipe_name, recipe_description, myTags);
+    Recipe recipe = Recipe(recipe_name, recipe_description, myTags, level);
     var currentRecipe = await db
         .collection('users')
         .document(user.uid)
