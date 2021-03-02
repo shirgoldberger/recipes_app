@@ -8,6 +8,7 @@ import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/screen/home_screen/ListIngredients.dart';
 import 'package:recipes_app/screen/home_screen/RecipeList.dart';
 import 'package:recipes_app/screen/home_screen/plusRecipe.dart';
+import 'package:recipes_app/screen/home_screen/recipesFolder.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/services/database.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +16,10 @@ import 'package:provider/provider.dart';
 class HomeLogIn extends StatelessWidget {
   final db = Firestore.instance;
   final AuthService _auth = AuthService();
-
+  User user;
+  // HomeLogIn(User u) {
+  //   user = u;
+  // }
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
@@ -63,6 +67,6 @@ class HomeLogIn extends StatelessWidget {
                     })
               ],
             ),
-            body: RecipeList()));
+            body: RecipeFolder()));
   }
 }

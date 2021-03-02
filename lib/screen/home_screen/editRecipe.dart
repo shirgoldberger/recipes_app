@@ -20,10 +20,10 @@ class EditRecipe extends StatefulWidget {
   Recipe current;
   List tagList = [
     "fish",
-    "meet",
+    "meat",
     "dairy",
     "desert",
-    "for childre",
+    "for children",
     "other",
     "choose recipe tag"
   ];
@@ -309,7 +309,7 @@ class _EditRecipeState extends State<EditRecipe> {
       case "fish":
         return 0;
         break;
-      case "meet":
+      case "meat":
         return 1;
         break;
       case "dairy":
@@ -318,7 +318,7 @@ class _EditRecipeState extends State<EditRecipe> {
       case "desert":
         return 3;
         break;
-      case "for childre":
+      case "for children":
         return 4;
         break;
       case "other":

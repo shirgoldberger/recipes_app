@@ -6,6 +6,7 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stages.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/screen/home_screen/editRecipe.dart';
+import 'package:recipes_app/screen/home_screen/homeLogIn.dart';
 import 'package:recipes_app/screen/home_screen/ingredients.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
@@ -19,6 +20,7 @@ class WatchRecipe extends StatefulWidget {
   bool done = false;
   int count = 0;
   String tags = '';
+  final db = Firestore.instance;
 
   @override
   _WatchRecipeState createState() => _WatchRecipeState();
@@ -30,7 +32,8 @@ class _WatchRecipeState extends State<WatchRecipe> {
   @override
   Widget build(BuildContext context) {
     makeList();
-
+    final user = Provider.of<User>(context);
+    final db = Firestore.instance;
     if (!widget.done) {
       return Loading();
     } else {
@@ -50,6 +53,20 @@ class _WatchRecipeState extends State<WatchRecipe> {
                           MaterialPageRoute(
                               builder: (context) => EditRecipe(
                                   widget.current, widget.ing, widget.stages)));
+                    }),
+                FlatButton.icon(
+                    icon: Icon(Icons.delete),
+                    label: Text('delete this recipe'),
+                    onPressed: () {
+                      db
+                          .collection('users')
+                          .document(user.uid)
+                          .collection('recipes')
+                          .document(widget.current.id)
+                          .delete();
+                      //go back
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => HomeLogIn()));
                     })
               ]),
           body: new Container(

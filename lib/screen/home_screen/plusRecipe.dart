@@ -25,10 +25,10 @@ class _PlusRecipeState extends State<PlusRecipe> {
   final _formKey = GlobalKey<FormState>();
   List tagList = [
     'fish',
-    'meet',
+    'meat',
     'dairy',
     'desert',
-    'for childre',
+    'for children',
     'other',
     'choose recipe tag'
   ];

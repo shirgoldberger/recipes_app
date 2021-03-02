@@ -5,6 +5,12 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screen/home_screen/recipeHeadLine.dart';
 
 class RecipeList extends StatefulWidget {
+  RecipeList(List<Recipe> list, String head) {
+    this.list = list;
+    this.head = head;
+  }
+  List<Recipe> list = [];
+  String head;
   @override
   _RecipeListState createState() => _RecipeListState();
 }
@@ -12,26 +18,24 @@ class RecipeList extends StatefulWidget {
 class _RecipeListState extends State<RecipeList> {
   @override
   Widget build(BuildContext context) {
-    final recipe = Provider.of<List<Recipe>>(context);
-
-    return Column(children: <Widget>[
-      Card(
-        child: Text("aa"),
-      ),
-      Expanded(
-        child: ListView.builder(
-          itemCount: recipe.length,
-          itemBuilder: (context, index) {
-            return Draggable<Recipe>(
-              data: (recipe[index]),
-              child: RecipeHeadLine(recipe[index]),
-              feedback: RecipeHeadLine(recipe[index]),
-              childWhenDragging: Text("drag"),
-            );
-          },
+    return Scaffold(
+        backgroundColor: Colors.brown[50],
+        appBar: AppBar(
+          title: Text(widget.head + " recipes:"),
+          backgroundColor: Colors.brown[400],
+          elevation: 0.0,
+          actions: <Widget>[],
         ),
-      )
-    ]);
+        body: Column(children: <Widget>[
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.list.length,
+              itemBuilder: (context, index) {
+                return RecipeHeadLine(widget.list[index]);
+              },
+            ),
+          )
+        ]));
 
     return Container();
   }
