@@ -34,8 +34,6 @@ class _PlusRecipeState extends State<PlusRecipe> {
 
   @override
   Widget build(BuildContext context) {
-    final db = Firestore.instance;
-    final user = Provider.of<User>(context);
     if (loading) {
       return Loading();
     } else {
@@ -51,39 +49,12 @@ class _PlusRecipeState extends State<PlusRecipe> {
                       title: Text('add new recipe'),
                       actions: <Widget>[
                         FlatButton.icon(
-                          icon: Icon(Icons.save),
-                          label: Text('save this recipe'),
-                          onPressed: () async {
-                            Recipe recipe =
-                                Recipe(recipe_name, recipe_description);
-                            var currentRecipe = await db
-                                .collection('users')
-                                .document(user.uid)
-                                .collection('recipes')
-                                .add(recipe.toJson());
-                            print(user.uid);
-                            print(currentRecipe.documentID.toString());
-                            String id = currentRecipe.documentID.toString();
-                            for (int i = 0; i < ingredients.length; i++) {
-                              await db
-                                  .collection('users')
-                                  .document(user.uid)
-                                  .collection('recipes')
-                                  .document(id)
-                                  .collection('ingredients')
-                                  .add(ingredients[i].toJson());
-                            }
-                            for (int i = 0; i < stages.length; i++) {
-                              await db
-                                  .collection('users')
-                                  .document(user.uid)
-                                  .collection('recipes')
-                                  .document(id)
-                                  .collection('stages')
-                                  .add(stages[i].toJson(i));
-                            }
-                          },
-                        ),
+                            icon: Icon(Icons.save),
+                            label: Text('save this recipe'),
+                            onPressed: () async {
+                              saveThisRecipe();
+                              Navigator.of(context).pop();
+                            }),
                       ]),
                   body: Container(
                       padding: EdgeInsets.symmetric(
@@ -294,5 +265,37 @@ class _PlusRecipeState extends State<PlusRecipe> {
     setState(() {
       stages.add(Stages());
     });
+  }
+
+  void saveThisRecipe() async {
+    final db = Firestore.instance;
+    final user = Provider.of<User>(context);
+    Recipe recipe = Recipe(recipe_name, recipe_description);
+    var currentRecipe = await db
+        .collection('users')
+        .document(user.uid)
+        .collection('recipes')
+        .add(recipe.toJson());
+    print(user.uid);
+    print(currentRecipe.documentID.toString());
+    String id = currentRecipe.documentID.toString();
+    for (int i = 0; i < ingredients.length; i++) {
+      await db
+          .collection('users')
+          .document(user.uid)
+          .collection('recipes')
+          .document(id)
+          .collection('ingredients')
+          .add(ingredients[i].toJson());
+    }
+    for (int i = 0; i < stages.length; i++) {
+      await db
+          .collection('users')
+          .document(user.uid)
+          .collection('recipes')
+          .document(id)
+          .collection('stages')
+          .add(stages[i].toJson(i));
+    }
   }
 }
