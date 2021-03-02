@@ -42,6 +42,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
   List<IngredientsModel> ingredients = [];
   List<Stages> stages = [];
   List<String> myTags = [];
+  List<String> notes = [];
   int level = 0;
   Color easyColor = Colors.green[200];
   Color midColor = Colors.red[200];
@@ -82,6 +83,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
                             SizedBox(
                               height: 20.0,
                             ),
+                            //name recipe
                             TextFormField(
                               decoration: InputDecoration(
                                 hintText: 'Recipe name',
@@ -95,6 +97,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
                             SizedBox(
                               height: 20.0,
                             ),
+                            //description recipe
                             TextFormField(
                               decoration: InputDecoration(
                                 hintText: 'Description',
@@ -106,7 +109,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                 setState(() => recipe_description = val);
                               },
                             ),
-                            //ingredients plus
+                            //ingredients plus buttom and text explanation
                             Row(children: <Widget>[
                               Expanded(
                                 child: SizedBox(
@@ -126,7 +129,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                 shape: CircleBorder(),
                               )
                             ]),
-                            //ingredients
+                            //ingredients list: its a row with 3 element : ingredient, count, unit.
                             Container(
                               child: Column(
                                 children: [
@@ -221,7 +224,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                 ],
                               ),
                             ),
-                            //stage buttom and text
+                            //stage buttom and text explenation
                             Row(children: <Widget>[
                               Expanded(
                                 child: SizedBox(
@@ -350,9 +353,12 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                           shape: CircleBorder(),
                                         )
                                       ])),
+                              //tags + buttom
                               SizedBox(
                                   height: 37.0,
-                                  child: Text("push on the + to add tags")),
+                                  child: Text(
+                                      "choose the level of the recipe Leval: hard/medium/easy:")),
+                              //t
                               Row(children: <Widget>[
                                 Expanded(
                                     child: RaisedButton(
@@ -399,7 +405,73 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                             hardColor = Colors.blue[900];
                                           });
                                         }))
-                              ])
+                              ]),
+                              //notes plus buttom
+                              Row(children: <Widget>[
+                                Expanded(
+                                  child: SizedBox(
+                                      height: 37.0,
+                                      child:
+                                          Text("push on the + to add  notes")),
+                                ),
+                                RawMaterialButton(
+                                  onPressed: addNotes,
+                                  elevation: 2.0,
+                                  fillColor: Colors.brown[300],
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 18.0,
+                                  ),
+                                  padding: EdgeInsets.all(5.0),
+                                  shape: CircleBorder(),
+                                )
+                              ]),
+                              //notes
+                              Container(
+                                  child: Column(children: [
+                                notes.length <= 0
+                                    ? Text('there is no notes in this recipe')
+                                    : ListView.builder(
+                                        shrinkWrap: true,
+                                        addAutomaticKeepAlives: true,
+                                        itemCount: notes.length,
+                                        itemBuilder: (_, i) =>
+                                            Row(children: <Widget>[
+                                              Text((i + 1).toString() +
+                                                  "." +
+                                                  " "),
+                                              Expanded(
+                                                  child: SizedBox(
+                                                      height: 37.0,
+                                                      child: TextFormField(
+                                                        decoration:
+                                                            InputDecoration(
+                                                          hintText: 'note',
+                                                        ),
+                                                        validator: (val) => val
+                                                                    .length <
+                                                                2
+                                                            ? 'Enter a description eith 2 letter at least'
+                                                            : null,
+                                                        onChanged: (val) {
+                                                          setState(() =>
+                                                              notes[i] = val);
+                                                        },
+                                                      ))),
+                                              RawMaterialButton(
+                                                onPressed: () =>
+                                                    onDelteNotes(i),
+                                                elevation: 0.2,
+                                                fillColor: Colors.brown[300],
+                                                child: Icon(
+                                                  Icons.delete,
+                                                  size: 18.0,
+                                                ),
+                                                padding: EdgeInsets.all(5.0),
+                                                shape: CircleBorder(),
+                                              )
+                                            ]))
+                              ])),
                             ]))
                           ]))
                         ]),
@@ -431,6 +503,13 @@ class _PlusRecipeState extends State<PlusRecipe> {
     });
   }
 
+  void addNotes() {
+    setState(() {
+      notes.add(' ');
+    });
+    print(notes.length);
+  }
+
   void onDelteIng(int i) {
     setState(() {
       ingredients.removeAt(i);
@@ -449,10 +528,17 @@ class _PlusRecipeState extends State<PlusRecipe> {
     });
   }
 
+  void onDelteNotes(int i) {
+    setState(() {
+      notes.removeAt(i);
+    });
+  }
+
   void saveThisRecipe() async {
     final db = Firestore.instance;
     final user = Provider.of<User>(context);
-    Recipe recipe = Recipe(recipe_name, recipe_description, myTags, level);
+    Recipe recipe =
+        Recipe(recipe_name, recipe_description, myTags, level, notes);
     var currentRecipe = await db
         .collection('users')
         .document(user.uid)

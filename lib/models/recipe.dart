@@ -7,13 +7,16 @@ class Recipe {
   List<IngredientsModel> ingredients;
   var id;
   List<String> myTag;
+  List<String> notes;
   int level;
 
-  Recipe(String n, String desc, List<String> tags, int level) {
+  Recipe(
+      String n, String desc, List<String> tags, int level, List<String> notes) {
     this.name = n;
     this.description = desc;
     this.myTag = tags;
     this.level = level;
+    this.notes = notes;
     //this.ingredients = ing;
   }
   void setId(var id) {
@@ -24,6 +27,7 @@ class Recipe {
         'name': name,
         'description': description,
         'level': level.toString(),
-        'tags': (myTag.map((e) => e).toList())
+        'tags': (myTag.map((e) => e).toList()),
+        'notes': (notes.map((e) => e).toList())
       };
 }

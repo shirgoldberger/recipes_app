@@ -17,6 +17,7 @@ class EditRecipe extends StatefulWidget {
   }
   List<IngredientsModel> ing = [];
   List<Stages> stages = [];
+  List<String> notes = [];
   Recipe current;
   List tagList = [
     "fish",
@@ -191,6 +192,7 @@ class _EditRecipeState extends State<EditRecipe> {
                                 ),
                             ],
                           ),
+                          //stages
                           new Padding(padding: EdgeInsets.only(top: 15.0)),
                           new Text(
                             'stages for the recipe:',
@@ -358,7 +360,59 @@ class _EditRecipeState extends State<EditRecipe> {
                                     }))
                           ])
                         ]),
-                      )
+                      ),
+                      new Padding(padding: EdgeInsets.only(top: 15.0)),
+                      new Text(
+                        'notes for the recipe:',
+                        style:
+                            new TextStyle(color: Colors.brown, fontSize: 25.0),
+                      ),
+                      RawMaterialButton(
+                        onPressed: addNotes,
+                        elevation: 2.0,
+                        fillColor: Colors.brown[300],
+                        child: Icon(
+                          Icons.add,
+                          size: 18.0,
+                        ),
+                        padding: EdgeInsets.all(5.0),
+                        shape: CircleBorder(),
+                      ),
+                      new Padding(padding: EdgeInsets.only(top: 10.0)),
+                      Column(
+                        children: <Widget>[
+                          for (var j = 0; j < widget.current.notes.length; j++)
+                            Row(children: [
+                              Text((j + 1).toString() + "." + " "),
+                              Expanded(
+                                  child: SizedBox(
+                                      height: 37.0,
+                                      child: TextFormField(
+                                        decoration: InputDecoration(
+                                          hintText: widget.current.notes[j],
+                                        ),
+                                        validator: (val) => val.length < 2
+                                            ? 'Enter a description eith 2 letter at least'
+                                            : null,
+                                        onChanged: (val) {
+                                          setState(() =>
+                                              widget.current.notes[j] = val);
+                                        },
+                                      ))),
+                              RawMaterialButton(
+                                onPressed: () => onDeleteNotes(j),
+                                elevation: 0.2,
+                                fillColor: Colors.brown[300],
+                                child: Icon(
+                                  Icons.delete,
+                                  size: 18.0,
+                                ),
+                                padding: EdgeInsets.all(5.0),
+                                shape: CircleBorder(),
+                              )
+                            ])
+                        ],
+                      ),
                     ]),
                   ))));
     }
@@ -411,6 +465,12 @@ class _EditRecipeState extends State<EditRecipe> {
     });
   }
 
+  void addNotes() {
+    setState(() {
+      widget.current.notes.add('');
+    });
+  }
+
   void onDeletIng(int i) {
     setState(() {
       widget.ing.removeAt(i);
@@ -426,6 +486,12 @@ class _EditRecipeState extends State<EditRecipe> {
   void onDeleteTags(int i) {
     setState(() {
       widget.current.myTag.removeAt(i);
+    });
+  }
+
+  void onDeleteNotes(int i) {
+    setState(() {
+      widget.current.notes.removeAt(i);
     });
   }
 

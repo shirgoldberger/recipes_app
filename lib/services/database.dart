@@ -68,6 +68,7 @@ class DataBaseService {
       String de = doc.data['description'] ?? '';
       String level = doc.data['level'] ?? 0;
       int levlelInt = int.parse(level);
+      //tags
       var tags = doc.data['tags'];
       String tagString = tags.toString();
       List<String> l = [];
@@ -80,8 +81,21 @@ class DataBaseService {
           }
         }
       }
+      //notes
+      var note = doc.data['tags'];
+      String noteString = tags.toString();
+      List<String> nList = [];
+      if (noteString != "[]") {
+        String tag = noteString.substring(1, noteString.length - 1);
+        nList = tag.split(',');
+        for (int i = 0; i < nList.length; i++) {
+          if (nList[i][0] == ' ') {
+            nList[i] = nList[i].substring(1, nList[i].length);
+          }
+        }
+      }
 
-      Recipe r = Recipe(n, de, l, levlelInt);
+      Recipe r = Recipe(n, de, l, levlelInt, nList);
       r.setId(id);
       return r;
     }).toList();
