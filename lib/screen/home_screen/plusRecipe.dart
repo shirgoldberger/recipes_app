@@ -23,14 +23,25 @@ class PlusRecipe extends StatefulWidget {
 class _PlusRecipeState extends State<PlusRecipe> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
+  List tagList = [
+    'fish',
+    'meet',
+    'dairy',
+    'desert',
+    'for childre',
+    'other',
+    'choose recipe tag'
+  ];
   List<IngredientsModel> ingredientsList = [];
   bool loading = false;
   //text field state
   String recipe_name = '';
   String recipe_description = '';
+  String tagChoose;
   int count = 0;
   List<IngredientsModel> ingredients = [];
   List<Stages> stages = [];
+  List<String> myTags = [];
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +102,13 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                 setState(() => recipe_description = val);
                               },
                             ),
+                            //ingredients plus
                             Row(children: <Widget>[
                               Expanded(
                                 child: SizedBox(
                                     height: 37.0,
                                     child: Text(
-                                        "push on the + to add more Ingredients")),
+                                        "push on the + to add  Ingredients")),
                               ),
                               RawMaterialButton(
                                 onPressed: addIng,
@@ -110,6 +122,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                 shape: CircleBorder(),
                               )
                             ]),
+                            //ingredients
                             Container(
                               child: Column(
                                 children: [
@@ -120,83 +133,97 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                           shrinkWrap: true,
                                           addAutomaticKeepAlives: true,
                                           itemCount: ingredients.length,
-                                          itemBuilder: (_, i) =>
-                                              Row(children: <Widget>[
-                                                Text((i + 1).toString() +
-                                                    "." +
-                                                    " "),
-                                                Expanded(
-                                                    child: SizedBox(
-                                                        height: 37.0,
-                                                        child: TextFormField(
-                                                          decoration:
-                                                              InputDecoration(
-                                                            hintText:
-                                                                'Ingredient',
-                                                          ),
-                                                          validator: (val) => val
-                                                                      .length <
-                                                                  2
-                                                              ? 'Enter a description eith 2 letter at least'
-                                                              : null,
-                                                          onChanged: (val) {
-                                                            setState(() =>
-                                                                ingredients[i]
-                                                                        .name =
-                                                                    val);
-                                                          },
-                                                        ))),
-                                                Expanded(
-                                                    child: SizedBox(
-                                                        height: 37.0,
-                                                        child: TextFormField(
-                                                          decoration:
-                                                              InputDecoration(
-                                                            hintText: 'amount',
-                                                          ),
-                                                          validator: (val) => val
-                                                                      .length <
-                                                                  6
-                                                              ? 'Enter a description eith 6 letter at least'
-                                                              : null,
-                                                          onChanged: (val) {
-                                                            setState(() =>
-                                                                ingredients[i]
-                                                                        .count =
-                                                                    int.parse(
-                                                                        val));
-                                                          },
-                                                        ))),
-                                                Expanded(
-                                                    child: SizedBox(
-                                                        height: 37.0,
-                                                        child: TextFormField(
-                                                          decoration:
-                                                              InputDecoration(
-                                                            hintText: 'unit',
-                                                          ),
-                                                          validator: (val) => val
-                                                                      .length <
-                                                                  6
-                                                              ? 'Enter a description eith 6 letter at least'
-                                                              : null,
-                                                          onChanged: (val) {
-                                                            setState(() =>
-                                                                ingredients[i]
-                                                                        .unit =
-                                                                    val);
-                                                          },
-                                                        ))),
-                                              ])),
+                                          itemBuilder: (_, i) => Row(
+                                                children: <Widget>[
+                                                  Text((i + 1).toString() +
+                                                      "." +
+                                                      " "),
+                                                  Expanded(
+                                                      child: SizedBox(
+                                                          height: 37.0,
+                                                          child: TextFormField(
+                                                            decoration:
+                                                                InputDecoration(
+                                                              hintText:
+                                                                  'Ingredient',
+                                                            ),
+                                                            validator: (val) =>
+                                                                val.length < 2
+                                                                    ? 'Enter a description eith 2 letter at least'
+                                                                    : null,
+                                                            onChanged: (val) {
+                                                              setState(() =>
+                                                                  ingredients[i]
+                                                                          .name =
+                                                                      val);
+                                                            },
+                                                          ))),
+                                                  Expanded(
+                                                      child: SizedBox(
+                                                          height: 37.0,
+                                                          child: TextFormField(
+                                                            decoration:
+                                                                InputDecoration(
+                                                              hintText:
+                                                                  'amount',
+                                                            ),
+                                                            validator: (val) =>
+                                                                val.length < 6
+                                                                    ? 'Enter a description eith 6 letter at least'
+                                                                    : null,
+                                                            onChanged: (val) {
+                                                              setState(() =>
+                                                                  ingredients[i]
+                                                                          .count =
+                                                                      int.parse(
+                                                                          val));
+                                                            },
+                                                          ))),
+                                                  Expanded(
+                                                      child: SizedBox(
+                                                          height: 37.0,
+                                                          child: TextFormField(
+                                                            decoration:
+                                                                InputDecoration(
+                                                              hintText: 'unit',
+                                                            ),
+                                                            validator: (val) =>
+                                                                val.length < 6
+                                                                    ? 'Enter a description eith 6 letter at least'
+                                                                    : null,
+                                                            onChanged: (val) {
+                                                              setState(() =>
+                                                                  ingredients[i]
+                                                                          .unit =
+                                                                      val);
+                                                            },
+                                                          ))),
+                                                  RawMaterialButton(
+                                                    onPressed: () =>
+                                                        onDelteIng(i),
+                                                    elevation: 0.2,
+                                                    fillColor:
+                                                        Colors.brown[300],
+                                                    child: Icon(
+                                                      Icons.delete,
+                                                      size: 18.0,
+                                                    ),
+                                                    padding:
+                                                        EdgeInsets.all(5.0),
+                                                    shape: CircleBorder(),
+                                                  )
+                                                ],
+                                              )),
                                 ],
                               ),
                             ),
+                            //stage buttom and text
                             Row(children: <Widget>[
                               Expanded(
                                 child: SizedBox(
                                     height: 37.0,
-                                    child: Text(
-                                        "push on the + to add more stages")),
+                                    child:
+                                        Text("push on the + to add  stages")),
                               ),
                               RawMaterialButton(
                                 onPressed: addStages,
@@ -210,6 +237,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                 shape: CircleBorder(),
                               )
                             ]),
+                            //stages
                             Container(
                                 child: Column(children: [
                               stages.length <= 0
@@ -241,7 +269,82 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                                             stages[i].s = val);
                                                       },
                                                     ))),
+                                            RawMaterialButton(
+                                              onPressed: () => onDelteStages(i),
+                                              elevation: 0.2,
+                                              fillColor: Colors.brown[300],
+                                              child: Icon(
+                                                Icons.delete,
+                                                size: 18.0,
+                                              ),
+                                              padding: EdgeInsets.all(5.0),
+                                              shape: CircleBorder(),
+                                            )
                                           ]))
+                            ])),
+                            //plus tag
+                            Row(children: <Widget>[
+                              Expanded(
+                                child: SizedBox(
+                                    height: 37.0,
+                                    child: Text("push on the + to add tags")),
+                              ),
+                              RawMaterialButton(
+                                onPressed: addTags,
+                                elevation: 2.0,
+                                fillColor: Colors.brown[300],
+                                child: Icon(
+                                  Icons.add,
+                                  size: 18.0,
+                                ),
+                                padding: EdgeInsets.all(5.0),
+                                shape: CircleBorder(),
+                              ),
+                            ]),
+                            //tags
+                            Container(
+                                child: Column(children: [
+                              ListView.builder(
+                                  shrinkWrap: true,
+                                  addAutomaticKeepAlives: true,
+                                  itemCount: myTags.length,
+                                  itemBuilder: (_, i) => Row(children: <Widget>[
+                                        Expanded(
+                                            child: SizedBox(
+                                          height: 37.0,
+                                          child: DropdownButton(
+                                            hint:
+                                                Text("choose this recipe tag"),
+                                            dropdownColor: Colors.brown[300],
+                                            icon: Icon(Icons.arrow_drop_down),
+                                            iconSize: 36,
+                                            isExpanded: true,
+                                            value: myTags[i],
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                myTags[i] = newValue;
+                                              });
+                                            },
+                                            items: tagList.map((valueItem) {
+                                              return DropdownMenuItem(
+                                                value: valueItem,
+                                                child: Text(valueItem),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        )),
+                                        RawMaterialButton(
+                                          onPressed: () => onDelteTags(i),
+                                          elevation: 0.2,
+                                          fillColor: Colors.brown[300],
+                                          child: Icon(
+                                            Icons.delete,
+                                            size: 18.0,
+                                          ),
+                                          padding: EdgeInsets.all(5.0),
+                                          shape: CircleBorder(),
+                                        )
+                                      ]))
                             ]))
                           ]))
                         ]),
@@ -267,10 +370,34 @@ class _PlusRecipeState extends State<PlusRecipe> {
     });
   }
 
+  void addTags() {
+    setState(() {
+      myTags.add('choose recipe tag');
+    });
+  }
+
+  void onDelteIng(int i) {
+    setState(() {
+      ingredients.removeAt(i);
+    });
+  }
+
+  void onDelteStages(int i) {
+    setState(() {
+      stages.removeAt(i);
+    });
+  }
+
+  void onDelteTags(int i) {
+    setState(() {
+      myTags.removeAt(i);
+    });
+  }
+
   void saveThisRecipe() async {
     final db = Firestore.instance;
     final user = Provider.of<User>(context);
-    Recipe recipe = Recipe(recipe_name, recipe_description);
+    Recipe recipe = Recipe(recipe_name, recipe_description, myTags);
     var currentRecipe = await db
         .collection('users')
         .document(user.uid)

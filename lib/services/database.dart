@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -66,7 +67,21 @@ class DataBaseService {
       var id = doc.documentID;
       String n = doc.data['name'] ?? '';
       String de = doc.data['description'] ?? '';
-      Recipe r = Recipe(n, de);
+
+      var tags = doc.data['tags'];
+      String tagString = tags.toString();
+      List<String> l = [];
+      if (tagString != "[]") {
+        String tag = tagString.substring(1, tagString.length - 1);
+        l = tag.split(',');
+        for (int i = 0; i < l.length; i++) {
+          if (l[i][0] == ' ') {
+            l[i] = l[i].substring(1, l[i].length);
+          }
+        }
+      }
+
+      Recipe r = Recipe(n, de, l);
       r.setId(id);
       return r;
     }).toList();

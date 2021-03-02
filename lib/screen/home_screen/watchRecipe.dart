@@ -18,6 +18,8 @@ class WatchRecipe extends StatefulWidget {
   Recipe current;
   bool done = false;
   int count = 0;
+  String tags = '';
+
   @override
   _WatchRecipeState createState() => _WatchRecipeState();
 }
@@ -28,6 +30,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
   @override
   Widget build(BuildContext context) {
     makeList();
+
     if (!widget.done) {
       return Loading();
     } else {
@@ -79,6 +82,11 @@ class _WatchRecipeState extends State<WatchRecipe> {
                 ),
                 new Padding(padding: EdgeInsets.only(top: 15.0)),
                 new Text(
+                  makeTags(),
+                  style: new TextStyle(color: Colors.brown, fontSize: 25.0),
+                ),
+                new Padding(padding: EdgeInsets.only(top: 15.0)),
+                new Text(
                   'ingredients for the recipe:',
                   style: new TextStyle(color: Colors.brown, fontSize: 25.0),
                 ),
@@ -124,26 +132,12 @@ class _WatchRecipeState extends State<WatchRecipe> {
     }
   }
 
-  void a() {}
-  Future<void> makeList2() async {
-    final user = Provider.of<User>(context);
-    QuerySnapshot snap2 = await Firestore.instance
-        .collection('users')
-        .document(user.uid)
-        .collection('recipes')
-        .document(widget.current.id.toString())
-        .collection('stages')
-        .getDocuments();
-    snap2.documents.forEach((element1) {
-      print(element1.data.toString());
-      setState(() {
-        widget.stages
-            .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
-      });
-    });
-    setState(() {
-      widget.done = true;
-    });
+  String makeTags() {
+    String tag = '';
+    for (int i = 0; i < widget.current.myTag.length; i++) {
+      tag += "#" + widget.current.myTag[i] + " ,";
+    }
+    return tag;
   }
 
   Future<void> makeList() async {

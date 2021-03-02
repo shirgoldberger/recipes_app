@@ -14,12 +14,24 @@ class _RecipeListState extends State<RecipeList> {
   Widget build(BuildContext context) {
     final recipe = Provider.of<List<Recipe>>(context);
 
-    return ListView.builder(
-      itemCount: recipe.length,
-      itemBuilder: (context, index) {
-        return RecipeHeadLine(recipe[index]);
-      },
-    );
+    return Column(children: <Widget>[
+      Card(
+        child: Text("aa"),
+      ),
+      Expanded(
+        child: ListView.builder(
+          itemCount: recipe.length,
+          itemBuilder: (context, index) {
+            return Draggable<Recipe>(
+              data: (recipe[index]),
+              child: RecipeHeadLine(recipe[index]),
+              feedback: RecipeHeadLine(recipe[index]),
+              childWhenDragging: Text("drag"),
+            );
+          },
+        ),
+      )
+    ]);
 
     return Container();
   }

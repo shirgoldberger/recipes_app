@@ -18,6 +18,15 @@ class EditRecipe extends StatefulWidget {
   List<IngredientsModel> ing = [];
   List<Stages> stages = [];
   Recipe current;
+  List tagList = [
+    "fish",
+    "meet",
+    "dairy",
+    "desert",
+    "for childre",
+    "other",
+    "choose recipe tag"
+  ];
   bool done = false;
   int count = 0;
   @override
@@ -104,57 +113,70 @@ class _EditRecipeState extends State<EditRecipe> {
                         Column(
                           children: <Widget>[
                             for (var i = 0; i < widget.ing.length; i++)
-                              Row(children: [
-                                Text((i + 1).toString() + "." + " "),
-                                Expanded(
-                                    child: SizedBox(
-                                        height: 37.0,
-                                        child: TextFormField(
-                                          decoration: InputDecoration(
-                                            hintText: widget.ing[i].name,
-                                          ),
-                                          validator: (val) => val.length < 2
-                                              ? 'Enter a description eith 2 letter at least'
-                                              : null,
-                                          onChanged: (val) {
-                                            setState(
-                                                () => widget.ing[i].name = val);
-                                          },
-                                        ))),
-                                Text(' '),
-                                Expanded(
-                                    child: SizedBox(
-                                        height: 37.0,
-                                        child: TextFormField(
-                                          decoration: InputDecoration(
-                                            hintText:
-                                                widget.ing[i].count.toString(),
-                                          ),
-                                          validator: (val) => val.length < 6
-                                              ? 'Enter a description eith 6 letter at least'
-                                              : null,
-                                          onChanged: (val) {
-                                            setState(() => widget.ing[i].count =
-                                                int.parse(val));
-                                          },
-                                        ))),
-                                Text(' '),
-                                Expanded(
-                                    child: SizedBox(
-                                        height: 37.0,
-                                        child: TextFormField(
-                                          decoration: InputDecoration(
-                                            hintText: widget.ing[i].unit,
-                                          ),
-                                          validator: (val) => val.length < 6
-                                              ? 'Enter a description eith 6 letter at least'
-                                              : null,
-                                          onChanged: (val) {
-                                            setState(
-                                                () => widget.ing[i].unit = val);
-                                          },
-                                        ))),
-                              ])
+                              Row(
+                                children: [
+                                  Text((i + 1).toString() + "." + " "),
+                                  Expanded(
+                                      child: SizedBox(
+                                          height: 37.0,
+                                          child: TextFormField(
+                                            decoration: InputDecoration(
+                                              hintText: widget.ing[i].name,
+                                            ),
+                                            validator: (val) => val.length < 2
+                                                ? 'Enter a description eith 2 letter at least'
+                                                : null,
+                                            onChanged: (val) {
+                                              setState(() =>
+                                                  widget.ing[i].name = val);
+                                            },
+                                          ))),
+                                  Text(' '),
+                                  Expanded(
+                                      child: SizedBox(
+                                          height: 37.0,
+                                          child: TextFormField(
+                                            decoration: InputDecoration(
+                                              hintText: widget.ing[i].count
+                                                  .toString(),
+                                            ),
+                                            validator: (val) => val.length < 6
+                                                ? 'Enter a description eith 6 letter at least'
+                                                : null,
+                                            onChanged: (val) {
+                                              setState(() => widget.ing[i]
+                                                  .count = int.parse(val));
+                                            },
+                                          ))),
+                                  Text(' '),
+                                  Expanded(
+                                      child: SizedBox(
+                                          height: 37.0,
+                                          child: TextFormField(
+                                            decoration: InputDecoration(
+                                              hintText: widget.ing[i].unit,
+                                            ),
+                                            validator: (val) => val.length < 6
+                                                ? 'Enter a description eith 6 letter at least'
+                                                : null,
+                                            onChanged: (val) {
+                                              setState(() =>
+                                                  widget.ing[i].unit = val);
+                                            },
+                                          ))),
+                                  RawMaterialButton(
+                                    onPressed: () => onDeletIng(i),
+                                    elevation: 0.2,
+                                    fillColor: Colors.brown[300],
+                                    child: Icon(
+                                      Icons.delete,
+                                      size: 18.0,
+                                    ),
+                                    padding: EdgeInsets.all(5.0),
+                                    shape: CircleBorder(),
+                                  )
+                                ],
+                              ),
                           ],
                         ),
                         new Padding(padding: EdgeInsets.only(top: 15.0)),
@@ -195,6 +217,81 @@ class _EditRecipeState extends State<EditRecipe> {
                                                 () => widget.stages[j].s = val);
                                           },
                                         ))),
+                                RawMaterialButton(
+                                  onPressed: () => onDeletStages(j),
+                                  elevation: 0.2,
+                                  fillColor: Colors.brown[300],
+                                  child: Icon(
+                                    Icons.delete,
+                                    size: 18.0,
+                                  ),
+                                  padding: EdgeInsets.all(5.0),
+                                  shape: CircleBorder(),
+                                )
+                              ])
+                          ],
+                        ),
+                        //tags
+                        new Padding(padding: EdgeInsets.only(top: 15.0)),
+                        new Text(
+                          'tags for the recipe:',
+                          style: new TextStyle(
+                              color: Colors.brown, fontSize: 25.0),
+                        ),
+                        RawMaterialButton(
+                          onPressed: addTags,
+                          elevation: 2.0,
+                          fillColor: Colors.brown[300],
+                          child: Icon(
+                            Icons.add,
+                            size: 18.0,
+                          ),
+                          padding: EdgeInsets.all(5.0),
+                          shape: CircleBorder(),
+                        ),
+                        new Padding(padding: EdgeInsets.only(top: 10.0)),
+                        Column(
+                          children: <Widget>[
+                            for (var t = 0;
+                                t < widget.current.myTag.length;
+                                t++)
+                              Row(children: [
+                                Text((t + 1).toString() + "." + " "),
+                                Expanded(
+                                    child: SizedBox(
+                                  height: 37.0,
+                                  child: DropdownButton(
+                                    hint: Text("choose this recipe tag"),
+                                    dropdownColor: Colors.brown[300],
+                                    icon: Icon(Icons.arrow_drop_down),
+                                    iconSize: 36,
+                                    isExpanded: true,
+                                    value: widget.tagList[convertToIndex(
+                                        widget.current.myTag[t])],
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        widget.current.myTag[t] = newValue;
+                                      });
+                                    },
+                                    items: widget.tagList.map((valueItem) {
+                                      return DropdownMenuItem(
+                                        value: valueItem,
+                                        child: Text(valueItem),
+                                      );
+                                    }).toList(),
+                                  ),
+                                )),
+                                RawMaterialButton(
+                                  onPressed: () => onDeleteTags(t),
+                                  elevation: 0.2,
+                                  fillColor: Colors.brown[300],
+                                  child: Icon(
+                                    Icons.delete,
+                                    size: 18.0,
+                                  ),
+                                  padding: EdgeInsets.all(5.0),
+                                  shape: CircleBorder(),
+                                )
                               ])
                           ],
                         )
@@ -204,26 +301,33 @@ class _EditRecipeState extends State<EditRecipe> {
     }
   }
 
-  void a() {}
-  Future<void> makeList2() async {
-    final user = Provider.of<User>(context);
-    QuerySnapshot snap2 = await Firestore.instance
-        .collection('users')
-        .document(user.uid)
-        .collection('recipes')
-        .document(widget.current.id.toString())
-        .collection('stages')
-        .getDocuments();
-    snap2.documents.forEach((element1) {
-      print(element1.data.toString());
-      setState(() {
-        widget.stages
-            .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
-      });
-    });
-    setState(() {
-      widget.done = true;
-    });
+  int convertToIndex(String s) {
+    if (s[0] == ' ') {
+      s = s.substring(1);
+    }
+    switch (s) {
+      case "fish":
+        return 0;
+        break;
+      case "meet":
+        return 1;
+        break;
+      case "dairy":
+        return 2;
+        break;
+      case "desert":
+        return 3;
+        break;
+      case "for childre":
+        return 4;
+        break;
+      case "other":
+        return 5;
+        break;
+      case "choose recipe tag":
+        return 6;
+        break;
+    }
   }
 
   void addIng() {
@@ -235,6 +339,30 @@ class _EditRecipeState extends State<EditRecipe> {
   void addStages() {
     setState(() {
       widget.stages.add(Stages());
+    });
+  }
+
+  void addTags() {
+    setState(() {
+      widget.current.myTag.add('choose recipe tag');
+    });
+  }
+
+  void onDeletIng(int i) {
+    setState(() {
+      widget.ing.removeAt(i);
+    });
+  }
+
+  void onDeletStages(int i) {
+    setState(() {
+      widget.stages.removeAt(i);
+    });
+  }
+
+  void onDeleteTags(int i) {
+    setState(() {
+      widget.current.myTag.removeAt(i);
     });
   }
 
