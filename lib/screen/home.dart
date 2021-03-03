@@ -10,6 +10,7 @@ import 'package:recipes_app/screen/home_screen/logIn/log_in_wrapper.dart';
 import 'package:recipes_app/screen/home_screen/plusRecipe.dart';
 import 'package:recipes_app/screen/home_screen/recipesFolder.dart';
 import 'package:recipes_app/services/auth.dart';
+import 'package:recipes_app/services/dataBaseAllRecipe.dart';
 import 'package:recipes_app/services/database.dart';
 import 'package:provider/provider.dart';
 
@@ -23,9 +24,8 @@ class HomePage extends StatelessWidget {
   // }
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
     return StreamProvider<List<Recipe>>.value(
-        value: DataBaseService(user.uid).recipe,
+        value: DataBaseAllRecipes().allRecipe,
         child: Scaffold(
             backgroundColor: Colors.brown[50],
             appBar: AppBar(
@@ -34,6 +34,6 @@ class HomePage extends StatelessWidget {
               elevation: 0.0,
               actions: <Widget>[],
             ),
-            body: Text("home first home")));
+            body: RecipeFolder()));
   }
 }
