@@ -91,7 +91,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
                   child: new Column(children: [
                 Center(
                   child: new Text(
-                    widget.current.name,
+                    widget.current.name + " / " + widget.current.writer,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

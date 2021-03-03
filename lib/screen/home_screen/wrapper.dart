@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/screen/home_screen/homeLogIn.dart';
-import 'package:recipes_app/screen/home_screen/Authentication.dart';
+import 'package:recipes_app/screen/home_screen/logIn/Authentication.dart';
 
 class Wrapper extends StatelessWidget {
   @override

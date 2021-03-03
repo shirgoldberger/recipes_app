@@ -67,6 +67,10 @@ class DataBaseService {
       String n = doc.data['name'] ?? '';
       String de = doc.data['description'] ?? '';
       String level = doc.data['level'] ?? 0;
+      String time = doc.data['time'] ?? '0';
+      int timeI = int.parse(time);
+      String writer = doc.data['writer'] ?? '';
+      String writerUid = doc.data['writerUid'] ?? '';
       int levlelInt = int.parse(level);
       //tags
       var tags = doc.data['tags'];
@@ -95,7 +99,7 @@ class DataBaseService {
         }
       }
 
-      Recipe r = Recipe(n, de, l, levlelInt, nList);
+      Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI);
       r.setId(id);
       return r;
     }).toList();

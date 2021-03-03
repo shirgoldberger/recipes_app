@@ -5,8 +5,8 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/userInformation.dart';
 import 'package:recipes_app/screen/Setting_form.dart';
 import 'package:recipes_app/models/user.dart';
-import 'package:recipes_app/screen/home_screen/ListIngredients.dart';
 import 'package:recipes_app/screen/home_screen/RecipeList.dart';
+import 'package:recipes_app/screen/home_screen/logIn/log_in_wrapper.dart';
 import 'package:recipes_app/screen/home_screen/plusRecipe.dart';
 import 'package:recipes_app/screen/home_screen/recipesFolder.dart';
 import 'package:recipes_app/services/auth.dart';
@@ -23,13 +23,14 @@ class HomeLogIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
+    print("home");
+    print(user.uid);
     void _showSettingPannel() {
       showModalBottomSheet(
           isScrollControlled: true,
           context: context,
           builder: (context) {
             return Container(
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 60),
               child: SettingForm(),
             );
           });
@@ -48,7 +49,14 @@ class HomeLogIn extends StatelessWidget {
                   icon: Icon(Icons.person),
                   label: Text('log out'),
                   onPressed: () async {
+                    print("out");
+                    print(user.uid);
                     await _auth.signOut();
+                    print("done");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LogInWrapper()));
                   },
                 ),
                 FlatButton.icon(

@@ -33,6 +33,9 @@ class EditRecipe extends StatefulWidget {
   Color easyColor = Colors.green[200];
   Color midColor = Colors.red[200];
   Color hardColor = Colors.blue[200];
+  Color timeInit1 = Colors.black;
+  Color timeInit2 = Colors.black;
+  Color timeInit3 = Colors.black;
   @override
   _EditRecipeState createState() => _EditRecipeState();
 }
@@ -53,6 +56,17 @@ class _EditRecipeState extends State<EditRecipe> {
     if (widget.current.level == 3) {
       widget.hardColor = Colors.blue[900];
     }
+    switch (widget.current.time) {
+      case 1:
+        widget.timeInit1 = Colors.green[400];
+        break;
+      case 2:
+        widget.timeInit2 = Colors.yellow[400];
+        break;
+      case 3:
+        widget.timeInit3 = Colors.pink[400];
+        break;
+    }
     {
       return Container(
           height: 100,
@@ -69,11 +83,12 @@ class _EditRecipeState extends State<EditRecipe> {
                             icon: Icon(Icons.save),
                             label: Text('save this recipe'),
                             onPressed: () {
+                              print(user.uid);
                               editAndSave();
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomeLogIn()));
+                              // Navigator.push(
+                              // context,
+                              //MaterialPageRoute(
+                              //  builder: (context) => HomeLogIn()));
                             }),
                       ]),
                   body: Container(
@@ -360,7 +375,57 @@ class _EditRecipeState extends State<EditRecipe> {
                                     }))
                           ])
                         ]),
-                      ),
+                      ), //time text
+                      SizedBox(
+                          height: 37.0,
+                          child: Text(
+                              "How long does it take to prepare the recipe?")),
+                      //time
+                      Row(children: <Widget>[
+                        Expanded(
+                          child: FlatButton.icon(
+                              icon: Icon(Icons.watch_later,
+                                  color: widget.timeInit1),
+                              label: Text(''),
+                              onPressed: () {
+                                setState(() {
+                                  widget.current.time = 1;
+                                  widget.timeInit1 = Colors.green[400];
+                                  widget.timeInit2 = Colors.black;
+                                  widget.timeInit3 = Colors.black;
+                                });
+                              }),
+                        ),
+                        Expanded(
+                          child: FlatButton.icon(
+                              icon: Icon(Icons.watch_later,
+                                  color: widget.timeInit2),
+                              label: Text(''),
+                              onPressed: () {
+                                setState(() {
+                                  widget.current.time = 2;
+                                  widget.timeInit1 = Colors.black;
+                                  widget.timeInit2 = Colors.yellow[400];
+                                  widget.timeInit3 = Colors.black;
+                                });
+                              }),
+                        ),
+                        Expanded(
+                          child: FlatButton.icon(
+                              icon: Icon(Icons.watch_later,
+                                  color: widget.timeInit3),
+                              label: Text(''),
+                              onPressed: () {
+                                setState(() {
+                                  widget.current.time = 3;
+                                  widget.timeInit1 = Colors.black;
+                                  widget.timeInit2 = Colors.black;
+                                  widget.timeInit3 = Colors.pink[400];
+                                });
+                              }),
+                        ),
+                      ]),
+                      //notes
                       new Padding(padding: EdgeInsets.only(top: 15.0)),
                       new Text(
                         'notes for the recipe:',

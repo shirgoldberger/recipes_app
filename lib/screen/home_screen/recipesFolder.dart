@@ -20,41 +20,40 @@ class _RecipeFolderState extends State<RecipeFolder> {
     List<Recipe> meet = [];
     List<Recipe> dairy = [];
     List<Recipe> desert = [];
-    List<Recipe> choose = [];
     List<Recipe> childern = [];
-    for (int i = 0; i < recipeList.length; i++) {
-      if (recipeList[i].myTag.length == 0) {
-        other.add(recipeList[i]);
-      }
-      for (int j = 0; j < recipeList[i].myTag.length; j++) {
-        switch (recipeList[i].myTag[j]) {
-          case "fish":
-            fish.add(recipeList[i]);
-            break;
-          case "meat":
-            meet.add(recipeList[i]);
-            break;
-          case "dairy":
-            dairy.add(recipeList[i]);
-            break;
-          case "desert":
-            desert.add(recipeList[i]);
-            break;
-          case "for children":
-            childern.add(recipeList[i]);
-            break;
-          case "other":
-            other.add(recipeList[i]);
-            break;
-          case "choose recipe tag":
-            other.add(recipeList[i]);
-            break;
+    if (recipeList != null) {
+      for (int i = 0; i < recipeList.length; i++) {
+        if (recipeList[i].myTag.length == 0) {
+          other.add(recipeList[i]);
+        }
+        for (int j = 0; j < recipeList[i].myTag.length; j++) {
+          switch (recipeList[i].myTag[j]) {
+            case "fish":
+              fish.add(recipeList[i]);
+              break;
+            case "meat":
+              meet.add(recipeList[i]);
+              break;
+            case "dairy":
+              dairy.add(recipeList[i]);
+              break;
+            case "desert":
+              desert.add(recipeList[i]);
+              break;
+            case "for children":
+              childern.add(recipeList[i]);
+              break;
+            case "other":
+              other.add(recipeList[i]);
+              break;
+            case "choose recipe tag":
+              other.add(recipeList[i]);
+              break;
+          }
         }
       }
     }
-    print(fish);
-    print(meet);
-    print(desert);
+
     return Column(children: <Widget>[
       Text('data'),
       //fish
