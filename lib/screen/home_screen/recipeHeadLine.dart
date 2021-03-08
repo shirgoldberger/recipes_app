@@ -6,8 +6,10 @@ import 'package:recipes_app/screen/home_screen/watchRecipe.dart';
 class RecipeHeadLine extends StatelessWidget {
   Recipe recipe;
   Color circleColor;
-  RecipeHeadLine(Recipe r) {
+  bool home;
+  RecipeHeadLine(Recipe r, bool home) {
     this.recipe = r;
+    this.home = home;
     switch (r.time) {
       case 1:
         circleColor = Colors.green[400];
@@ -31,8 +33,10 @@ class RecipeHeadLine extends StatelessWidget {
         child: InkWell(
             onTap: () {
               print("Card Clicked");
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => WatchRecipe(recipe)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => WatchRecipe(recipe, home)));
             },
             child: new Card(
               margin: EdgeInsets.fromLTRB(20, 6, 20, 0),

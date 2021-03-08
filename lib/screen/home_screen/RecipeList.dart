@@ -5,10 +5,12 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screen/home_screen/recipeHeadLine.dart';
 
 class RecipeList extends StatefulWidget {
-  RecipeList(List<Recipe> list, String head) {
+  RecipeList(List<Recipe> list, String head, bool home) {
     this.list = list;
     this.head = head;
+    this.home = home;
   }
+  bool home;
   List<Recipe> list = [];
   String head;
   @override
@@ -31,7 +33,7 @@ class _RecipeListState extends State<RecipeList> {
             child: ListView.builder(
               itemCount: widget.list.length,
               itemBuilder: (context, index) {
-                return RecipeHeadLine(widget.list[index]);
+                return RecipeHeadLine(widget.list[index], widget.home);
               },
             ),
           )

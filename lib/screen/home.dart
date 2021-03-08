@@ -16,14 +16,22 @@ import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   final db = Firestore.instance;
-  final AuthService _auth = AuthService();
+  //final AuthService _auth = AuthService();
+  //var user;
 
-  User user;
-  // HomeLogIn(User u) {
-  //   user = u;
+  // final FirebaseAuth auth = FirebaseAuth.instance;
+
+  // void inputData() async {
+  //   final FirebaseUser user = await auth.currentUser();
+  //   final uid = user.uid;
+  //   print("///////////////////////////");
+  //   print(uid);
+  //   // here you write the codes to input the data into firestore
   // }
+
   @override
   Widget build(BuildContext context) {
+    //inputData();
     return StreamProvider<List<Recipe>>.value(
         value: DataBaseAllRecipes().allRecipe,
         child: Scaffold(
@@ -34,6 +42,6 @@ class HomePage extends StatelessWidget {
               elevation: 0.0,
               actions: <Widget>[],
             ),
-            body: RecipeFolder()));
+            body: RecipeFolder(true)));
   }
 }

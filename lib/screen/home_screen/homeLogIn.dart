@@ -75,6 +75,6 @@ class HomeLogIn extends StatelessWidget {
                     })
               ],
             ),
-            body: RecipeFolder()));
+            body: RecipeFolder(false)));
   }
 }

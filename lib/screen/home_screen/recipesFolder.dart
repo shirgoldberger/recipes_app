@@ -1,13 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:recipes_app/main.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screen/home_screen/RecipeList.dart';
 import 'package:recipes_app/screen/home_screen/recipeHeadLine.dart';
 
 class RecipeFolder extends StatefulWidget {
+  RecipeFolder(bool home) {
+    this.home = home;
+  }
   @override
   _RecipeFolderState createState() => _RecipeFolderState();
+  bool home;
 }
 
 class _RecipeFolderState extends State<RecipeFolder> {
@@ -65,7 +70,8 @@ class _RecipeFolderState extends State<RecipeFolder> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RecipeList(fish, "fish")));
+                      builder: (context) =>
+                          RecipeList(fish, "fish", widget.home)));
             }),
       //meat
       if (!meet.isEmpty)
@@ -76,7 +82,8 @@ class _RecipeFolderState extends State<RecipeFolder> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RecipeList(meet, "meat")));
+                      builder: (context) =>
+                          RecipeList(meet, "meat", widget.home)));
             }),
       //dairy
       if (!dairy.isEmpty)
@@ -87,7 +94,8 @@ class _RecipeFolderState extends State<RecipeFolder> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RecipeList(dairy, "dairy")));
+                      builder: (context) =>
+                          RecipeList(dairy, "dairy", widget.home)));
             }),
       //desert
       if (!desert.isEmpty)
@@ -98,7 +106,8 @@ class _RecipeFolderState extends State<RecipeFolder> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RecipeList(desert, "desert")));
+                      builder: (context) =>
+                          RecipeList(desert, "desert", widget.home)));
             }),
       //for childern
       if (!childern.isEmpty)
@@ -109,7 +118,8 @@ class _RecipeFolderState extends State<RecipeFolder> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RecipeList(childern, "childeren")));
+                      builder: (context) =>
+                          RecipeList(childern, "childeren", widget.home)));
             }),
       //other
       if (!other.isEmpty)
@@ -120,7 +130,8 @@ class _RecipeFolderState extends State<RecipeFolder> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RecipeList(other, "other")));
+                      builder: (context) =>
+                          RecipeList(other, "other", widget.home)));
             }),
     ]);
 

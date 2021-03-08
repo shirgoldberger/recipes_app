@@ -564,6 +564,7 @@ class _EditRecipeState extends State<EditRecipe> {
     final db = Firestore.instance;
     final user = Provider.of<User>(context);
     //delete the last recipe  and then add new one
+
     db
         .collection('users')
         .document(user.uid)
