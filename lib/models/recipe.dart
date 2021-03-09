@@ -14,6 +14,7 @@ class Recipe {
   int time;
   //אם המתכון שמור בתיקית ביוזר או אם המתכון שמור בתיקית המתכונים.
   bool saveInUser;
+  String publish = '';
 
   Recipe(
       String n,
@@ -40,6 +41,10 @@ class Recipe {
     this.id = id;
   }
 
+  void publishThisRecipe(String id) {
+    this.publish = id;
+  }
+
   Map<String, dynamic> toJson() => {
         'name': name,
         'description': description,
@@ -47,6 +52,7 @@ class Recipe {
         'time': time.toString(),
         'writer': writer,
         'writerUid': writerUid,
+        'publishID': publish,
         'tags': (myTag.map((e) => e).toList()),
         'notes': (notes.map((e) => e).toList())
       };

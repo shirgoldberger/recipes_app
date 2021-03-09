@@ -23,8 +23,6 @@ class HomeLogIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
-    print("home");
-    print(user.uid);
     void _showSettingPannel() {
       showModalBottomSheet(
           isScrollControlled: true,

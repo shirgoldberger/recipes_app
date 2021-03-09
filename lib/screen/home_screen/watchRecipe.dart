@@ -31,11 +31,17 @@ class WatchRecipe extends StatefulWidget {
   bool publish = false;
 
   @override
+  @override
   _WatchRecipeState createState() => _WatchRecipeState();
 }
 
 class _WatchRecipeState extends State<WatchRecipe> {
   var i;
+  @override
+  void initState() {
+    super.initState();
+    makeList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +58,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
       widget.levelString = "hard";
     }
     //if we came from home screen
-    makeList();
+
     if (widget.home) {
       final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -278,8 +284,19 @@ class _WatchRecipeState extends State<WatchRecipe> {
       'recipeId': widget.current.id,
       'userID': user.uid
     };
+    //save this recipe in the publish folder
     var currentRecipe =
         await db.collection('publish recipe').add(publishRecipe);
+    String idPublish = currentRecipe.documentID;
+    //save where he is publish
+    widget.current.publishThisRecipe(idPublish);
+    //update in the database
+    db
+        .collection('users')
+        .document(user.uid)
+        .collection('recipes')
+        .document(widget.current.id)
+        .updateData(widget.current.toJson());
     setState(() {
       widget.publish = true;
     });

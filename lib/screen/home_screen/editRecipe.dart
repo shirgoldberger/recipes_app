@@ -36,6 +36,7 @@ class EditRecipe extends StatefulWidget {
   Color timeInit1 = Colors.black;
   Color timeInit2 = Colors.black;
   Color timeInit3 = Colors.black;
+  bool doneEdit = false;
   @override
   _EditRecipeState createState() => _EditRecipeState();
 }
@@ -83,8 +84,8 @@ class _EditRecipeState extends State<EditRecipe> {
                             icon: Icon(Icons.save),
                             label: Text('save this recipe'),
                             onPressed: () {
-                              print(user.uid);
                               editAndSave();
+
                               // Navigator.push(
                               // context,
                               //MaterialPageRoute(
@@ -560,6 +561,115 @@ class _EditRecipeState extends State<EditRecipe> {
     });
   }
 
+//   void edit() async {
+//     final db = Firestore.instance;
+//     final user = Provider.of<User>(context);
+//     //edit the recipe
+
+//     db
+//         .collection('users')
+//         .document(user.uid)
+//         .collection('recipes')
+//         .document(widget.current.id)
+//         .updateData(widget.current.toJson());
+
+//     int i = 0;
+// //update the current ing
+//     var a = db
+//         .collection('users')
+//         .document(user.uid)
+//         .collection('recipes')
+//         .document(widget.current.id)
+//         .collection('ingredients')
+//         .getDocuments()
+//         .then((snapshot) {
+//       for (DocumentSnapshot ds in snapshot.documents) {
+//         ds.reference.updateData(widget.ing[i].toJson());
+//         i++;
+//       }
+//       setState(() {
+//         widget.doneEdit = true;
+//       });
+//     });
+
+//     //if we add new ing
+//     if (widget.doneEdit) {
+//       while (i < widget.ing.length) {
+//         print("i");
+//         print(i);
+//         db
+//             .collection('users')
+//             .document(user.uid)
+//             .collection('recipes')
+//             .document(widget.current.id)
+//             .collection('ingredients')
+//             .add(widget.ing[i].toJson());
+//         i++;
+//       }
+//     }
+
+//     int j = 0;
+// //update the current ing
+//     var b = db
+//         .collection('users')
+//         .document(user.uid)
+//         .collection('recipes')
+//         .document(widget.current.id)
+//         .collection('stages')
+//         .getDocuments()
+//         .then((snapshot) {
+//       for (DocumentSnapshot ds in snapshot.documents) {
+//         ds.reference.updateData(widget.stages[j].toJson(j));
+//         j++;
+//       }
+//     });
+//     //if we add new ing
+//     while (i < widget.stages.length) {
+//       db
+//           .collection('users')
+//           .document(widget.current.id)
+//           .collection('recipes')
+//           .document(widget.current.id)
+//           .collection('stages')
+//           .add(widget.stages[j].toJson(j));
+//       i++;
+//     }
+//   }
+
+  // void addIngStages() async {
+  //   final db = Firestore.instance;
+  //   //add new ingredients to the recipe
+  //   print("ing");
+  //   print(widget.ing.length);
+  //   print(widget.ing[0]);
+  //   for (int i = 0; i < widget.ing.length; i++) {
+  //     await db
+  //         .collection('users')
+  //         .document(widget.current.id)
+  //         .collection('recipes')
+  //         .document(widget.current.id)
+  //         .collection('ingredients')
+  //         .add(widget.ing[i].toJson());
+  //     if (i == 0) {
+  //       print("insert");
+  //     }
+  //   }
+
+  //   //addd new stages to the recipe
+  //   for (int i = 0; i < widget.stages.length; i++) {
+  //     await db
+  //         .collection('users')
+  //         .document(widget.current.id)
+  //         .collection('recipes')
+  //         .document(widget.current.id)
+  //         .collection('stages')
+  //         .add(widget.stages[i].toJson(i));
+  //   }
+  //   setState(() {
+  //     widget.doneEdit = true;
+  //   });
+  // }
+
   void editAndSave() async {
     final db = Firestore.instance;
     final user = Provider.of<User>(context);
@@ -576,7 +686,13 @@ class _EditRecipeState extends State<EditRecipe> {
         .document(user.uid)
         .collection('recipes')
         .add(widget.current.toJson());
-
+    if (widget.current.publish != '') {
+      //update in the public the new id;
+      db
+          .collection('publish recipe')
+          .document(widget.current.publish)
+          .updateData({'recipeId': currentRecipe.documentID.toString()});
+    }
     String id = currentRecipe.documentID.toString();
     for (int i = 0; i < widget.ing.length; i++) {
       await db
