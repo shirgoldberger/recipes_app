@@ -30,6 +30,9 @@ class WatchRecipe extends StatefulWidget {
   var uid;
   IconData iconPublish = Icons.public;
   String publishString = "publish this recipe";
+  String saveRecipe = '';
+  IconData iconSave = Icons.favorite_border;
+  String saveString = 'save';
   //bool publish = false;
 
   @override
@@ -111,11 +114,23 @@ class _WatchRecipeState extends State<WatchRecipe> {
                 title: Text('watch this recipe'),
                 actions: <Widget>[
                   FlatButton.icon(
-                      icon: Icon(Icons.save),
-                      label: Text('save this recipe'),
+                      icon: Icon(widget.iconSave),
+                      label: Text(widget.saveString),
                       onPressed: () {
                         if (widget.uid != null) {
-                          plusRecipe();
+                          if (widget.saveRecipe == '') {
+                            plusRecipe();
+                            setState(() {
+                              widget.iconSave = Icons.favorite;
+                              widget.saveString = 'unsave';
+                            });
+                          } else {
+                            unSaveRecipe();
+                            setState(() {
+                              widget.iconSave = Icons.favorite_border;
+                              widget.saveString = 'save';
+                            });
+                          }
                         } else {
                           showAlertDialog();
                         }
@@ -196,6 +211,9 @@ class _WatchRecipeState extends State<WatchRecipe> {
       if (widget.current.saveInUser) {
         //final user = Provider.of<User>(context);
         String uid = widget.current.writerUid;
+        //print('save in user');
+        //print(uid);
+        //print(widget.current.id.toString());
         QuerySnapshot snap = await Firestore.instance
             .collection('users')
             .document(uid)
@@ -219,7 +237,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
             .collection('stages')
             .getDocuments();
         snap2.documents.forEach((element1) {
-          print(element1.data.toString());
+          // print(element1.data.toString());
           setState(() {
             widget.stages
                 .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
@@ -245,7 +263,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
             .collection('stages')
             .getDocuments();
         snap2.documents.forEach((element1) {
-          print(element1.data.toString());
+          //print(element1.data.toString());
           setState(() {
             widget.stages
                 .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
@@ -267,7 +285,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
         .document(widget.uid)
         .collection('recipes')
         .add(recipe.toJson());
-    print(currentRecipe.documentID.toString());
+    //print(currentRecipe.documentID.toString());
     String id = currentRecipe.documentID.toString();
     for (int i = 0; i < widget.ing.length; i++) {
       await db
@@ -287,6 +305,23 @@ class _WatchRecipeState extends State<WatchRecipe> {
           .collection('stages')
           .add(widget.stages[i].toJson(i));
     }
+    widget.saveRecipe = id;
+    print("plus");
+    print(id);
+  }
+
+  void unSaveRecipe() {
+    final db = Firestore.instance;
+    db
+        .collection('users')
+        .document(widget.uid)
+        .collection('recipes')
+        .document(widget.saveRecipe)
+        .delete();
+
+    setState(() {
+      widget.saveRecipe = '';
+    });
   }
 
   Future<void> publishRecipe() async {
