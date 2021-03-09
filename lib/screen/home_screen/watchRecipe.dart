@@ -28,7 +28,9 @@ class WatchRecipe extends StatefulWidget {
   Color levelColor;
   String levelString = '';
   var uid;
-  bool publish = false;
+  IconData iconPublish = Icons.public;
+  String publishString = "publish this recipe";
+  //bool publish = false;
 
   @override
   @override
@@ -148,12 +150,22 @@ class _WatchRecipeState extends State<WatchRecipe> {
                                     widget.ing, widget.stages)));
                       }),
                   FlatButton.icon(
-                      icon: Icon(Icons.public),
-                      label: Text('publish this recipe'),
+                      icon: Icon(widget.iconPublish),
+                      label: Text(widget.publishString),
                       onPressed: () {
                         //only id its not publish - publish (only once)
-                        if (!widget.publish) {
+                        if (widget.current.publish == '') {
                           publishRecipe();
+                          setState(() {
+                            widget.iconPublish = Icons.public_off;
+                            widget.publishString = "un publish";
+                          });
+                        } else {
+                          setState(() {
+                            unPublishRecipe();
+                            widget.iconPublish = Icons.public;
+                            widget.publishString = "publish this recipe";
+                          });
                         }
                       }),
                   FlatButton.icon(
@@ -297,8 +309,11 @@ class _WatchRecipeState extends State<WatchRecipe> {
         .collection('recipes')
         .document(widget.current.id)
         .updateData(widget.current.toJson());
-    setState(() {
-      widget.publish = true;
-    });
+  }
+
+  void unPublishRecipe() {
+    final db = Firestore.instance;
+    db.collection('publish recipe').document(widget.current.publish).delete();
+    widget.current.publishThisRecipe('');
   }
 }
