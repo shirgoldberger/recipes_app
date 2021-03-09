@@ -595,7 +595,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
     print("writer uid");
     print(time);
     Recipe recipe = Recipe(recipe_name, recipe_description, myTags, level,
-        notes, writerName, writerUid, time);
+        notes, writerName, writerUid, time, true);
     var currentRecipe = await db
         .collection('users')
         .document(user.uid)
@@ -631,9 +631,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
         await Firestore.instance.collection('users').document(user.uid).get();
     String firstName = (snap.data['firstName']);
     String lsatName = (snap.data['lastName']);
-    print(firstName);
-    print("noa");
-    print(user.uid);
+
     setState(() {
       writerUid = user.uid;
     });

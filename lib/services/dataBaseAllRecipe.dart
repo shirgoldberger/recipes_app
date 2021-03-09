@@ -16,15 +16,10 @@ class DataBaseAllRecipes {
 
   //get recipe list
   List<Recipe> _recipeListFromSnapshot(QuerySnapshot snapshot) {
-    // List<Recipe> allRecipe = [];
-    // var list = snapshot.documents;
-    // for (int i; i < list.length; i++) {
-    //   allRecipe.add(convertToRecipe(list[i]));
-    // }
-    return snapshot.documents.map((doc) {
+    List<Recipe> recipeList = snapshot.documents.map((doc) {
       return convertToRecipe(doc);
     }).toList();
-    //return allRecipe;
+    return recipeList;
   }
 
   Recipe convertToRecipe(DocumentSnapshot doc) {
@@ -64,8 +59,30 @@ class DataBaseAllRecipes {
       }
     }
 
-    Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI);
+    Recipe r =
+        Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, false);
     r.setId(id);
     return r;
+  }
+
+  Future<List<Recipe>> getPublicTrcipe() async {
+    List<Recipe> publicRecipeList = [];
+    String uid;
+    String recipeId;
+
+    QuerySnapshot snap =
+        await Firestore.instance.collection('publish recipe').getDocuments();
+
+    snap.documents.forEach((element) {
+      uid = element.data['userID'] ?? '';
+      recipeId = element.data['recipeId'] ?? '';
+      DocumentSnapshot doc2 = Firestore.instance
+          .collection('users')
+          .document(uid)
+          .collection('recipes')
+          .document(recipeId) as DocumentSnapshot;
+      publicRecipeList.add(convertToRecipe(doc2));
+    });
+    return publicRecipeList;
   }
 }

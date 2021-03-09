@@ -52,6 +52,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
       widget.levelString = "hard";
     }
     //if we came from home screen
+    makeList();
     if (widget.home) {
       final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -90,7 +91,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
         );
       }
 
-      makeList2();
       getuser();
       if (!widget.done) {
         return Loading();
@@ -119,7 +119,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
     }
     //if we come from personal page
     if (!widget.home) {
-      makeList1();
       final user = Provider.of<User>(context);
       final db = Firestore.instance;
       if (!widget.done) {
@@ -174,73 +173,67 @@ class _WatchRecipeState extends State<WatchRecipe> {
     }
   }
 
-  Future<void> makeList1() async {
+  Future<void> makeList() async {
     if (!widget.done) {
-      final user = Provider.of<User>(context);
-
-      QuerySnapshot snap = await Firestore.instance
-          .collection('users')
-          .document(user.uid)
-          .collection('recipes')
-          .document(widget.current.id.toString())
-          .collection('ingredients')
-          .getDocuments();
-      snap.documents.forEach((element) {
-        setState(() {
-          widget.ing.add(IngredientsModel.antherConstactor(
-              element.data['name'] ?? '',
-              element.data['count'] ?? 0,
-              element.data['unit'] ?? ''));
+      if (widget.current.saveInUser) {
+        //final user = Provider.of<User>(context);
+        String uid = widget.current.writerUid;
+        QuerySnapshot snap = await Firestore.instance
+            .collection('users')
+            .document(uid)
+            .collection('recipes')
+            .document(widget.current.id.toString())
+            .collection('ingredients')
+            .getDocuments();
+        snap.documents.forEach((element) {
+          setState(() {
+            widget.ing.add(IngredientsModel.antherConstactor(
+                element.data['name'] ?? '',
+                element.data['count'] ?? 0,
+                element.data['unit'] ?? ''));
+          });
         });
-      });
-      QuerySnapshot snap2 = await Firestore.instance
-          .collection('users')
-          .document(user.uid)
-          .collection('recipes')
-          .document(widget.current.id.toString())
-          .collection('stages')
-          .getDocuments();
-      snap2.documents.forEach((element1) {
-        print(element1.data.toString());
-        setState(() {
-          widget.stages
-              .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
+        QuerySnapshot snap2 = await Firestore.instance
+            .collection('users')
+            .document(uid)
+            .collection('recipes')
+            .document(widget.current.id.toString())
+            .collection('stages')
+            .getDocuments();
+        snap2.documents.forEach((element1) {
+          print(element1.data.toString());
+          setState(() {
+            widget.stages
+                .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
+          });
         });
-      });
-
-      setState(() {
-        widget.done = true;
-      });
-    }
-  }
-
-  Future<void> makeList2() async {
-    if (!widget.done) {
-      QuerySnapshot snap = await Firestore.instance
-          .collection('recipes')
-          .document(widget.current.id)
-          .collection('ingredients')
-          .getDocuments();
-      snap.documents.forEach((element) {
-        setState(() {
-          widget.ing.add(IngredientsModel.antherConstactor(
-              element.data['name'] ?? '',
-              element.data['count'] ?? 0,
-              element.data['unit'] ?? ''));
+      } else {
+        QuerySnapshot snap = await Firestore.instance
+            .collection('recipes')
+            .document(widget.current.id)
+            .collection('ingredients')
+            .getDocuments();
+        snap.documents.forEach((element) {
+          setState(() {
+            widget.ing.add(IngredientsModel.antherConstactor(
+                element.data['name'] ?? '',
+                element.data['count'] ?? 0,
+                element.data['unit'] ?? ''));
+          });
         });
-      });
-      QuerySnapshot snap2 = await Firestore.instance
-          .collection('recipes')
-          .document(widget.current.id)
-          .collection('stages')
-          .getDocuments();
-      snap2.documents.forEach((element1) {
-        print(element1.data.toString());
-        setState(() {
-          widget.stages
-              .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
+        QuerySnapshot snap2 = await Firestore.instance
+            .collection('recipes')
+            .document(widget.current.id)
+            .collection('stages')
+            .getDocuments();
+        snap2.documents.forEach((element1) {
+          print(element1.data.toString());
+          setState(() {
+            widget.stages
+                .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
+          });
         });
-      });
+      }
 
       setState(() {
         widget.done = true;

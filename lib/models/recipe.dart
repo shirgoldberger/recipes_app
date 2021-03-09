@@ -12,9 +12,19 @@ class Recipe {
   List<String> notes;
   int level;
   int time;
+  //אם המתכון שמור בתיקית ביוזר או אם המתכון שמור בתיקית המתכונים.
+  bool saveInUser;
 
-  Recipe(String n, String desc, List<String> tags, int level,
-      List<String> notes, String writer, String writerUid, int time) {
+  Recipe(
+      String n,
+      String desc,
+      List<String> tags,
+      int level,
+      List<String> notes,
+      String writer,
+      String writerUid,
+      int time,
+      bool save) {
     this.name = n;
     this.description = desc;
     this.myTag = tags;
@@ -23,6 +33,7 @@ class Recipe {
     this.writer = writer;
     this.writerUid = writerUid;
     this.time = time;
+    this.saveInUser = save;
     //this.ingredients = ing;
   }
   void setId(var id) {
