@@ -7,7 +7,7 @@ class Recipe {
   String name;
   String description;
   List<IngredientsModel> ingredients;
-  var id;
+  String id;
   List<String> myTag;
   List<String> notes;
   int level;
@@ -25,7 +25,9 @@ class Recipe {
       String writer,
       String writerUid,
       int time,
-      bool save) {
+      bool save,
+      String id,
+      String publish) {
     this.name = n;
     this.description = desc;
     this.myTag = tags;
@@ -35,6 +37,9 @@ class Recipe {
     this.writerUid = writerUid;
     this.time = time;
     this.saveInUser = save;
+    this.id = id;
+    this.publish = publish;
+
     //this.ingredients = ing;
   }
   void setId(var id) {
@@ -53,6 +58,7 @@ class Recipe {
         'writer': writer,
         'writerUid': writerUid,
         'publishID': publish,
+        'recipeID': id,
         'tags': (myTag.map((e) => e).toList()),
         'notes': (notes.map((e) => e).toList())
       };

@@ -686,6 +686,15 @@ class _EditRecipeState extends State<EditRecipe> {
         .document(user.uid)
         .collection('recipes')
         .add(widget.current.toJson());
+
+    String id = currentRecipe.documentID.toString();
+    db
+        .collection('users')
+        .document(user.uid)
+        .collection('recipes')
+        .document(id)
+        .updateData({'recipeID': id});
+
     if (widget.current.publish != '') {
       //update in the public the new id;
       db
@@ -693,7 +702,7 @@ class _EditRecipeState extends State<EditRecipe> {
           .document(widget.current.publish)
           .updateData({'recipeId': currentRecipe.documentID.toString()});
     }
-    String id = currentRecipe.documentID.toString();
+    // String id = currentRecipe.documentID.toString();
     for (int i = 0; i < widget.ing.length; i++) {
       await db
           .collection('users')

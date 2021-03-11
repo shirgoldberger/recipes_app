@@ -595,14 +595,24 @@ class _PlusRecipeState extends State<PlusRecipe> {
     print("writer uid");
     print(time);
     Recipe recipe = Recipe(recipe_name, recipe_description, myTags, level,
-        notes, writerName, writerUid, time, true);
+        notes, writerName, writerUid, time, true, '', '');
     var currentRecipe = await db
         .collection('users')
         .document(user.uid)
         .collection('recipes')
         .add(recipe.toJson());
+    //set the new id to data base
+
     print(currentRecipe.documentID.toString());
     String id = currentRecipe.documentID.toString();
+    recipe.setId(id);
+    var fixID = await db
+        .collection('users')
+        .document(user.uid)
+        .collection('recipes')
+        .document(id)
+        .updateData({'recipeID': id});
+
     for (int i = 0; i < ingredients.length; i++) {
       await db
           .collection('users')

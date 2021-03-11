@@ -24,6 +24,8 @@ class RecipeHeadLine extends StatelessWidget {
         circleColor = Colors.grey[400];
         break;
     }
+    print("head line");
+    print(r.publish);
   }
 
   @override

@@ -200,6 +200,9 @@ class _RecipeFolderState extends State<RecipeFolder> {
       int timeI = int.parse(time);
       String writer = doc.data['writer'] ?? '';
       String writerUid = doc.data['writerUid'] ?? '';
+      String id = doc.data['recipeID'] ?? '';
+      //
+      String publish = doc.data['publishID'] ?? '';
       int levlelInt = int.parse(level);
       //tags
       var tags = doc.data['tags'];
@@ -228,12 +231,14 @@ class _RecipeFolderState extends State<RecipeFolder> {
         }
       }
 
-      Recipe r =
-          Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, true);
+      Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
+          true, id, publish);
 
-      r.setId(recipeId);
-
+      // r.setId(id);
+      // print(publish + "publish");
+      //r.publishThisRecipe(publish);
       widget.publisRecipe.add(r);
+      // print(r.publish);
       i++;
 
       print(snap.documents.length);

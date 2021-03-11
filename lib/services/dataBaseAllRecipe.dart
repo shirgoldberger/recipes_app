@@ -31,6 +31,7 @@ class DataBaseAllRecipes {
     int timeI = int.parse(time);
     String writer = doc.data['writer'] ?? '';
     String writerUid = doc.data['writerUid'] ?? '';
+    String publish = doc.data['publishID'] ?? '';
     int levlelInt = int.parse(level);
     //tags
     var tags = doc.data['tags'];
@@ -59,8 +60,8 @@ class DataBaseAllRecipes {
       }
     }
 
-    Recipe r =
-        Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, false);
+    Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
+        false, id, publish);
     r.setId(id);
     return r;
   }

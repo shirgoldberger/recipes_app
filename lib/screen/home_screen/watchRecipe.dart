@@ -16,6 +16,9 @@ class WatchRecipe extends StatefulWidget {
   WatchRecipe(Recipe r, bool home) {
     this.current = r;
     this.home = home;
+    print("watch recipe");
+    print(current.publish);
+    print(r.publish);
   }
   bool home;
   List<IngredientsModel> ing = [];
@@ -46,6 +49,15 @@ class _WatchRecipeState extends State<WatchRecipe> {
   void initState() {
     super.initState();
     makeList();
+    print("init state");
+    print(widget.current.publish);
+    if (widget.current.publish == '') {
+      widget.iconPublish = Icons.public;
+      widget.publishString = "publish";
+    } else {
+      widget.iconPublish = Icons.public_off;
+      widget.publishString = "un publish";
+    }
   }
 
   @override
@@ -169,13 +181,18 @@ class _WatchRecipeState extends State<WatchRecipe> {
                       label: Text(widget.publishString),
                       onPressed: () {
                         //only id its not publish - publish (only once)
+                        print(widget.current.publish);
+                        print(("publish curren"));
                         if (widget.current.publish == '') {
-                          publishRecipe();
+                          print("if");
                           setState(() {
                             widget.iconPublish = Icons.public_off;
                             widget.publishString = "un publish";
+                            publishRecipe();
                           });
+                          // publishRecipe();
                         } else {
+                          print("else");
                           setState(() {
                             unPublishRecipe();
                             widget.iconPublish = Icons.public;
@@ -211,9 +228,9 @@ class _WatchRecipeState extends State<WatchRecipe> {
       if (widget.current.saveInUser) {
         //final user = Provider.of<User>(context);
         String uid = widget.current.writerUid;
-        //print('save in user');
+        print('save in user');
         //print(uid);
-        //print(widget.current.id.toString());
+        print(widget.current.id.toString());
         QuerySnapshot snap = await Firestore.instance
             .collection('users')
             .document(uid)
@@ -347,8 +364,16 @@ class _WatchRecipeState extends State<WatchRecipe> {
   }
 
   void unPublishRecipe() {
+    final user = Provider.of<User>(context);
     final db = Firestore.instance;
     db.collection('publish recipe').document(widget.current.publish).delete();
     widget.current.publishThisRecipe('');
+
+    db
+        .collection('users')
+        .document(user.uid)
+        .collection('recipes')
+        .document(widget.current.id)
+        .updateData(widget.current.toJson());
   }
 }
