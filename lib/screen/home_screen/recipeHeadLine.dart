@@ -24,8 +24,8 @@ class RecipeHeadLine extends StatelessWidget {
         circleColor = Colors.grey[400];
         break;
     }
-    print("head line");
-    print(r.publish);
+    // print("head line");
+    // print(r.publish);
   }
 
   @override
@@ -34,7 +34,7 @@ class RecipeHeadLine extends StatelessWidget {
         padding: EdgeInsets.only(top: 8),
         child: InkWell(
             onTap: () {
-              print("Card Clicked");
+              //("Card Clicked");
               Navigator.push(
                   context,
                   MaterialPageRoute(

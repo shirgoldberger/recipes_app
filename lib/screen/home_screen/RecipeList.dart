@@ -33,8 +33,8 @@ class _RecipeListState extends State<RecipeList> {
             child: ListView.builder(
               itemCount: widget.list.length,
               itemBuilder: (context, index) {
-                print('recipeList');
-                print(widget.list[index]);
+                // print('recipeList');
+                // print(widget.list[index]);
                 return RecipeHeadLine(widget.list[index], widget.home);
               },
             ),

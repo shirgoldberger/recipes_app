@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/main.dart';
@@ -15,22 +16,40 @@ class RecipeFolder extends StatefulWidget {
   _RecipeFolderState createState() => _RecipeFolderState();
   bool home;
   List<Recipe> publisRecipe = [];
+  List<Recipe> savedRecipe = [];
   bool doneLoadPublishRecipe = false;
+  bool doneLoadSavedRecipe = false;
+  bool doneGetUser = false;
+  String uid;
 }
 
 class _RecipeFolderState extends State<RecipeFolder> {
   @override
-  // void initState() {
-  //   super.initState();
-  //   if (!widget.home) {
-  //     widget.doneLoadPublishRecipe = true;
-  //   } else {
-  //     loadPublishRecipe();
-  //   }
-  // }
-
-  @override
   Widget build(BuildContext context) {
+    void getuser() async {
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      final FirebaseUser user = await auth.currentUser();
+      setState(() {
+        widget.uid = user.uid;
+        print("get user");
+        loadSavedRecipe();
+        widget.doneGetUser = true;
+      });
+    }
+
+    // @override
+    // void initState() {
+    //   super.initState();
+    //   if (!widget.home) {
+    //     print("iinniitt");
+    //     widget.doneLoadPublishRecipe = true;
+    //     getuser();
+    //     loadSavedRecipe();
+    //   } else {
+    //     loadPublishRecipe();
+    //   }
+    // }
+
     //הסבר לגבי הרשימה של המתכונים -
     //אם אנחנו מגיעים מעמוד האישי של המשתמש יהיה כאן את כל רשימת המתכונים שלו,
     //אם אנחנו מגיעים מעמוד הבית יהיה כאן כל המתכונים שנמצאים בתיקית המתכונים בדאטה בייס,
@@ -38,18 +57,33 @@ class _RecipeFolderState extends State<RecipeFolder> {
     var recipeList = Provider.of<List<Recipe>>(context);
     //אם לא הגעת מעמוד הבית אין סיבה לטעון את כל המתכונים -
     // לכן מיד נשנה את הערך הבוליאני ל- נכון, ולא נקרא לפונקציה.
-    if (!widget.home) {
-      widget.doneLoadPublishRecipe = true;
-    } else {
-      loadPublishRecipe();
-    }
+    if ((!widget.doneLoadPublishRecipe) && (!widget.doneLoadSavedRecipe)) {
+      if (!widget.home) {
+        print("iinniitt");
+        widget.doneLoadPublishRecipe = true;
 
+        getuser();
+        print("if");
+        if (widget.uid != null) {
+          loadSavedRecipe();
+        }
+      } else {
+        loadPublishRecipe();
+      }
+      print("aaaaaaaaaaaaaaaaaaaaa");
+    }
     if (!widget.doneLoadPublishRecipe) {
       return Loading();
     }
     if (widget.doneLoadPublishRecipe) {
-      recipeList = recipeList + widget.publisRecipe;
-
+      if (widget.publisRecipe != null) {
+        recipeList = recipeList + widget.publisRecipe;
+      }
+      if (widget.doneLoadSavedRecipe) {
+        recipeList = recipeList + widget.savedRecipe;
+        print("plus   " + recipeList.length.toString());
+      }
+      //print("aaaaaaaaaaaaaaaaaaaaa");
       int i;
       List<Recipe> fish = [];
       List<Recipe> other = [];
@@ -89,7 +123,6 @@ class _RecipeFolderState extends State<RecipeFolder> {
           }
         }
       }
-
       return Column(children: <Widget>[
         Text('data'),
         //fish
@@ -241,10 +274,162 @@ class _RecipeFolderState extends State<RecipeFolder> {
       // print(r.publish);
       i++;
 
-      print(snap.documents.length);
+      // print(snap.documents.length);
       if ((i) == snap.documents.length) {
         setState(() {
           widget.doneLoadPublishRecipe = true;
+        });
+      }
+    });
+  }
+
+  Future<void> loadSavedRecipe() async {
+    String uid;
+    String recipeId;
+    bool saveInUser;
+    Recipe r;
+    //if(widget.uid!=null)
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .collection('saved recipe')
+        .getDocuments();
+    widget.savedRecipe = [];
+    print("check");
+    print(widget.uid);
+    print(snap.documents.length);
+    if (snap.documents.length == 0) {
+      setState(() {
+        widget.doneLoadSavedRecipe = true;
+      });
+    }
+    int i = 0;
+    snap.documents.forEach((element) async {
+      uid = element.data['userID'] ?? '';
+      recipeId = element.data['recipeID'] ?? '';
+      saveInUser = element.data['saveInUser'] ?? true;
+      print(uid);
+      print(recipeId);
+      print(saveInUser);
+      if (saveInUser) {
+        DocumentSnapshot doc = await Firestore.instance
+            .collection('users')
+            .document(uid)
+            .collection('recipes')
+            .document(recipeId)
+            .get();
+        //check if in the user;
+        print(doc.data.length.toString() +
+            "   .....................................");
+
+        String n = doc.data['name'] ?? '';
+        String de = doc.data['description'] ?? '';
+        String level = doc.data['level'] ?? 0;
+        String time = doc.data['time'] ?? '0';
+        int timeI = int.parse(time);
+        String writer = doc.data['writer'] ?? '';
+        String writerUid = doc.data['writerUid'] ?? '';
+        String id = doc.data['recipeID'] ?? '';
+        //
+        String publish = doc.data['publishID'] ?? '';
+        int levlelInt = int.parse(level);
+        //tags
+        var tags = doc.data['tags'];
+        String tagString = tags.toString();
+        List<String> l = [];
+        if (tagString != "[]") {
+          String tag = tagString.substring(1, tagString.length - 1);
+          l = tag.split(',');
+          for (int i = 0; i < l.length; i++) {
+            if (l[i][0] == ' ') {
+              l[i] = l[i].substring(1, l[i].length);
+            }
+          }
+        }
+        //notes
+        var note = doc.data['tags'];
+        String noteString = note.toString();
+        List<String> nList = [];
+        if (noteString != "[]") {
+          String tag = noteString.substring(1, noteString.length - 1);
+          nList = tag.split(',');
+          for (int i = 0; i < nList.length; i++) {
+            if (nList[i][0] == ' ') {
+              nList[i] = nList[i].substring(1, nList[i].length);
+            }
+          }
+        }
+        print(n + "   " + de);
+        r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, true,
+            id, publish);
+      }
+      //from recipe
+      else {
+        print("else" + recipeId);
+        print(recipeId);
+        DocumentSnapshot doc = await Firestore.instance
+            .collection('recipes')
+            .document(recipeId)
+            .get();
+        //check if in the user;
+        print(doc.data.length.toString() +
+            "   .....................................");
+
+        String n = doc.data['name'] ?? '';
+        String de = doc.data['description'] ?? '';
+        String level = doc.data['level'] ?? 0;
+        String time = doc.data['time'] ?? '0';
+        int timeI = int.parse(time);
+        String writer = doc.data['writer'] ?? '';
+        String writerUid = doc.data['writerUid'] ?? '';
+        String id = doc.data['recipeID'] ?? '';
+        //
+        String publish = doc.data['publishID'] ?? '';
+        int levlelInt = int.parse(level);
+        //tags
+        var tags = doc.data['tags'];
+        String tagString = tags.toString();
+        List<String> l = [];
+        if (tagString != "[]") {
+          String tag = tagString.substring(1, tagString.length - 1);
+          l = tag.split(',');
+          for (int i = 0; i < l.length; i++) {
+            if (l[i][0] == ' ') {
+              l[i] = l[i].substring(1, l[i].length);
+            }
+          }
+        }
+        //notes
+        var note = doc.data['tags'];
+        String noteString = note.toString();
+        List<String> nList = [];
+        if (noteString != "[]") {
+          String tag = noteString.substring(1, noteString.length - 1);
+          nList = tag.split(',');
+          for (int i = 0; i < nList.length; i++) {
+            if (nList[i][0] == ' ') {
+              nList[i] = nList[i].substring(1, nList[i].length);
+            }
+          }
+        }
+        print(n + "   " + de);
+        r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, false,
+            id, publish);
+      }
+
+      // r.setId(id);
+      // print(publish + "publish");
+      //r.publishThisRecipe(publish);
+      widget.savedRecipe.add(r);
+      print(widget.savedRecipe.length);
+      // print(r.publish);
+      i++;
+
+      // print(snap.documents.length);
+      if ((i) == snap.documents.length) {
+        setState(() {
+          widget.doneLoadSavedRecipe = true;
+          print("done save");
         });
       }
     });

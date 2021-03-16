@@ -9,16 +9,22 @@ import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/screen/home_screen/editRecipe.dart';
 import 'package:recipes_app/screen/home_screen/homeLogIn.dart';
 import 'package:recipes_app/screen/home_screen/ingredients.dart';
+import 'package:recipes_app/screen/home_screen/notesForm.dart';
 import 'package:recipes_app/screen/home_screen/warchRecipeBody.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
+//הסבר כללי לגבי העמוד הזה-
+// העמוד מקבל מתכון ומציג אותו למשתמש כאשר הוא מחולק ל 3 מצבים:
+// מצב ראשןן - במקרה ואנחנו צופים במתכון שאנחנו כתבנו - ניתן לערוך את המתכון, למחוק אותו ולפרסם אותו.
+//  לכן אפשר רק למחוק אותו, נמחק רק אצלי, או להוסיף עליו הערות אישיות שלי. (עשינו לו save )  מצב שני - אנחנו צופים במתכון ששמרנו אותו
+// מצב שלישי - צפיה במתכון מתוך העמוד הכללי - ניתן רק לשמור מתכון.
 class WatchRecipe extends StatefulWidget {
   WatchRecipe(Recipe r, bool home) {
     this.current = r;
     this.home = home;
-    print("watch recipe");
-    print(current.publish);
-    print(r.publish);
+    // print("watch recipe");
+    // print(current.publish);
+    // print(r.publish);
   }
   bool home;
   List<IngredientsModel> ing = [];
@@ -49,8 +55,8 @@ class _WatchRecipeState extends State<WatchRecipe> {
   void initState() {
     super.initState();
     makeList();
-    print("init state");
-    print(widget.current.publish);
+    // print("init state");
+    // print(widget.current.publish);
     if (widget.current.publish == '') {
       widget.iconPublish = Icons.public;
       widget.publishString = "publish";
@@ -74,17 +80,31 @@ class _WatchRecipeState extends State<WatchRecipe> {
       widget.levelColor = Colors.blue[900];
       widget.levelString = "hard";
     }
+    final FirebaseAuth auth = FirebaseAuth.instance;
+
+    void getuser() async {
+      final FirebaseUser user = await auth.currentUser();
+      setState(() {
+        widget.uid = user.uid;
+      });
+    }
+
+    getuser();
     //if we came from home screen
-
+//מצב שלישי 333333333333333333333333333333333333333333333333333333333333333333
     if (widget.home) {
-      final FirebaseAuth auth = FirebaseAuth.instance;
+      // final FirebaseAuth auth = FirebaseAuth.instance;
 
-      void getuser() async {
-        final FirebaseUser user = await auth.currentUser();
-        setState(() {
-          widget.uid = user.uid;
-        });
-      }
+      // void getuser() async {
+      //   final FirebaseUser user = await auth.currentUser();
+      //   setState(() {
+      //     widget.uid = user.uid;
+      //   });
+      // }
+
+      print("watch reci[e ::");
+      print(widget.uid);
+      print(widget.current.writerUid);
 
       showAlertDialog() {
         // set up the buttons
@@ -114,7 +134,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
         );
       }
 
-      getuser();
+      // getuser();
       if (!widget.done) {
         return Loading();
       } else {
@@ -131,7 +151,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
                       onPressed: () {
                         if (widget.uid != null) {
                           if (widget.saveRecipe == '') {
-                            plusRecipe();
+                            saveRecipe();
                             setState(() {
                               widget.iconSave = Icons.favorite;
                               widget.saveString = 'unsave';
@@ -152,73 +172,114 @@ class _WatchRecipeState extends State<WatchRecipe> {
                 widget.levelColor, widget.levelString));
       }
     }
+    //מצב ראשון 1111111111111111111111111111111111111111111111111111111111111111111111111111
+
     //if we come from personal page
     if (!widget.home) {
+      //print("watch reci[e ::");
+
       final user = Provider.of<User>(context);
       final db = Firestore.instance;
+      String id = widget.uid;
+      String writerId = widget.current.writerUid;
+      // print(widget.uid);
+      // print(widget.current.writerUid);
       if (!widget.done) {
         return Loading();
       } else {
-        return Scaffold(
-            backgroundColor: Colors.brown[100],
-            appBar: AppBar(
-                backgroundColor: Colors.brown[400],
-                elevation: 0.0,
-                title: Text('watch this recipe'),
-                actions: <Widget>[
-                  FlatButton.icon(
-                      icon: Icon(Icons.edit),
-                      label: Text('edit'),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditRecipe(widget.current,
-                                    widget.ing, widget.stages)));
-                      }),
-                  FlatButton.icon(
-                      icon: Icon(widget.iconPublish),
-                      label: Text(widget.publishString),
-                      onPressed: () {
-                        //only id its not publish - publish (only once)
-                        print(widget.current.publish);
-                        print(("publish curren"));
-                        if (widget.current.publish == '') {
-                          print("if");
-                          setState(() {
-                            widget.iconPublish = Icons.public_off;
-                            widget.publishString = "un publish";
-                            publishRecipe();
-                          });
-                          // publishRecipe();
-                        } else {
-                          print("else");
-                          setState(() {
-                            unPublishRecipe();
-                            widget.iconPublish = Icons.public;
-                            widget.publishString = "publish this recipe";
-                          });
-                        }
-                      }),
-                  FlatButton.icon(
-                      icon: Icon(Icons.delete),
-                      label: Text('delete'),
-                      onPressed: () {
-                        db
-                            .collection('users')
-                            .document(user.uid)
-                            .collection('recipes')
-                            .document(widget.current.id)
-                            .delete();
-                        //go back
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HomeLogIn()));
-                      })
-                ]),
-            body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
-                widget.levelColor, widget.levelString));
+        if (id == writerId) {
+          return Scaffold(
+              backgroundColor: Colors.brown[100],
+              appBar: AppBar(
+                  backgroundColor: Colors.brown[400],
+                  elevation: 0.0,
+                  title: Text('watch this recipe'),
+                  actions: <Widget>[
+                    FlatButton.icon(
+                        icon: Icon(Icons.edit),
+                        label: Text('edit'),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditRecipe(
+                                      widget.current,
+                                      widget.ing,
+                                      widget.stages)));
+                        }),
+                    FlatButton.icon(
+                        icon: Icon(widget.iconPublish),
+                        label: Text(widget.publishString),
+                        onPressed: () {
+                          //only id its not publish - publish (only once)
+                          //print(widget.current.publish);
+                          // print(("publish curren"));
+                          if (widget.current.publish == '') {
+                            // print("if");
+                            setState(() {
+                              widget.iconPublish = Icons.public_off;
+                              widget.publishString = "un publish";
+                              publishRecipe();
+                            });
+                            // publishRecipe();
+                          } else {
+                            //print("else");
+                            setState(() {
+                              unPublishRecipe();
+                              widget.iconPublish = Icons.public;
+                              widget.publishString = "publish this recipe";
+                            });
+                          }
+                        }),
+                    FlatButton.icon(
+                        icon: Icon(Icons.delete),
+                        label: Text('delete'),
+                        onPressed: () {
+                          db
+                              .collection('users')
+                              .document(user.uid)
+                              .collection('recipes')
+                              .document(widget.current.id)
+                              .delete();
+                          //go back
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomeLogIn()));
+                        })
+                  ]),
+              body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
+                  widget.levelColor, widget.levelString));
+        } else {
+          //מצב שני 2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+          return Scaffold(
+              backgroundColor: Colors.brown[100],
+              appBar: AppBar(
+                  backgroundColor: Colors.brown[400],
+                  elevation: 0.0,
+                  title: Text('watch this recipe'),
+                  actions: <Widget>[
+                    FlatButton.icon(
+                        icon: Icon(Icons.delete),
+                        label: Text('delete'),
+                        onPressed: () {
+                          deleteFromSavedRecipe(id);
+                          //go back
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => HomeLogIn()));
+                        }),
+                    FlatButton.icon(
+                        icon: Icon(Icons.note_add),
+                        label: Text('add note'),
+                        onPressed: () {
+                          _showNotesPanel(id);
+                        }),
+                  ]),
+              body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
+                  widget.levelColor, widget.levelString));
+        }
       }
     }
   }
@@ -228,9 +289,9 @@ class _WatchRecipeState extends State<WatchRecipe> {
       if (widget.current.saveInUser) {
         //final user = Provider.of<User>(context);
         String uid = widget.current.writerUid;
-        print('save in user');
+        // print('save in user');
         //print(uid);
-        print(widget.current.id.toString());
+        //print(widget.current.id.toString());
         QuerySnapshot snap = await Firestore.instance
             .collection('users')
             .document(uid)
@@ -294,48 +355,38 @@ class _WatchRecipeState extends State<WatchRecipe> {
     }
   }
 
-  void plusRecipe() async {
+  void saveRecipe() async {
     final db = Firestore.instance;
-    Recipe recipe = widget.current;
-    var currentRecipe = await db
-        .collection('users')
-        .document(widget.uid)
-        .collection('recipes')
-        .add(recipe.toJson());
-    //print(currentRecipe.documentID.toString());
-    String id = currentRecipe.documentID.toString();
-    for (int i = 0; i < widget.ing.length; i++) {
-      await db
-          .collection('users')
-          .document(widget.uid)
-          .collection('recipes')
-          .document(id)
-          .collection('ingredients')
-          .add(widget.ing[i].toJson());
-    }
-    for (int i = 0; i < widget.stages.length; i++) {
-      await db
-          .collection('users')
-          .document(widget.uid)
-          .collection('recipes')
-          .document(id)
-          .collection('stages')
-          .add(widget.stages[i].toJson(i));
-    }
-    widget.saveRecipe = id;
-    print("plus");
-    print(id);
+
+    db.collection('users').document(widget.uid).collection('saved recipe').add({
+      'saveInUser': widget.current.saveInUser,
+      'recipeID': widget.current.id,
+      'userID': widget.current.writerUid
+    });
+    setState(() {
+      widget.saveRecipe = 'saved';
+    });
   }
 
-  void unSaveRecipe() {
+  Future<void> unSaveRecipe() async {
     final db = Firestore.instance;
-    db
+    QuerySnapshot allDocuments = await db
         .collection('users')
         .document(widget.uid)
-        .collection('recipes')
-        .document(widget.saveRecipe)
-        .delete();
-
+        .collection('saved recipe')
+        .getDocuments();
+    String delete;
+    allDocuments.documents.forEach((doc) {
+      if (doc.data['recipeID'] == widget.current.id) {
+        delete = doc.documentID.toString();
+      }
+      db
+          .collection('users')
+          .document(widget.uid)
+          .collection('saved recipe')
+          .document(delete)
+          .delete();
+    });
     setState(() {
       widget.saveRecipe = '';
     });
@@ -375,5 +426,53 @@ class _WatchRecipeState extends State<WatchRecipe> {
         .collection('recipes')
         .document(widget.current.id)
         .updateData(widget.current.toJson());
+  }
+
+  Future<void> deleteFromSavedRecipe(
+    String id,
+  ) async {
+    final db = Firestore.instance;
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(id)
+        .collection('saved recipe')
+        .getDocuments();
+    snap.documents.forEach((element) async {
+      String recipeIdfromSnap = element.data['recipeID'];
+      if (recipeIdfromSnap == widget.current.id) {
+        db
+            .collection('users')
+            .document(id)
+            .collection('saved recipe')
+            .document(element.documentID)
+            .delete();
+      }
+    });
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => HomeLogIn()));
+  }
+
+  Future<void> _showNotesPanel(String id) async {
+    final db = Firestore.instance;
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(id)
+        .collection('saved recipe')
+        .getDocuments();
+    snap.documents.forEach((element) async {
+      String recipeIdfromSnap = element.data['recipeID'];
+      if (recipeIdfromSnap == widget.current.id) {
+        List notes = element.data['notes'];
+        print(notes);
+        showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return Container(
+                padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),
+                child: NotesForm(notes, id, element.documentID),
+              );
+            });
+      }
+    });
   }
 }

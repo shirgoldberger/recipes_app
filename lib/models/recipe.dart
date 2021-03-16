@@ -15,6 +15,7 @@ class Recipe {
   //אם המתכון שמור בתיקית ביוזר או אם המתכון שמור בתיקית המתכונים.
   bool saveInUser;
   String publish = '';
+  bool saveRecipe;
 
   Recipe(
       String n,
