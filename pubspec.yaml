@@ -45,7 +45,15 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
+  fonts:
+    - family: Raleway
+      fonts:
+        - asset: lib/fonts/MeriendaOne-Regular.ttf
+          style: italic
+          weight: 700
+  assets:
+    - lib/images/cookbook.jpg
+    - lib/images/chef.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
