@@ -5,8 +5,9 @@ import 'package:recipes_app/models/ingresients.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stages.dart';
 import 'package:recipes_app/models/user.dart';
-import 'package:recipes_app/screen/home_screen/homeLogIn.dart';
-import 'package:recipes_app/screen/home_screen/ingredients.dart';
+import 'package:recipes_app/screens/book_page.dart';
+import 'package:recipes_app/screens/home_screen/homeLogIn.dart';
+import 'package:recipes_app/screens/home_screen/ingredients.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
 class EditRecipe extends StatefulWidget {
@@ -721,5 +722,9 @@ class _EditRecipeState extends State<EditRecipe> {
           .collection('stages')
           .add(widget.stages[i].toJson(i));
     }
+    int count = 0;
+    Navigator.of(context).popUntil((_) => count++ >= 3);
+    // Navigator.push(context,
+    //     MaterialPageRoute(builder: (context) => RecipesBookPage(user.uid)));
   }
 }

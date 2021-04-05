@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:recipes_app/screen/home.dart';
-import 'package:recipes_app/screen/home_screen/homeWrepper.dart';
-import 'package:recipes_app/screen/home_screen/logIn/log_in_wrapper.dart';
-import 'package:recipes_app/screen/home_screen/logIn/login_page.dart';
-import 'screen/personal_page.dart';
+import 'package:recipes_app/screens/book_page.dart';
+import 'package:recipes_app/screens/home.dart';
+import 'package:recipes_app/screens/home_screen/logIn/log_in_wrapper.dart';
+import 'package:recipes_app/screens/search_page.dart';
+import 'package:recipes_app/services/auth.dart';
+import 'models/user.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -118,7 +120,7 @@ class MyStatefulWidget extends StatefulWidget {
 
 /// This is the private State class that goes with MyStatefulWidget.
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   List<Widget> pageList = List<Widget>();
 
   @override
@@ -183,32 +185,28 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 }
 
 class Personal extends StatelessWidget {
-  final routes = <String, WidgetBuilder>{
-    LoginPage.tag: (context) => LogInWrapper(),
-    PersonalPage.tag: (context) => PersonalPage(),
-  };
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kodeversitas',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.lightBlue,
-        fontFamily: 'Nunito',
-      ),
-      home: LogInWrapper(),
-      routes: routes,
-    );
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.lightBlue,
+          fontFamily: 'Nunito',
+        ),
+        home: LogInWrapper());
   }
 }
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: HomePage(),
-    );
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.lightBlue,
+          fontFamily: 'Nunito',
+        ),
+        home: HomePage());
   }
 }
 
@@ -216,7 +214,7 @@ class Search extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Text("Search Page"),
+      body: SearchPage(),
     );
   }
 }
@@ -224,8 +222,24 @@ class Search extends StatelessWidget {
 class Book extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Text("Book Page"),
+    return StreamProvider<User>.value(
+      value: AuthService().user,
+      child: MaterialApp(
+        home: A(),
+      ),
     );
+  }
+}
+
+class A extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
+    // if the user is null - no user us cinnect
+    if (user == null) {
+      return RecipesBookPage("");
+    } else {
+      return RecipesBookPage(user.uid);
+    }
   }
 }

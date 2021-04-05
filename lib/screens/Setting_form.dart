@@ -34,12 +34,20 @@ class _SettingFormState extends State<SettingForm> {
             return Form(
                 key: _formKey,
                 child: Scaffold(
-                  backgroundColor: Colors.blueGrey[350],
+                  backgroundColor: Colors.blueGrey[50],
+                  appBar: AppBar(
+                    title: Text(
+                      'Cook Book',
+                      style: TextStyle(fontFamily: 'LogoFont'),
+                    ),
+                    backgroundColor: Colors.blueGrey[700],
+                    elevation: 0.0,
+                    actions: <Widget>[],
+                  ),
                   body: ListView(
                     padding:
                         EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0),
                     children: <Widget>[
-                      box,
                       box,
                       Text(
                         'Update your details',
@@ -75,7 +83,7 @@ class _SettingFormState extends State<SettingForm> {
                             val.isEmpty ? 'Please enter an email' : null,
                         onChanged: (val) => setState(() => _cuttentEmail = val),
                       ),
-                      SizedBox(height: 20),
+                      box,
                       TextFormField(
                         initialValue: userData.age.toString(),
                         decoration: InputDecoration(labelText: 'your age'),
@@ -84,7 +92,7 @@ class _SettingFormState extends State<SettingForm> {
                         onChanged: (val) =>
                             setState(() => _cuttentAge = int.parse(val)),
                       ),
-                      SizedBox(height: 20),
+                      box,
                       TextFormField(
                         initialValue: userData.phone,
                         decoration: InputDecoration(labelText: 'Phone'),
@@ -94,7 +102,7 @@ class _SettingFormState extends State<SettingForm> {
                       ),
                       box,
                       RaisedButton(
-                          color: Colors.cyan[600],
+                          color: Colors.blueGrey[500],
                           child: Text(
                             'Update',
                             style: TextStyle(color: Colors.white),

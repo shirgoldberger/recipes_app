@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
-class Register extends StatefulWidget {
+class SignIn extends StatefulWidget {
   final Function toggleView;
-  Register({this.toggleView});
+  SignIn({this.toggleView});
+
   @override
-  _RegisterState createState() => _RegisterState();
+  _SignInState createState() => _SignInState();
 }
 
-class _RegisterState extends State<Register> {
+class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
@@ -23,17 +25,20 @@ class _RegisterState extends State<Register> {
     height: 20.0,
   );
 
-  void pressedRegister() async {
-    //if passwors and email are null its enter to if
+  // log in button pressed function
+  void pressedLogIn() async {
+    // if passwors and email are null its enter to 'if'
     if (_formKey.currentState.validate()) {
       setState(() {
         loading = true;
       });
-      dynamic result = await _auth.registerWithEnailAndPass(email, password);
+      dynamic result = await _auth.signInWithEnailAndPass(email, password);
       if (result == null) {
         setState(() {
-          error = 'please supply a valid email';
           loading = false;
+        });
+        setState(() {
+          error = 'Could not log in - check your email and password again';
         });
       }
     }
@@ -44,7 +49,16 @@ class _RegisterState extends State<Register> {
     return loading
         ? Loading()
         : Scaffold(
-            backgroundColor: Colors.grey[350],
+            backgroundColor: Colors.blueGrey[50],
+            appBar: AppBar(
+              title: Text(
+                'Cook Book',
+                style: TextStyle(fontFamily: 'LogoFont'),
+              ),
+              backgroundColor: Colors.blueGrey[700],
+              elevation: 0.0,
+              actions: <Widget>[],
+            ),
             body: Container(
                 padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
                 child: Form(
@@ -53,17 +67,26 @@ class _RegisterState extends State<Register> {
                     children: <Widget>[
                       box,
                       Text(
-                        'Enter details about yourself:',
+                        "Hello!",
                         style: TextStyle(
                             fontFamily: 'Raleway',
                             fontSize: 20,
                             color: Colors.blueGrey[800]),
                         textAlign: TextAlign.center,
                       ),
+                      Text(
+                        "Log in and enjoy from great recipes!",
+                        style: TextStyle(
+                            fontFamily: 'Raleway',
+                            fontSize: 15,
+                            height: 2,
+                            color: Colors.blueGrey[800]),
+                        textAlign: TextAlign.center,
+                      ),
                       box,
                       TextFormField(
                         decoration: InputDecoration(
-                          hintText: 'Email',
+                          hintText: 'enter email...',
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: Colors.blueGrey, width: 2.0)),
@@ -80,7 +103,7 @@ class _RegisterState extends State<Register> {
                       box,
                       TextFormField(
                         decoration: InputDecoration(
-                          hintText: 'Password',
+                          hintText: 'enter password...',
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: Colors.blueGrey, width: 2.0)),
@@ -88,39 +111,54 @@ class _RegisterState extends State<Register> {
                               borderSide: BorderSide(
                                   color: Colors.blueGrey, width: 2.0)),
                         ),
-                        obscureText: true,
                         validator: (val) => val.length < 6
                             ? 'Enter a password 6+ chars long'
                             : null,
+                        obscureText: true,
                         onChanged: (val) {
                           setState(() => password = val);
                         },
                       ),
                       box,
-                      RaisedButton(
-                        color: Colors.cyan[600],
-                        child: Text(
-                          'register',
-                          style: TextStyle(color: Colors.white),
+                      SizedBox(
+                        width: 320,
+                        height: 30.0,
+                        child: RaisedButton(
+                          padding: EdgeInsets.only(left: 1.0, right: 1.0),
+                          focusColor: Colors.black,
+                          color: Colors.blueGrey[500],
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)),
+                          child: Text(
+                            'Log In',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: pressedLogIn,
+                          splashColor: Colors.yellow[200],
+                          animationDuration: Duration(seconds: 2),
                         ),
-                        onPressed: pressedRegister,
                       ),
+                      box,
                       Text(
                         error,
                         style: TextStyle(color: Colors.red, fontSize: 14.0),
                       ),
-                      box,
                       OutlineButton(
                         borderSide: BorderSide.none,
                         onPressed: () {
                           widget.toggleView();
                         },
                         child: Text(
-                          'If you already have an account, tap here!',
+                          'Don\'t have an account?\n Tap here to register',
                           style: TextStyle(fontSize: 15),
                           textAlign: TextAlign.center,
                         ),
                       ),
+                      box,
+                      Image.asset('lib/images/chef.png',
+                          height: 50,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.contain),
                     ],
                   ),
                 )),

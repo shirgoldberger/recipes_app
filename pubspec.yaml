@@ -51,6 +51,12 @@ flutter:
         - asset: lib/fonts/MeriendaOne-Regular.ttf
           style: italic
           weight: 700
+          
+    - family: LogoFont
+      fonts:
+        - asset: lib/fonts/DancingScript-SemiBold.ttf
+          style: italic
+          weight: 700
   assets:
     - lib/images/cookbook.jpg
     - lib/images/chef.png

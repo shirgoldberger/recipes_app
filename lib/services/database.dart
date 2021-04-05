@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recipes_app/models/ingresients.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/screen/home_screen/ingredients.dart';
+import 'package:recipes_app/screens/home_screen/ingredients.dart';
 
 class DataBaseService {
   String uid;

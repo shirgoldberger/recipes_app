@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/screen/home_screen/recipeHeadLine.dart';
+import 'package:recipes_app/screens/home_screen/recipeHeadLine.dart';
 
 class RecipeList extends StatefulWidget {
   RecipeList(List<Recipe> list, String head, bool home) {
@@ -21,10 +21,13 @@ class _RecipeListState extends State<RecipeList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.brown[50],
+        backgroundColor: Colors.blueGrey[50],
         appBar: AppBar(
-          title: Text(widget.head + " recipes:"),
-          backgroundColor: Colors.brown[400],
+          title: Text(
+            widget.head + " recipes:",
+            style: TextStyle(fontFamily: 'Raleway'),
+          ),
+          backgroundColor: Colors.blueGrey[700],
           elevation: 0.0,
           actions: <Widget>[],
         ),

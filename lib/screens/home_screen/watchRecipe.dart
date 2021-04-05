@@ -6,11 +6,10 @@ import 'package:recipes_app/models/ingresients.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stages.dart';
 import 'package:recipes_app/models/user.dart';
-import 'package:recipes_app/screen/home_screen/editRecipe.dart';
-import 'package:recipes_app/screen/home_screen/homeLogIn.dart';
-import 'package:recipes_app/screen/home_screen/ingredients.dart';
-import 'package:recipes_app/screen/home_screen/notesForm.dart';
-import 'package:recipes_app/screen/home_screen/warchRecipeBody.dart';
+import 'package:recipes_app/screens/home_screen/editRecipe.dart';
+import 'package:recipes_app/screens/home_screen/homeLogIn.dart';
+import 'package:recipes_app/screens/home_screen/notesForm.dart';
+import 'package:recipes_app/screens/home_screen/warchRecipeBody.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
 //הסבר כללי לגבי העמוד הזה-
@@ -54,8 +53,9 @@ class _WatchRecipeState extends State<WatchRecipe> {
   @override
   void initState() {
     super.initState();
+    getuser();
     makeList();
-    // print("init state");
+    print("init state");
     // print(widget.current.publish);
     if (widget.current.publish == '') {
       widget.iconPublish = Icons.public;
@@ -63,6 +63,55 @@ class _WatchRecipeState extends State<WatchRecipe> {
     } else {
       widget.iconPublish = Icons.public_off;
       widget.publishString = "un publish";
+    }
+    print(widget.uid);
+    // if (widget.uid != null) {
+    //   print("user:   " + widget.uid);
+    //   Firestore.instance
+    //       .collection("users")
+    //       .document(widget.uid)
+    //       .get()
+    //       .then((doc) {
+    //     if (doc.data['recipeID'] == widget.current.id) {
+    //       print("save");
+    //     } else {
+    //       print("unsave");
+    //     }
+    //   });
+    // }
+  }
+
+  void getuser() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final FirebaseUser user = await auth.currentUser();
+    setState(() {
+      widget.uid = user.uid;
+      print(widget.uid);
+      print("user uid");
+    });
+    if (widget.uid != null) {
+      print("user:   " + widget.uid);
+      QuerySnapshot snap = await Firestore.instance
+          .collection("users")
+          .document(widget.uid)
+          .collection("saved recipe")
+          .getDocuments();
+      snap.documents.forEach((element) async {
+        if (element.data['recipeID'] == widget.current.id) {
+          widget.iconSave = Icons.favorite;
+          widget.saveString = 'unsave';
+          print("unsave");
+        }
+      });
+      print(widget.saveString);
+
+      //     .then((doc) {
+      //   if (doc.data['recipeID'] == widget.current.id) {
+      //     print("save");
+      //   } else {
+      //     print("unsave");
+      //   }
+      // });
     }
   }
 
@@ -80,16 +129,8 @@ class _WatchRecipeState extends State<WatchRecipe> {
       widget.levelColor = Colors.blue[900];
       widget.levelString = "hard";
     }
-    final FirebaseAuth auth = FirebaseAuth.instance;
 
-    void getuser() async {
-      final FirebaseUser user = await auth.currentUser();
-      setState(() {
-        widget.uid = user.uid;
-      });
-    }
-
-    getuser();
+    // getuser();
     //if we came from home screen
 //מצב שלישי 333333333333333333333333333333333333333333333333333333333333333333
     if (widget.home) {
@@ -102,9 +143,9 @@ class _WatchRecipeState extends State<WatchRecipe> {
       //   });
       // }
 
-      print("watch reci[e ::");
-      print(widget.uid);
-      print(widget.current.writerUid);
+      // print("watch reci[e ::");
+      // print(widget.uid);
+      // print(widget.current.writerUid);
 
       showAlertDialog() {
         // set up the buttons
@@ -150,7 +191,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
                       label: Text(widget.saveString),
                       onPressed: () {
                         if (widget.uid != null) {
-                          if (widget.saveRecipe == '') {
+                          if (widget.saveString == 'save') {
                             saveRecipe();
                             setState(() {
                               widget.iconSave = Icons.favorite;
@@ -363,9 +404,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
       'recipeID': widget.current.id,
       'userID': widget.current.writerUid
     });
-    setState(() {
-      widget.saveRecipe = 'saved';
-    });
   }
 
   Future<void> unSaveRecipe() async {
@@ -386,9 +424,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
           .collection('saved recipe')
           .document(delete)
           .delete();
-    });
-    setState(() {
-      widget.saveRecipe = '';
     });
   }
 

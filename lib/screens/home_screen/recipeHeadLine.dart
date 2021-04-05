@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 
-import 'package:recipes_app/screen/home_screen/watchRecipe.dart';
+import 'package:recipes_app/screens/home_screen/watchRecipe.dart';
 
 class RecipeHeadLine extends StatelessWidget {
   Recipe recipe;

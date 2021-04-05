@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/main.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/screen/home_screen/RecipeList.dart';
-import 'package:recipes_app/screen/home_screen/recipeHeadLine.dart';
+import 'package:recipes_app/screens/home_screen/RecipeList.dart';
+import 'package:recipes_app/screens/home_screen/recipeHeadLine.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
+
+import 'RecipeList.dart';
 
 class RecipeFolder extends StatefulWidget {
   RecipeFolder(bool home) {
@@ -25,18 +27,65 @@ class RecipeFolder extends StatefulWidget {
 
 class _RecipeFolderState extends State<RecipeFolder> {
   @override
-  Widget build(BuildContext context) {
-    void getuser() async {
-      final FirebaseAuth auth = FirebaseAuth.instance;
-      final FirebaseUser user = await auth.currentUser();
-      setState(() {
-        widget.uid = user.uid;
-        print("get user");
-        loadSavedRecipe();
-        widget.doneGetUser = true;
-      });
+  void initState() {
+    super.initState();
+    print("initstate");
+    widget.publisRecipe = [];
+    widget.savedRecipe = [];
+    widget.doneLoadPublishRecipe = false;
+    widget.doneLoadSavedRecipe = false;
+    if ((!widget.doneLoadPublishRecipe) && (!widget.doneLoadSavedRecipe)) {
+      if (!widget.home) {
+        print("iinniitt");
+        widget.doneLoadPublishRecipe = true;
+        getuser();
+        print("if");
+        if (widget.uid != null) {
+          loadSavedRecipe();
+        }
+      } else {
+        print("publish");
+        loadPublishRecipe();
+      }
+      print("aaaaaaaaaaaaaaaaaaaaa");
     }
+  }
 
+  void changeState() {
+    widget.publisRecipe = [];
+    widget.savedRecipe = [];
+    widget.doneLoadPublishRecipe = false;
+    widget.doneLoadSavedRecipe = false;
+    if ((!widget.doneLoadPublishRecipe) && (!widget.doneLoadSavedRecipe)) {
+      if (!widget.home) {
+        print("iinniitt");
+        widget.doneLoadPublishRecipe = true;
+        getuser();
+        print("if");
+        if (widget.uid != null) {
+          loadSavedRecipe();
+        }
+      } else {
+        print("publish");
+        loadPublishRecipe();
+      }
+      print("aaaaaaaaaaaaaaaaaaaaa");
+    }
+  }
+
+  void getuser() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final FirebaseUser user = await auth.currentUser();
+    setState(() {
+      widget.uid = user.uid;
+      print("get user");
+      loadSavedRecipe();
+      widget.doneGetUser = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // @override
     // void initState() {
     //   super.initState();
@@ -49,7 +98,6 @@ class _RecipeFolderState extends State<RecipeFolder> {
     //     loadPublishRecipe();
     //   }
     // }
-
     //הסבר לגבי הרשימה של המתכונים -
     //אם אנחנו מגיעים מעמוד האישי של המשתמש יהיה כאן את כל רשימת המתכונים שלו,
     //אם אנחנו מגיעים מעמוד הבית יהיה כאן כל המתכונים שנמצאים בתיקית המתכונים בדאטה בייס,
@@ -57,32 +105,36 @@ class _RecipeFolderState extends State<RecipeFolder> {
     var recipeList = Provider.of<List<Recipe>>(context);
     //אם לא הגעת מעמוד הבית אין סיבה לטעון את כל המתכונים -
     // לכן מיד נשנה את הערך הבוליאני ל- נכון, ולא נקרא לפונקציה.
-    if ((!widget.doneLoadPublishRecipe) && (!widget.doneLoadSavedRecipe)) {
-      if (!widget.home) {
-        print("iinniitt");
-        widget.doneLoadPublishRecipe = true;
+    // widget.publisRecipe = [];
+    // widget.savedRecipe = [];
 
-        getuser();
-        print("if");
-        if (widget.uid != null) {
-          loadSavedRecipe();
-        }
-      } else {
-        loadPublishRecipe();
-      }
-      print("aaaaaaaaaaaaaaaaaaaaa");
-    }
+    // if ((!widget.doneLoadPublishRecipe) && (!widget.doneLoadSavedRecipe)) {
+    //   if (!widget.home) {
+    //     print("iinniitt");
+    //     widget.doneLoadPublishRecipe = true;
+    //     getuser();
+    //     print("if");
+    //     if (widget.uid != null) {
+    //       loadSavedRecipe();
+    //     }
+    //   } else {
+    //     loadPublishRecipe();
+    //   }
+    //   print("aaaaaaaaaaaaaaaaaaaaa");
+    // }
     if (!widget.doneLoadPublishRecipe) {
       return Loading();
     }
+
     if (widget.doneLoadPublishRecipe) {
       if (widget.publisRecipe != null) {
         recipeList = recipeList + widget.publisRecipe;
       }
       if (widget.doneLoadSavedRecipe) {
         recipeList = recipeList + widget.savedRecipe;
-        print("plus   " + recipeList.length.toString());
+        // print("plus   " + recipeList.length.toString());
       }
+
       //print("aaaaaaaaaaaaaaaaaaaaa");
       int i;
       List<Recipe> fish = [];
@@ -124,6 +176,18 @@ class _RecipeFolderState extends State<RecipeFolder> {
         }
       }
       return Column(children: <Widget>[
+        FlatButton.icon(
+          color: Colors.blueGrey[400],
+          icon: Icon(
+            Icons.refresh,
+            color: Colors.white,
+          ),
+          label: Text(
+            'Refresh',
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: () => {changeState()},
+        ),
         Text('data'),
         //fish
         if (!fish.isEmpty)
@@ -218,14 +282,12 @@ class _RecipeFolderState extends State<RecipeFolder> {
     snap.documents.forEach((element) async {
       uid = element.data['userID'] ?? '';
       recipeId = element.data['recipeId'] ?? '';
-
       DocumentSnapshot doc = await Firestore.instance
           .collection('users')
           .document(uid)
           .collection('recipes')
           .document(recipeId)
           .get();
-
       String n = doc.data['name'] ?? '';
       String de = doc.data['description'] ?? '';
       String level = doc.data['level'] ?? 0;
@@ -263,19 +325,18 @@ class _RecipeFolderState extends State<RecipeFolder> {
           }
         }
       }
-
       Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
           true, id, publish);
-
       // r.setId(id);
       // print(publish + "publish");
       //r.publishThisRecipe(publish);
       widget.publisRecipe.add(r);
       // print(r.publish);
       i++;
-
+      print("i -     " + i.toString());
+      print(snap.documents.length);
       // print(snap.documents.length);
-      if ((i) == snap.documents.length) {
+      if ((i + 1) == snap.documents.length) {
         setState(() {
           widget.doneLoadPublishRecipe = true;
         });
@@ -319,9 +380,8 @@ class _RecipeFolderState extends State<RecipeFolder> {
             .document(recipeId)
             .get();
         //check if in the user;
-        print(doc.data.length.toString() +
-            "   .....................................");
-
+        // print(doc.data.length.toString() +
+        //     "   .....................................");
         String n = doc.data['name'] ?? '';
         String de = doc.data['description'] ?? '';
         String level = doc.data['level'] ?? 0;
@@ -374,7 +434,6 @@ class _RecipeFolderState extends State<RecipeFolder> {
         //check if in the user;
         print(doc.data.length.toString() +
             "   .....................................");
-
         String n = doc.data['name'] ?? '';
         String de = doc.data['description'] ?? '';
         String level = doc.data['level'] ?? 0;
@@ -416,12 +475,11 @@ class _RecipeFolderState extends State<RecipeFolder> {
         r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, false,
             id, publish);
       }
-
       // r.setId(id);
       // print(publish + "publish");
       //r.publishThisRecipe(publish);
       widget.savedRecipe.add(r);
-      print(widget.savedRecipe.length);
+      print("plus ");
       // print(r.publish);
       i++;
 
