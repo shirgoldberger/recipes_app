@@ -75,181 +75,127 @@ class _EditRecipeState extends State<EditRecipe> {
           child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Scaffold(
-                  backgroundColor: Colors.brown[100],
-                  appBar: AppBar(
-                      backgroundColor: Colors.brown[400],
-                      elevation: 0.0,
-                      title: Text('edit this recipe'),
-                      actions: <Widget>[
-                        FlatButton.icon(
-                            icon: Icon(Icons.save),
-                            label: Text('save this recipe'),
-                            onPressed: () {
-                              editAndSave();
+                backgroundColor: Colors.brown[100],
+                appBar: AppBar(
+                    backgroundColor: Colors.brown[400],
+                    elevation: 0.0,
+                    title: Text('edit this recipe'),
+                    actions: <Widget>[
+                      FlatButton.icon(
+                          icon: Icon(Icons.save),
+                          label: Text('save this recipe'),
+                          onPressed: () {
+                            editAndSave();
 
-                              // Navigator.push(
-                              // context,
-                              //MaterialPageRoute(
-                              //  builder: (context) => HomeLogIn()));
-                            }),
-                      ]),
-                  body: Container(
-                    child: ListView(children: [
-                      Container(
-                        child: new Column(children: [
-                          Center(
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                hintText: widget.current.name,
-                              ),
-                              validator: (val) => val.length < 6
-                                  ? 'Enter a description eith 6 letter at least'
-                                  : null,
-                              onChanged: (val) {
-                                setState(() => widget.current.name = val);
-                              },
-                            ),
-                          ),
-                          new Padding(padding: EdgeInsets.only(top: 15.0)),
-                          TextFormField(
+                            // Navigator.push(
+                            // context,
+                            //MaterialPageRoute(
+                            //  builder: (context) => HomeLogIn()));
+                          }),
+                    ]),
+                body: Container(
+                  child: ListView(children: [
+                    Container(
+                      child: new Column(children: [
+                        Center(
+                          child: TextFormField(
                             decoration: InputDecoration(
-                              hintText: widget.current.description,
+                              hintText: widget.current.name,
                             ),
                             validator: (val) => val.length < 6
                                 ? 'Enter a description eith 6 letter at least'
                                 : null,
                             onChanged: (val) {
-                              setState(() => widget.current.description = val);
+                              setState(() => widget.current.name = val);
                             },
                           ),
-                          new Padding(padding: EdgeInsets.only(top: 15.0)),
-                          RawMaterialButton(
-                            onPressed: addIng,
-                            elevation: 2.0,
-                            fillColor: Colors.brown[300],
-                            child: Icon(
-                              Icons.add,
-                              size: 18.0,
-                            ),
-                            padding: EdgeInsets.all(5.0),
-                            shape: CircleBorder(),
+                        ),
+                        new Padding(padding: EdgeInsets.only(top: 15.0)),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            hintText: widget.current.description,
                           ),
-                          new Text(
-                            'ingredients for the recipe:',
-                            style: new TextStyle(
-                                color: Colors.brown, fontSize: 25.0),
+                          validator: (val) => val.length < 6
+                              ? 'Enter a description eith 6 letter at least'
+                              : null,
+                          onChanged: (val) {
+                            setState(() => widget.current.description = val);
+                          },
+                        ),
+                        new Padding(padding: EdgeInsets.only(top: 15.0)),
+                        RawMaterialButton(
+                          onPressed: addIng,
+                          elevation: 2.0,
+                          fillColor: Colors.brown[300],
+                          child: Icon(
+                            Icons.add,
+                            size: 18.0,
                           ),
-                          new Padding(padding: EdgeInsets.only(top: 10.0)),
-                          Column(
-                            children: <Widget>[
-                              for (var i = 0; i < widget.ing.length; i++)
-                                Row(
-                                  children: [
-                                    Text((i + 1).toString() + "." + " "),
-                                    Expanded(
-                                        child: SizedBox(
-                                            height: 37.0,
-                                            child: TextFormField(
-                                              decoration: InputDecoration(
-                                                hintText: widget.ing[i].name,
-                                              ),
-                                              validator: (val) => val.length < 2
-                                                  ? 'Enter a description eith 2 letter at least'
-                                                  : null,
-                                              onChanged: (val) {
-                                                setState(() =>
-                                                    widget.ing[i].name = val);
-                                              },
-                                            ))),
-                                    Text(' '),
-                                    Expanded(
-                                        child: SizedBox(
-                                            height: 37.0,
-                                            child: TextFormField(
-                                              decoration: InputDecoration(
-                                                hintText: widget.ing[i].count
-                                                    .toString(),
-                                              ),
-                                              validator: (val) => val.length < 6
-                                                  ? 'Enter a description eith 6 letter at least'
-                                                  : null,
-                                              onChanged: (val) {
-                                                setState(() => widget.ing[i]
-                                                    .count = int.parse(val));
-                                              },
-                                            ))),
-                                    Text(' '),
-                                    Expanded(
-                                        child: SizedBox(
-                                            height: 37.0,
-                                            child: TextFormField(
-                                              decoration: InputDecoration(
-                                                hintText: widget.ing[i].unit,
-                                              ),
-                                              validator: (val) => val.length < 6
-                                                  ? 'Enter a description eith 6 letter at least'
-                                                  : null,
-                                              onChanged: (val) {
-                                                setState(() =>
-                                                    widget.ing[i].unit = val);
-                                              },
-                                            ))),
-                                    RawMaterialButton(
-                                      onPressed: () => onDeletIng(i),
-                                      elevation: 0.2,
-                                      fillColor: Colors.brown[300],
-                                      child: Icon(
-                                        Icons.delete,
-                                        size: 18.0,
-                                      ),
-                                      padding: EdgeInsets.all(5.0),
-                                      shape: CircleBorder(),
-                                    )
-                                  ],
-                                ),
-                            ],
-                          ),
-                          //stages
-                          new Padding(padding: EdgeInsets.only(top: 15.0)),
-                          new Text(
-                            'stages for the recipe:',
-                            style: new TextStyle(
-                                color: Colors.brown, fontSize: 25.0),
-                          ),
-                          RawMaterialButton(
-                            onPressed: addStages,
-                            elevation: 2.0,
-                            fillColor: Colors.brown[300],
-                            child: Icon(
-                              Icons.add,
-                              size: 18.0,
-                            ),
-                            padding: EdgeInsets.all(5.0),
-                            shape: CircleBorder(),
-                          ),
-                          new Padding(padding: EdgeInsets.only(top: 10.0)),
-                          Column(
-                            children: <Widget>[
-                              for (var j = 0; j < widget.stages.length; j++)
-                                Row(children: [
-                                  Text((j + 1).toString() + "." + " "),
+                          padding: EdgeInsets.all(5.0),
+                          shape: CircleBorder(),
+                        ),
+                        new Text(
+                          'ingredients for the recipe:',
+                          style: new TextStyle(
+                              color: Colors.brown, fontSize: 25.0),
+                        ),
+                        new Padding(padding: EdgeInsets.only(top: 10.0)),
+                        Column(
+                          children: <Widget>[
+                            for (var i = 0; i < widget.ing.length; i++)
+                              Row(
+                                children: [
+                                  Text((i + 1).toString() + "." + " "),
                                   Expanded(
                                       child: SizedBox(
                                           height: 37.0,
                                           child: TextFormField(
                                             decoration: InputDecoration(
-                                              hintText: widget.stages[j].s,
+                                              hintText: widget.ing[i].name,
                                             ),
                                             validator: (val) => val.length < 2
                                                 ? 'Enter a description eith 2 letter at least'
                                                 : null,
                                             onChanged: (val) {
                                               setState(() =>
-                                                  widget.stages[j].s = val);
+                                                  widget.ing[i].name = val);
+                                            },
+                                          ))),
+                                  Text(' '),
+                                  Expanded(
+                                      child: SizedBox(
+                                          height: 37.0,
+                                          child: TextFormField(
+                                            decoration: InputDecoration(
+                                              hintText: widget.ing[i].count
+                                                  .toString(),
+                                            ),
+                                            validator: (val) => val.length < 6
+                                                ? 'Enter a description eith 6 letter at least'
+                                                : null,
+                                            onChanged: (val) {
+                                              setState(() => widget.ing[i]
+                                                  .count = int.parse(val));
+                                            },
+                                          ))),
+                                  Text(' '),
+                                  Expanded(
+                                      child: SizedBox(
+                                          height: 37.0,
+                                          child: TextFormField(
+                                            decoration: InputDecoration(
+                                              hintText: widget.ing[i].unit,
+                                            ),
+                                            validator: (val) => val.length < 6
+                                                ? 'Enter a description eith 6 letter at least'
+                                                : null,
+                                            onChanged: (val) {
+                                              setState(() =>
+                                                  widget.ing[i].unit = val);
                                             },
                                           ))),
                                   RawMaterialButton(
-                                    onPressed: () => onDeletStages(j),
+                                    onPressed: () => onDeletIng(i),
                                     elevation: 0.2,
                                     fillColor: Colors.brown[300],
                                     child: Icon(
@@ -259,229 +205,284 @@ class _EditRecipeState extends State<EditRecipe> {
                                     padding: EdgeInsets.all(5.0),
                                     shape: CircleBorder(),
                                   )
-                                ])
-                            ],
-                          ),
-                          //tags
-                          new Padding(padding: EdgeInsets.only(top: 15.0)),
-                          new Text(
-                            'tags for the recipe:',
-                            style: new TextStyle(
-                                color: Colors.brown, fontSize: 25.0),
-                          ),
-                          RawMaterialButton(
-                            onPressed: addTags,
-                            elevation: 2.0,
-                            fillColor: Colors.brown[300],
-                            child: Icon(
-                              Icons.add,
-                              size: 18.0,
-                            ),
-                            padding: EdgeInsets.all(5.0),
-                            shape: CircleBorder(),
-                          ),
-                          new Padding(padding: EdgeInsets.only(top: 10.0)),
-                          Column(
-                            children: <Widget>[
-                              for (var t = 0;
-                                  t < widget.current.myTag.length;
-                                  t++)
-                                Row(children: [
-                                  Text((t + 1).toString() + "." + " "),
-                                  Expanded(
-                                      child: SizedBox(
-                                    height: 37.0,
-                                    child: DropdownButton(
-                                      hint: Text("choose this recipe tag"),
-                                      dropdownColor: Colors.brown[300],
-                                      icon: Icon(Icons.arrow_drop_down),
-                                      iconSize: 36,
-                                      isExpanded: true,
-                                      value: widget.tagList[convertToIndex(
-                                          widget.current.myTag[t])],
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          widget.current.myTag[t] = newValue;
-                                        });
-                                      },
-                                      items: widget.tagList.map((valueItem) {
-                                        return DropdownMenuItem(
-                                          value: valueItem,
-                                          child: Text(valueItem),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  )),
-                                  RawMaterialButton(
-                                    onPressed: () => onDeleteTags(t),
-                                    elevation: 0.2,
-                                    fillColor: Colors.brown[300],
-                                    child: Icon(
-                                      Icons.delete,
-                                      size: 18.0,
-                                    ),
-                                    padding: EdgeInsets.all(5.0),
-                                    shape: CircleBorder(),
-                                  )
-                                ])
-                            ],
-                          ),
-                          SizedBox(
-                              height: 37.0,
-                              child: Text("push on the + to add tags")),
-                          Row(children: <Widget>[
-                            Expanded(
-                                child: RaisedButton(
-                                    color: widget.easyColor,
-                                    child: Text(
-                                      'easy',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        widget.current.level = 1;
-                                        widget.easyColor = Colors.green[900];
-                                        widget.midColor = Colors.red[200];
-                                        widget.hardColor = Colors.blue[200];
-                                      });
-                                    })),
-                            Expanded(
-                                child: RaisedButton(
-                                    color: widget.midColor,
-                                    child: Text(
-                                      'medium',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        widget.current.level = 2;
-                                        widget.easyColor = Colors.green[200];
-                                        widget.midColor = Colors.red[900];
-                                        widget.hardColor = Colors.blue[200];
-                                      });
-                                    })),
-                            Expanded(
-                                child: RaisedButton(
-                                    color: widget.hardColor,
-                                    child: Text(
-                                      'hard',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        widget.current.level = 3;
-                                        widget.easyColor = Colors.green[200];
-                                        widget.midColor = Colors.red[200];
-                                        widget.hardColor = Colors.blue[900];
-                                      });
-                                    }))
-                          ])
-                        ]),
-                      ), //time text
-                      SizedBox(
-                          height: 37.0,
-                          child: Text(
-                              "How long does it take to prepare the recipe?")),
-                      //time
-                      Row(children: <Widget>[
-                        Expanded(
-                          child: FlatButton.icon(
-                              icon: Icon(Icons.watch_later,
-                                  color: widget.timeInit1),
-                              label: Text(''),
-                              onPressed: () {
-                                setState(() {
-                                  widget.current.time = 1;
-                                  widget.timeInit1 = Colors.green[400];
-                                  widget.timeInit2 = Colors.black;
-                                  widget.timeInit3 = Colors.black;
-                                });
-                              }),
+                                ],
+                              ),
+                          ],
                         ),
-                        Expanded(
-                          child: FlatButton.icon(
-                              icon: Icon(Icons.watch_later,
-                                  color: widget.timeInit2),
-                              label: Text(''),
-                              onPressed: () {
-                                setState(() {
-                                  widget.current.time = 2;
-                                  widget.timeInit1 = Colors.black;
-                                  widget.timeInit2 = Colors.yellow[400];
-                                  widget.timeInit3 = Colors.black;
-                                });
-                              }),
+                        //stages
+                        new Padding(padding: EdgeInsets.only(top: 15.0)),
+                        new Text(
+                          'stages for the recipe:',
+                          style: new TextStyle(
+                              color: Colors.brown, fontSize: 25.0),
                         ),
-                        Expanded(
-                          child: FlatButton.icon(
-                              icon: Icon(Icons.watch_later,
-                                  color: widget.timeInit3),
-                              label: Text(''),
-                              onPressed: () {
-                                setState(() {
-                                  widget.current.time = 3;
-                                  widget.timeInit1 = Colors.black;
-                                  widget.timeInit2 = Colors.black;
-                                  widget.timeInit3 = Colors.pink[400];
-                                });
-                              }),
+                        RawMaterialButton(
+                          onPressed: addStages,
+                          elevation: 2.0,
+                          fillColor: Colors.brown[300],
+                          child: Icon(
+                            Icons.add,
+                            size: 18.0,
+                          ),
+                          padding: EdgeInsets.all(5.0),
+                          shape: CircleBorder(),
                         ),
+                        new Padding(padding: EdgeInsets.only(top: 10.0)),
+                        Column(
+                          children: <Widget>[
+                            for (var j = 0; j < widget.stages.length; j++)
+                              Row(children: [
+                                Text((j + 1).toString() + "." + " "),
+                                Expanded(
+                                    child: SizedBox(
+                                        height: 37.0,
+                                        child: TextFormField(
+                                          decoration: InputDecoration(
+                                            hintText: widget.stages[j].s,
+                                          ),
+                                          validator: (val) => val.length < 2
+                                              ? 'Enter a description eith 2 letter at least'
+                                              : null,
+                                          onChanged: (val) {
+                                            setState(
+                                                () => widget.stages[j].s = val);
+                                          },
+                                        ))),
+                                RawMaterialButton(
+                                  onPressed: () => onDeletStages(j),
+                                  elevation: 0.2,
+                                  fillColor: Colors.brown[300],
+                                  child: Icon(
+                                    Icons.delete,
+                                    size: 18.0,
+                                  ),
+                                  padding: EdgeInsets.all(5.0),
+                                  shape: CircleBorder(),
+                                )
+                              ])
+                          ],
+                        ),
+                        //tags
+                        new Padding(padding: EdgeInsets.only(top: 15.0)),
+                        new Text(
+                          'tags for the recipe:',
+                          style: new TextStyle(
+                              color: Colors.brown, fontSize: 25.0),
+                        ),
+                        RawMaterialButton(
+                          onPressed: addTags,
+                          elevation: 2.0,
+                          fillColor: Colors.brown[300],
+                          child: Icon(
+                            Icons.add,
+                            size: 18.0,
+                          ),
+                          padding: EdgeInsets.all(5.0),
+                          shape: CircleBorder(),
+                        ),
+                        new Padding(padding: EdgeInsets.only(top: 10.0)),
+                        Column(
+                          children: <Widget>[
+                            for (var t = 0;
+                                t < widget.current.myTag.length;
+                                t++)
+                              Row(children: [
+                                Text((t + 1).toString() + "." + " "),
+                                Expanded(
+                                    child: SizedBox(
+                                  height: 37.0,
+                                  child: DropdownButton(
+                                    hint: Text("choose this recipe tag"),
+                                    dropdownColor: Colors.brown[300],
+                                    icon: Icon(Icons.arrow_drop_down),
+                                    iconSize: 36,
+                                    isExpanded: true,
+                                    value: widget.tagList[convertToIndex(
+                                        widget.current.myTag[t])],
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        widget.current.myTag[t] = newValue;
+                                      });
+                                    },
+                                    items: widget.tagList.map((valueItem) {
+                                      return DropdownMenuItem(
+                                        value: valueItem,
+                                        child: Text(valueItem),
+                                      );
+                                    }).toList(),
+                                  ),
+                                )),
+                                RawMaterialButton(
+                                  onPressed: () => onDeleteTags(t),
+                                  elevation: 0.2,
+                                  fillColor: Colors.brown[300],
+                                  child: Icon(
+                                    Icons.delete,
+                                    size: 18.0,
+                                  ),
+                                  padding: EdgeInsets.all(5.0),
+                                  shape: CircleBorder(),
+                                )
+                              ])
+                          ],
+                        ),
+                        SizedBox(
+                            height: 37.0,
+                            child: Text("push on the + to add tags")),
+                        Row(children: <Widget>[
+                          Expanded(
+                              child: RaisedButton(
+                                  color: widget.easyColor,
+                                  child: Text(
+                                    'easy',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      widget.current.level = 1;
+                                      widget.easyColor = Colors.green[900];
+                                      widget.midColor = Colors.red[200];
+                                      widget.hardColor = Colors.blue[200];
+                                    });
+                                  })),
+                          Expanded(
+                              child: RaisedButton(
+                                  color: widget.midColor,
+                                  child: Text(
+                                    'medium',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      widget.current.level = 2;
+                                      widget.easyColor = Colors.green[200];
+                                      widget.midColor = Colors.red[900];
+                                      widget.hardColor = Colors.blue[200];
+                                    });
+                                  })),
+                          Expanded(
+                              child: RaisedButton(
+                                  color: widget.hardColor,
+                                  child: Text(
+                                    'hard',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      widget.current.level = 3;
+                                      widget.easyColor = Colors.green[200];
+                                      widget.midColor = Colors.red[200];
+                                      widget.hardColor = Colors.blue[900];
+                                    });
+                                  }))
+                        ])
                       ]),
-                      //notes
-                      new Padding(padding: EdgeInsets.only(top: 15.0)),
-                      new Text(
-                        'notes for the recipe:',
-                        style:
-                            new TextStyle(color: Colors.brown, fontSize: 25.0),
+                    ), //time text
+                    SizedBox(
+                        height: 37.0,
+                        child: Text(
+                            "How long does it take to prepare the recipe?")),
+                    //time
+                    Row(children: <Widget>[
+                      Expanded(
+                        child: FlatButton.icon(
+                            icon: Icon(Icons.watch_later,
+                                color: widget.timeInit1),
+                            label: Text(''),
+                            onPressed: () {
+                              setState(() {
+                                widget.current.time = 1;
+                                widget.timeInit1 = Colors.green[400];
+                                widget.timeInit2 = Colors.black;
+                                widget.timeInit3 = Colors.black;
+                              });
+                            }),
                       ),
-                      RawMaterialButton(
-                        onPressed: addNotes,
-                        elevation: 2.0,
-                        fillColor: Colors.brown[300],
-                        child: Icon(
-                          Icons.add,
-                          size: 18.0,
-                        ),
-                        padding: EdgeInsets.all(5.0),
-                        shape: CircleBorder(),
+                      Expanded(
+                        child: FlatButton.icon(
+                            icon: Icon(Icons.watch_later,
+                                color: widget.timeInit2),
+                            label: Text(''),
+                            onPressed: () {
+                              setState(() {
+                                widget.current.time = 2;
+                                widget.timeInit1 = Colors.black;
+                                widget.timeInit2 = Colors.yellow[400];
+                                widget.timeInit3 = Colors.black;
+                              });
+                            }),
                       ),
-                      new Padding(padding: EdgeInsets.only(top: 10.0)),
-                      Column(
-                        children: <Widget>[
-                          for (var j = 0; j < widget.current.notes.length; j++)
-                            Row(children: [
-                              Text((j + 1).toString() + "." + " "),
-                              Expanded(
-                                  child: SizedBox(
-                                      height: 37.0,
-                                      child: TextFormField(
-                                        decoration: InputDecoration(
-                                          hintText: widget.current.notes[j],
-                                        ),
-                                        validator: (val) => val.length < 2
-                                            ? 'Enter a description eith 2 letter at least'
-                                            : null,
-                                        onChanged: (val) {
-                                          setState(() =>
-                                              widget.current.notes[j] = val);
-                                        },
-                                      ))),
-                              RawMaterialButton(
-                                onPressed: () => onDeleteNotes(j),
-                                elevation: 0.2,
-                                fillColor: Colors.brown[300],
-                                child: Icon(
-                                  Icons.delete,
-                                  size: 18.0,
-                                ),
-                                padding: EdgeInsets.all(5.0),
-                                shape: CircleBorder(),
-                              )
-                            ])
-                        ],
+                      Expanded(
+                        child: FlatButton.icon(
+                            icon: Icon(Icons.watch_later,
+                                color: widget.timeInit3),
+                            label: Text(''),
+                            onPressed: () {
+                              setState(() {
+                                widget.current.time = 3;
+                                widget.timeInit1 = Colors.black;
+                                widget.timeInit2 = Colors.black;
+                                widget.timeInit3 = Colors.pink[400];
+                              });
+                            }),
                       ),
                     ]),
-                  ))));
+                    //notes
+                    new Padding(padding: EdgeInsets.only(top: 15.0)),
+                    new Text(
+                      'notes for the recipe:',
+                      style: new TextStyle(color: Colors.brown, fontSize: 25.0),
+                    ),
+                    RawMaterialButton(
+                      onPressed: addNotes,
+                      elevation: 2.0,
+                      fillColor: Colors.brown[300],
+                      child: Icon(
+                        Icons.add,
+                        size: 18.0,
+                      ),
+                      padding: EdgeInsets.all(5.0),
+                      shape: CircleBorder(),
+                    ),
+                    new Padding(padding: EdgeInsets.only(top: 10.0)),
+                    Column(
+                      children: <Widget>[
+                        for (var j = 0; j < widget.current.notes.length; j++)
+                          Row(children: [
+                            Text((j + 1).toString() + "." + " "),
+                            Expanded(
+                                child: SizedBox(
+                                    height: 37.0,
+                                    child: TextFormField(
+                                      decoration: InputDecoration(
+                                        hintText: widget.current.notes[j],
+                                      ),
+                                      validator: (val) => val.length < 2
+                                          ? 'Enter a description eith 2 letter at least'
+                                          : null,
+                                      onChanged: (val) {
+                                        setState(() =>
+                                            widget.current.notes[j] = val);
+                                      },
+                                    ))),
+                            RawMaterialButton(
+                              onPressed: () => onDeleteNotes(j),
+                              elevation: 0.2,
+                              fillColor: Colors.brown[300],
+                              child: Icon(
+                                Icons.delete,
+                                size: 18.0,
+                              ),
+                              padding: EdgeInsets.all(5.0),
+                              shape: CircleBorder(),
+                            )
+                          ])
+                      ],
+                    ),
+                  ]),
+                ),
+                resizeToAvoidBottomPadding: false,
+              )));
     }
   }
 

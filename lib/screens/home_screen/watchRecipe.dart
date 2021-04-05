@@ -286,7 +286,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => HomeLogIn()));
+                                  builder: (context) => HomeLogIn(widget.uid)));
                         })
                   ]),
               body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
@@ -483,8 +483,8 @@ class _WatchRecipeState extends State<WatchRecipe> {
             .delete();
       }
     });
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HomeLogIn()));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => HomeLogIn(widget.uid)));
   }
 
   Future<void> _showNotesPanel(String id) async {
@@ -503,9 +503,10 @@ class _WatchRecipeState extends State<WatchRecipe> {
             context: context,
             builder: (context) {
               return Container(
-                padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),
-                child: NotesForm(notes, id, element.documentID),
-              );
+                  padding:
+                      EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),
+                  child: NotesForm(
+                      notes, id, element.documentID, widget.current.id));
             });
       }
     });
