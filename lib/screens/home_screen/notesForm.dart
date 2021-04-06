@@ -61,7 +61,11 @@ class _NotesFormState extends State<NotesForm> {
           onChanged: (val) {
             setState(() {
               widget.newNotes = val;
+<<<<<<< Updated upstream
               //  print(widget.newNotes);
+=======
+              print(widget.newNotes);
+>>>>>>> Stashed changes
             });
           },
         ),

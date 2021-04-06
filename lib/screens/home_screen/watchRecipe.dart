@@ -498,9 +498,10 @@ class _WatchRecipeState extends State<WatchRecipe> {
       String recipeIdfromSnap = element.data['recipeID'];
       if (recipeIdfromSnap == widget.current.id) {
         List notes = element.data['notes'];
-        print(notes);
+        //print(notes);
         showModalBottomSheet(
             context: context,
+<<<<<<< Updated upstream
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
             builder: (context) => Container(
@@ -514,6 +515,15 @@ class _WatchRecipeState extends State<WatchRecipe> {
                 ),
                 child: NotesForm(
                     notes, id, element.documentID, widget.current.id)));
+=======
+            builder: (context) {
+              return Container(
+                padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),
+                child:
+                    NotesForm(notes, id, element.documentID, widget.current.id),
+              );
+            });
+>>>>>>> Stashed changes
       }
     });
   }
