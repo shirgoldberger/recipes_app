@@ -101,7 +101,7 @@ class DataBaseService {
       }
 
       Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
-          true, id, publish);
+          true, id, publish, '');
       r.setId(id);
       return r;
     }).toList();

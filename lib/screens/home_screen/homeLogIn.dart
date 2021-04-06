@@ -37,7 +37,7 @@ class _HomeLogInState extends State<HomeLogIn> {
   @override
   void initState() {
     super.initState();
-    print("initttttttttttttttttttttt");
+//  print("initttttttttttttttttttttt");
     // getData() async {
     //   print("uiddddddddddddddddddddddddd:         " + user.uid);
     //   DocumentSnapshot a =
@@ -52,7 +52,7 @@ class _HomeLogInState extends State<HomeLogIn> {
   }
 
   void getData() async {
-    print("uiddddddddddddddddddddddddd:         " + widget.uid);
+    //   print("uiddddddddddddddddddddddddd:         " + widget.uid);
     DocumentSnapshot a =
         await Firestore.instance.collection('users').document(widget.uid).get();
     setState(() {
@@ -63,8 +63,8 @@ class _HomeLogInState extends State<HomeLogIn> {
   @override
   Widget build(BuildContext context) {
     // final user = Provider.of<User>(context);
-    print("a");
-    print(widget.uid);
+    // print("a");
+    // print(widget.uid);
     getData();
     void _showSettingPannel() {
       showModalBottomSheet(

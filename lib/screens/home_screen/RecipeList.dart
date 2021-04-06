@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/home_screen/recipeHeadLine.dart';
+import 'package:recipes_app/screens/home_screen/Folfer.dart';
 
 class RecipeList extends StatefulWidget {
   RecipeList(List<Recipe> list, String head, bool home) {
@@ -38,12 +39,33 @@ class _RecipeListState extends State<RecipeList> {
               itemBuilder: (context, index) {
                 // print('recipeList');
                 // print(widget.list[index]);
-                return RecipeHeadLine(widget.list[index], widget.home);
+                return Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30.0),
+                              topRight: Radius.circular(30.0),
+                              bottomLeft: Radius.circular(30.0),
+                              bottomRight: Radius.circular(30.0)),
+                        ),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(30.0),
+                                topRight: Radius.circular(30.0),
+                                bottomLeft: Radius.circular(30.0),
+                                bottomRight: Radius.circular(30.0)),
+                            child:
+                                //                       SizedBox(
+                                //   height: 20.0,
+                                // );
+                                RecipeHeadLine(
+                                    widget.list[index], widget.home))));
+                //return Folder(widget.list, widget.home);
               },
             ),
           )
         ]));
-
-    return Container();
   }
 }

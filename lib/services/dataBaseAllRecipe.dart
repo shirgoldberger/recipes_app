@@ -61,7 +61,7 @@ class DataBaseAllRecipes {
     }
 
     Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
-        false, id, publish);
+        false, id, publish, '');
     r.setId(id);
     return r;
   }

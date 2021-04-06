@@ -501,13 +501,19 @@ class _WatchRecipeState extends State<WatchRecipe> {
         print(notes);
         showModalBottomSheet(
             context: context,
-            builder: (context) {
-              return Container(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),
-                  child: NotesForm(
-                      notes, id, element.documentID, widget.current.id));
-            });
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => Container(
+                height: MediaQuery.of(context).size.height * 0.75,
+                decoration: new BoxDecoration(
+                  color: Colors.blueGrey[50],
+                  borderRadius: new BorderRadius.only(
+                    topLeft: const Radius.circular(25.0),
+                    topRight: const Radius.circular(25.0),
+                  ),
+                ),
+                child: NotesForm(
+                    notes, id, element.documentID, widget.current.id)));
       }
     });
   }

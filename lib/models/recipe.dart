@@ -16,6 +16,7 @@ class Recipe {
   bool saveInUser;
   String publish = '';
   bool saveRecipe;
+  String imagePath;
 
   Recipe(
       String n,
@@ -28,7 +29,8 @@ class Recipe {
       int time,
       bool save,
       String id,
-      String publish) {
+      String publish,
+      String path) {
     this.name = n;
     this.description = desc;
     this.myTag = tags;
@@ -40,9 +42,11 @@ class Recipe {
     this.saveInUser = save;
     this.id = id;
     this.publish = publish;
+    this.imagePath = path;
 
     //this.ingredients = ing;
   }
+
   void setId(var id) {
     this.id = id;
   }
@@ -61,6 +65,7 @@ class Recipe {
         'publishID': publish,
         'recipeID': id,
         'tags': (myTag.map((e) => e).toList()),
-        'notes': (notes.map((e) => e).toList())
+        'notes': (notes.map((e) => e).toList()),
+        'imagePath': imagePath
       };
 }

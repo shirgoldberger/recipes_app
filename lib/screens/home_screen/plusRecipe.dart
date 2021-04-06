@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:recipes_app/models/ingresients.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/user.dart';
@@ -7,6 +9,8 @@ import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/models/stages.dart';
+
+import 'uploadImage.dart';
 
 class PlusRecipe extends StatefulWidget {
   final db = Firestore.instance;
@@ -33,6 +37,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
   // text field state
   String recipe_name = '';
   String recipe_description = '';
+  String imagePath = "";
   String writerName = '';
   String writerUid = '';
   String tagChoose;
@@ -56,6 +61,14 @@ class _PlusRecipeState extends State<PlusRecipe> {
     height: 20.0,
   );
 
+  void uploadImagePressed() async {
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => UploadingImageToFirebaseStorage()));
+    imagePath = result.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (loading) {
@@ -64,7 +77,6 @@ class _PlusRecipeState extends State<PlusRecipe> {
       return Container(
           height: 100,
           child: Scaffold(
-              resizeToAvoidBottomPadding: false,
               backgroundColor: Colors.blueGrey[50],
               appBar: AppBar(
                 title: Text(
@@ -104,6 +116,13 @@ class _PlusRecipeState extends State<PlusRecipe> {
                             textAlign: TextAlign.center,
                           ),
                           box,
+                          FlatButton.icon(
+                              onPressed: uploadImagePressed,
+                              icon: Icon(
+                                Icons.image_sharp,
+                                color: Colors.black,
+                              ),
+                              label: Text('Upload image')),
                           // name recipe
                           TextFormField(
                             decoration: InputDecoration(
@@ -133,20 +152,19 @@ class _PlusRecipeState extends State<PlusRecipe> {
                           // ingredients plus buttom and text explanation
                           Row(children: <Widget>[
                             RawMaterialButton(
-                                onPressed: addIng,
-                                elevation: 2.0,
-                                fillColor: Colors.blueGrey[400],
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                ),
-                                shape: CircleBorder(),
-                                padding: EdgeInsets.all(5.0)),
+                              onPressed: addIng,
+                              elevation: 2.0,
+                              fillColor: Colors.blueGrey[400],
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                              ),
+                              shape: CircleBorder(),
+                            ),
                             Expanded(
                                 child: SizedBox(
                               child: Text(
                                 "push on the + to add Ingredients",
-                                textAlign: TextAlign.left,
                               ),
                             )),
                           ]),
@@ -156,8 +174,7 @@ class _PlusRecipeState extends State<PlusRecipe> {
                               children: [
                                 ingredients.length <= 0
                                     ? Text(
-                                        'there is no Ingredients in this recipe',
-                                        textAlign: TextAlign.right)
+                                        'there is no Ingredients in this recipe')
                                     : ListView.builder(
                                         shrinkWrap: true,
                                         addAutomaticKeepAlives: true,
@@ -248,6 +265,11 @@ class _PlusRecipeState extends State<PlusRecipe> {
                           ),
                           // stage buttom and text explenation
                           Row(children: <Widget>[
+                            Expanded(
+                              child: SizedBox(
+                                  height: 37.0,
+                                  child: Text("push on the + to add  stages")),
+                            ),
                             RawMaterialButton(
                               onPressed: addStages,
                               elevation: 2.0,
@@ -255,26 +277,17 @@ class _PlusRecipeState extends State<PlusRecipe> {
                               child: Icon(
                                 Icons.add,
                                 color: Colors.white,
+                                size: 18.0,
                               ),
                               padding: EdgeInsets.all(5.0),
                               shape: CircleBorder(),
-                            ),
-                            Expanded(
-                              child: SizedBox(
-                                  child: Text(
-                                "push on the + to add stages",
-                                textAlign: TextAlign.left,
-                              )),
-                            ),
+                            )
                           ]),
                           // stages
                           Container(
                               child: Column(children: [
                             stages.length <= 0
-                                ? Text(
-                                    'there is no stages in this recipe',
-                                    textAlign: TextAlign.right,
-                                  )
+                                ? Text('there is no stages in this recipe')
                                 : ListView.builder(
                                     shrinkWrap: true,
                                     addAutomaticKeepAlives: true,
@@ -313,65 +326,13 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                           )
                                         ]))
                           ])),
-                          // notes plus buttom
-                          Row(children: <Widget>[
-                            RawMaterialButton(
-                              onPressed: addNotes,
-                              elevation: 2.0,
-                              fillColor: Colors.blueGrey[400],
-                              child: Icon(Icons.add, color: Colors.white),
-                              padding: EdgeInsets.all(5.0),
-                              shape: CircleBorder(),
-                            ),
-                            Expanded(
-                              child: SizedBox(
-                                  child: Text("push on the + to add notes")),
-                            ),
-                          ]),
-                          //notes
-                          Container(
-                              child: Column(children: [
-                            notes.length <= 0
-                                ? Text('there is no notes in this recipe')
-                                : ListView.builder(
-                                    shrinkWrap: true,
-                                    addAutomaticKeepAlives: true,
-                                    itemCount: notes.length,
-                                    itemBuilder: (_, i) =>
-                                        Row(children: <Widget>[
-                                          Text((i + 1).toString() + "." + " "),
-                                          Expanded(
-                                              child: SizedBox(
-                                                  height: 37.0,
-                                                  child: TextFormField(
-                                                    decoration: InputDecoration(
-                                                      hintText: 'note',
-                                                    ),
-                                                    validator: (val) => val
-                                                                .length <
-                                                            2
-                                                        ? 'Enter a description eith 2 letter at least'
-                                                        : null,
-                                                    onChanged: (val) {
-                                                      setState(
-                                                          () => notes[i] = val);
-                                                    },
-                                                  ))),
-                                          RawMaterialButton(
-                                            onPressed: () => onDelteNotes(i),
-                                            elevation: 0.2,
-                                            fillColor: Colors.brown[300],
-                                            child: Icon(
-                                              Icons.delete,
-                                              size: 18.0,
-                                            ),
-                                            padding: EdgeInsets.all(5.0),
-                                            shape: CircleBorder(),
-                                          )
-                                        ]))
-                          ])),
                           // plus tag
                           Row(children: <Widget>[
+                            Expanded(
+                              child: SizedBox(
+                                  height: 37.0,
+                                  child: Text("push on the + to add tags")),
+                            ),
                             RawMaterialButton(
                               onPressed: addTags,
                               elevation: 2.0,
@@ -379,13 +340,10 @@ class _PlusRecipeState extends State<PlusRecipe> {
                               child: Icon(
                                 Icons.add,
                                 color: Colors.white,
+                                size: 18.0,
                               ),
                               padding: EdgeInsets.all(5.0),
                               shape: CircleBorder(),
-                            ),
-                            Expanded(
-                              child: SizedBox(
-                                  child: Text("push on the + to add tags")),
                             ),
                           ]),
                           // tags
@@ -432,10 +390,10 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                       )
                                     ])),
                             //tags + buttom
-                            box,
                             SizedBox(
+                                height: 37.0,
                                 child: Text(
-                                    "Choose the level of the recipe: hard / medium / easy:")),
+                                    "choose the level of the recipe Leval: hard/medium/easy:")),
                             //tags
                             Row(children: <Widget>[
                               Expanded(
@@ -483,9 +441,9 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                           hardColor = Colors.blue[900];
                                         });
                                       }))
-                            ]),
-                            box,
+                            ]), //time text
                             SizedBox(
+                                height: 37.0,
                                 child: Text(
                                     "How long does it take to prepare the recipe?")),
                             //time
@@ -533,8 +491,70 @@ class _PlusRecipeState extends State<PlusRecipe> {
                                     }),
                               ),
                             ]),
+                            //notes plus buttom
+                            Row(children: <Widget>[
+                              Expanded(
+                                child: SizedBox(
+                                    height: 37.0,
+                                    child: Text("push on the + to add  notes")),
+                              ),
+                              RawMaterialButton(
+                                onPressed: addNotes,
+                                elevation: 2.0,
+                                fillColor: Colors.brown[300],
+                                child: Icon(
+                                  Icons.add,
+                                  size: 18.0,
+                                ),
+                                padding: EdgeInsets.all(5.0),
+                                shape: CircleBorder(),
+                              )
+                            ]),
+                            //notes
+                            Container(
+                                child: Column(children: [
+                              notes.length <= 0
+                                  ? Text('there is no notes in this recipe')
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      addAutomaticKeepAlives: true,
+                                      itemCount: notes.length,
+                                      itemBuilder: (_, i) =>
+                                          Row(children: <Widget>[
+                                            Text(
+                                                (i + 1).toString() + "." + " "),
+                                            Expanded(
+                                                child: SizedBox(
+                                                    height: 37.0,
+                                                    child: TextFormField(
+                                                      decoration:
+                                                          InputDecoration(
+                                                        hintText: 'note',
+                                                      ),
+                                                      validator: (val) => val
+                                                                  .length <
+                                                              2
+                                                          ? 'Enter a description eith 2 letter at least'
+                                                          : null,
+                                                      onChanged: (val) {
+                                                        setState(() =>
+                                                            notes[i] = val);
+                                                      },
+                                                    ))),
+                                            RawMaterialButton(
+                                              onPressed: () => onDelteNotes(i),
+                                              elevation: 0.2,
+                                              fillColor: Colors.brown[300],
+                                              child: Icon(
+                                                Icons.delete,
+                                                size: 18.0,
+                                              ),
+                                              padding: EdgeInsets.all(5.0),
+                                              shape: CircleBorder(),
+                                            )
+                                          ]))
+                            ])),
                           ])),
-                          // save the recipe
                           FlatButton.icon(
                             color: Colors.blueAccent,
                             icon: Icon(
@@ -619,19 +639,14 @@ class _PlusRecipeState extends State<PlusRecipe> {
         await Firestore.instance.collection('users').document(user.uid).get();
     String firstName = (snap.data['firstName']);
     String lsatName = (snap.data['lastName']);
-    print(firstName);
-    print("noa");
-    print(user.uid);
     setState(() {
       writerUid = user.uid;
     });
     setState(() {
       writerName = firstName + " " + lsatName;
     });
-    print("writer uid");
-    print(time);
     Recipe recipe = Recipe(recipe_name, recipe_description, myTags, level,
-        notes, writerName, writerUid, time, true, '', '');
+        notes, writerName, writerUid, time, true, '', '', imagePath);
     var currentRecipe = await db
         .collection('users')
         .document(user.uid)

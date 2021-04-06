@@ -7,6 +7,7 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/home_screen/RecipeList.dart';
 import 'package:recipes_app/screens/home_screen/recipeHeadLine.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
+import 'package:recipes_app/screens/home_screen/Folfer.dart';
 
 import 'RecipeList.dart';
 
@@ -29,26 +30,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
   @override
   void initState() {
     super.initState();
-    print("initstate");
-    widget.publisRecipe = [];
-    widget.savedRecipe = [];
-    widget.doneLoadPublishRecipe = false;
-    widget.doneLoadSavedRecipe = false;
-    if ((!widget.doneLoadPublishRecipe) && (!widget.doneLoadSavedRecipe)) {
-      if (!widget.home) {
-        print("iinniitt");
-        widget.doneLoadPublishRecipe = true;
-        getuser();
-        print("if");
-        if (widget.uid != null) {
-          loadSavedRecipe();
-        }
-      } else {
-        print("publish");
-        loadPublishRecipe();
-      }
-      print("aaaaaaaaaaaaaaaaaaaaa");
-    }
+    changeState();
   }
 
   void changeState() {
@@ -58,18 +40,14 @@ class _RecipeFolderState extends State<RecipeFolder> {
     widget.doneLoadSavedRecipe = false;
     if ((!widget.doneLoadPublishRecipe) && (!widget.doneLoadSavedRecipe)) {
       if (!widget.home) {
-        print("iinniitt");
         widget.doneLoadPublishRecipe = true;
         getuser();
-        print("if");
         if (widget.uid != null) {
           loadSavedRecipe();
         }
       } else {
-        print("publish");
         loadPublishRecipe();
       }
-      print("aaaaaaaaaaaaaaaaaaaaa");
     }
   }
 
@@ -78,7 +56,6 @@ class _RecipeFolderState extends State<RecipeFolder> {
     final FirebaseUser user = await auth.currentUser();
     setState(() {
       widget.uid = user.uid;
-      print("get user");
       loadSavedRecipe();
       widget.doneGetUser = true;
     });
@@ -188,7 +165,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
           ),
           onPressed: () => {changeState()},
         ),
-        Text('data'),
+        // Folder(recipeList),
         //fish
         if (!fish.isEmpty)
           IconButton(
@@ -326,7 +303,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
         }
       }
       Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
-          true, id, publish);
+          true, id, publish, '');
       // r.setId(id);
       // print(publish + "publish");
       //r.publishThisRecipe(publish);
@@ -421,7 +398,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
         }
         print(n + "   " + de);
         r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, true,
-            id, publish);
+            id, publish, '');
       }
       //from recipe
       else {
@@ -473,7 +450,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
         }
         print(n + "   " + de);
         r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, false,
-            id, publish);
+            id, publish, '');
       }
       // r.setId(id);
       // print(publish + "publish");
