@@ -26,10 +26,13 @@ class HomePage extends StatelessWidget {
     return StreamProvider<List<Recipe>>.value(
         value: DataBaseAllRecipes().allRecipe,
         child: Scaffold(
-            backgroundColor: Colors.brown[50],
+            backgroundColor: Colors.teal[50],
             appBar: AppBar(
-              title: Text('cook book'),
-              backgroundColor: Colors.brown[400],
+              title: Text(
+                'cook book',
+                style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+              ),
+              backgroundColor: Colors.teal[900],
               elevation: 0.0,
               actions: <Widget>[],
             ),

@@ -11,7 +11,7 @@ class RecipeHeadLine extends StatelessWidget {
   RecipeHeadLine(Recipe r, bool home) {
     this.recipe = r;
     this.home = home;
-    switch (r.time) {
+    switch (r.level) {
       case 1:
         circleColor = Colors.green[400];
         level = 'easy';

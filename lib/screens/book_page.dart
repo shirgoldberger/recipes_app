@@ -75,10 +75,15 @@ class RecipesBookPage extends StatelessWidget {
       return StreamProvider<List<Recipe>>.value(
           value: DataBaseService(user).recipe,
           child: Scaffold(
-              backgroundColor: Colors.brown[50],
+              backgroundColor: Colors.blueGrey[50],
               appBar: AppBar(
-                title: Text('cook book'),
-                backgroundColor: Colors.brown[400],
+                title: Text(
+                  'cook book',
+                  style: TextStyle(
+                    fontFamily: 'Raleway',
+                  ),
+                ),
+                backgroundColor: Colors.blueGrey[700],
                 elevation: 0.0,
                 actions: <Widget>[],
               ),

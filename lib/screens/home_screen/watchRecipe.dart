@@ -180,15 +180,25 @@ class _WatchRecipeState extends State<WatchRecipe> {
         return Loading();
       } else {
         return Scaffold(
-            backgroundColor: Colors.brown[100],
+            backgroundColor: Colors.teal[50],
             appBar: AppBar(
-                backgroundColor: Colors.brown[400],
                 elevation: 0.0,
-                title: Text('watch this recipe'),
+                title: Text(
+                  'watch this recipe',
+                  style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+                ),
+                backgroundColor: Colors.teal[900],
                 actions: <Widget>[
                   FlatButton.icon(
-                      icon: Icon(widget.iconSave),
-                      label: Text(widget.saveString),
+                      icon: Icon(
+                        widget.iconSave,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        widget.saveString,
+                        style: TextStyle(
+                            fontFamily: 'Raleway', color: Colors.white),
+                      ),
                       onPressed: () {
                         if (widget.uid != null) {
                           if (widget.saveString == 'save') {
@@ -230,15 +240,25 @@ class _WatchRecipeState extends State<WatchRecipe> {
       } else {
         if (id == writerId) {
           return Scaffold(
-              backgroundColor: Colors.brown[100],
+              backgroundColor: Colors.blueGrey[50],
               appBar: AppBar(
-                  backgroundColor: Colors.brown[400],
+                  backgroundColor: Colors.blueGrey[700],
                   elevation: 0.0,
-                  title: Text('watch this recipe'),
+                  title: Text(
+                    'watch this recipe',
+                    style: TextStyle(fontFamily: 'Raleway'),
+                  ),
                   actions: <Widget>[
                     FlatButton.icon(
-                        icon: Icon(Icons.edit),
-                        label: Text('edit'),
+                        icon: Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'edit',
+                          style: TextStyle(
+                              fontFamily: 'Raleway', color: Colors.white),
+                        ),
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -249,8 +269,15 @@ class _WatchRecipeState extends State<WatchRecipe> {
                                       widget.stages)));
                         }),
                     FlatButton.icon(
-                        icon: Icon(widget.iconPublish),
-                        label: Text(widget.publishString),
+                        icon: Icon(
+                          widget.iconPublish,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          widget.publishString,
+                          style: TextStyle(
+                              fontFamily: 'Raleway', color: Colors.white),
+                        ),
                         onPressed: () {
                           //only id its not publish - publish (only once)
                           //print(widget.current.publish);
@@ -273,8 +300,15 @@ class _WatchRecipeState extends State<WatchRecipe> {
                           }
                         }),
                     FlatButton.icon(
-                        icon: Icon(Icons.delete),
-                        label: Text('delete'),
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'delete',
+                          style: TextStyle(
+                              fontFamily: 'Raleway', color: Colors.white),
+                        ),
                         onPressed: () {
                           db
                               .collection('users')
@@ -294,15 +328,26 @@ class _WatchRecipeState extends State<WatchRecipe> {
         } else {
           //מצב שני 2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
           return Scaffold(
-              backgroundColor: Colors.brown[100],
+              backgroundColor: Colors.blueGrey[50],
               appBar: AppBar(
-                  backgroundColor: Colors.brown[400],
+                  backgroundColor: Colors.blueGrey[700],
                   elevation: 0.0,
-                  title: Text('watch this recipe'),
+                  title: Text(
+                    'watch this recipe',
+                    style:
+                        TextStyle(fontFamily: 'Raleway', color: Colors.white),
+                  ),
                   actions: <Widget>[
                     FlatButton.icon(
-                        icon: Icon(Icons.delete),
-                        label: Text('delete'),
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'delete',
+                          style: TextStyle(
+                              fontFamily: 'Raleway', color: Colors.white),
+                        ),
                         onPressed: () {
                           deleteFromSavedRecipe(id);
                           //go back
@@ -312,8 +357,15 @@ class _WatchRecipeState extends State<WatchRecipe> {
                           //         builder: (context) => HomeLogIn()));
                         }),
                     FlatButton.icon(
-                        icon: Icon(Icons.note_add),
-                        label: Text('add note'),
+                        icon: Icon(
+                          Icons.note_add,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'add note',
+                          style: TextStyle(
+                              fontFamily: 'Raleway', color: Colors.white),
+                        ),
                         onPressed: () {
                           _showNotesPanel(id);
                         }),
@@ -501,7 +553,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
         //print(notes);
         showModalBottomSheet(
             context: context,
-<<<<<<< Updated upstream
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
             builder: (context) => Container(
@@ -515,15 +566,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
                 ),
                 child: NotesForm(
                     notes, id, element.documentID, widget.current.id)));
-=======
-            builder: (context) {
-              return Container(
-                padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),
-                child:
-                    NotesForm(notes, id, element.documentID, widget.current.id),
-              );
-            });
->>>>>>> Stashed changes
       }
     });
   }

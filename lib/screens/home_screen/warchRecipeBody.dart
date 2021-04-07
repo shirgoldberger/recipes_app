@@ -34,7 +34,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-                color: Colors.brown[900],
+                color: Colors.black,
                 fontWeight: FontWeight.w900,
                 fontStyle: FontStyle.italic,
                 fontFamily: 'Open Sans',
@@ -45,7 +45,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
         new Text(
           widget.current.description,
           style: TextStyle(
-              color: Colors.brown[900],
+              color: Colors.black,
               fontWeight: FontWeight.w900,
               fontStyle: FontStyle.italic,
               fontFamily: 'Open Sans',
@@ -54,15 +54,8 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
         new Padding(padding: EdgeInsets.only(top: 15.0)),
         new Text(
           makeTags(),
-          style: new TextStyle(color: Colors.brown, fontSize: 25.0),
+          style: new TextStyle(color: Colors.black, fontSize: 25.0),
         ),
-        new Padding(padding: EdgeInsets.only(top: 15.0)),
-        new Text(
-          'ingredients for the recipe:',
-          style: new TextStyle(color: Colors.brown, fontSize: 25.0),
-        ),
-        new Padding(padding: EdgeInsets.only(top: 10.0)),
-        //level buttom
         if (widget.levelString != '')
           RaisedButton(
               color: widget.levelColor,
@@ -71,40 +64,96 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {}),
-        new Padding(padding: EdgeInsets.only(top: 10.0)),
-        Column(
-          children: <Widget>[
-            for (var i = 0; i < widget.ing.length; i++)
-              Text(
-                (i + 1).toString() +
-                    "." +
-                    "  " +
-                    widget.ing[i].count.toString() +
-                    " " +
-                    widget.ing[i].unit.toString() +
-                    " " +
-                    widget.ing[i].name.toString(),
-                textAlign: TextAlign.left,
-                style: new TextStyle(color: Colors.brown, fontSize: 25.0),
-              ),
-          ],
+        //  new Padding(padding: EdgeInsets.only(top: 10.0)),
+
+        new Padding(padding: EdgeInsets.only(top: 15.0)),
+
+        //level buttom
+
+        new Center(
+          child: new Container(
+            width: 450,
+            // height: 300,
+            decoration: new BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              // boxShadow: [
+              //   new BoxShadow(
+              //     color: Colors.grey,
+              //     offset: new Offset(3.0, 3.0),
+              //   ),
+              // ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Padding(padding: EdgeInsets.only(top: 20.0)),
+                new Text(
+                  'ingredients for the recipe:',
+                  style: new TextStyle(
+                      color: Colors.black,
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.w700),
+                ),
+                new Padding(padding: EdgeInsets.only(top: 10.0)),
+                for (var i = 0; i < widget.ing.length; i++)
+                  Text(
+                    (i + 1).toString() +
+                        "." +
+                        "  " +
+                        widget.ing[i].count.toString() +
+                        " " +
+                        widget.ing[i].unit.toString() +
+                        " " +
+                        widget.ing[i].name.toString(),
+                    textAlign: TextAlign.left,
+                    style:
+                        new TextStyle(color: Colors.grey[800], fontSize: 25.0),
+                  ),
+                new Padding(padding: EdgeInsets.only(top: 20.0)),
+              ],
+            ),
+          ),
         ),
         new Padding(padding: EdgeInsets.only(top: 15.0)),
-        new Text(
-          'stages for the recipe:',
-          style: new TextStyle(color: Colors.brown, fontSize: 25.0),
-        ),
+
         new Padding(padding: EdgeInsets.only(top: 10.0)),
-        Column(
-          children: <Widget>[
-            for (var j = 0; j < widget.stages.length; j++)
-              Text(
-                (j + 1).toString() + "." + "  " + widget.stages[j].s,
-                textAlign: TextAlign.left,
-                style: new TextStyle(color: Colors.brown, fontSize: 25.0),
+        new Center(
+            child: new Container(
+          width: 450,
+          // height: 300,
+          decoration: new BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            // boxShadow: [
+            //   new BoxShadow(
+            //     color: Colors.grey,
+            //     offset: new Offset(3.0, 3.0),
+            //   ),
+            // ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              new Padding(padding: EdgeInsets.only(top: 20.0)),
+              new Text(
+                'stages for the recipe:',
+                style: new TextStyle(
+                    color: Colors.black,
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.w700),
               ),
-          ],
-        ),
+              new Padding(padding: EdgeInsets.only(top: 10.0)),
+              for (var j = 0; j < widget.stages.length; j++)
+                Text(
+                  (j + 1).toString() + "." + "  " + widget.stages[j].s,
+                  textAlign: TextAlign.left,
+                  style: new TextStyle(color: Colors.grey[800], fontSize: 25.0),
+                ),
+              new Padding(padding: EdgeInsets.only(top: 20.0)),
+            ],
+          ),
+        ))
       ]))
     ]));
   }
