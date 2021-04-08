@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 
 import 'package:recipes_app/screens/home_screen/watchRecipe.dart';
+import 'package:recipes_app/services/fireStorageService.dart';
 
 class RecipeHeadLine extends StatelessWidget {
   Recipe recipe;
   Color circleColor;
   String level;
   bool home;
+  String image = "";
   RecipeHeadLine(Recipe r, bool home) {
     this.recipe = r;
     this.home = home;
-    switch (r.level) {
+    image = r.imagePath;
+    switch (r.time) {
       case 1:
         circleColor = Colors.green[400];
         level = 'easy';
@@ -32,16 +35,32 @@ class RecipeHeadLine extends StatelessWidget {
     // print("head line");
     // print(r.publish);
   }
+  Future<Widget> _getImage(BuildContext context, String image) async {
+    print("imageeeeeeeeeeeeeeeeeeeee " + image);
+    if (image == "") {
+      return null;
+    }
+    image = "uploads/" + image;
+    Image m;
+    await FireStorageService.loadFromStorage(context, image)
+        .then((downloadUrl) {
+      print("downloadUrl:" + downloadUrl.toString());
+      m = Image.network(
+        downloadUrl.toString(),
+        fit: BoxFit.scaleDown,
+      );
+    });
+
+    return m;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
       child: InkWell(
-        // splashColor: Colors.yellow,
-        // highlightColor: Colors.blue,
+        highlightColor: Colors.blueGrey,
         onTap: () {
-          //("Card Clicked");
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -53,8 +72,23 @@ class RecipeHeadLine extends StatelessWidget {
             Row(
               children: <Widget>[
                 CircleAvatar(
+                  child: FutureBuilder(
+                      future: _getImage(context, image),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done)
+                          return Container(
+                            // height: MediaQuery.of(context).size.height / 1.25,
+                            // width: MediaQuery.of(context).size.width / 1.25,
+                            child: snapshot.data,
+                          );
+
+                        if (snapshot.connectionState == ConnectionState.waiting)
+                          return Container(
+                              height: MediaQuery.of(context).size.height / 1.25,
+                              width: MediaQuery.of(context).size.width / 1.25,
+                              child: CircularProgressIndicator());
+                      }),
                   radius: 35.0,
-                  backgroundImage: AssetImage('lib/images/chef.png'),
                 ),
                 SizedBox(width: 10.0),
                 Column(

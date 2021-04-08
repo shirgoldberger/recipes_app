@@ -47,6 +47,11 @@ class Recipe {
     //this.ingredients = ing;
   }
 
+  Recipe.forSearchRecipe(String _id, String _path) {
+    this.id = _id;
+    this.imagePath = _path;
+  }
+
   void setId(var id) {
     this.id = id;
   }

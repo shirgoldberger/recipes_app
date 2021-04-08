@@ -9,6 +9,8 @@ import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/screens/home_screen/editRecipe.dart';
 import 'package:recipes_app/screens/home_screen/homeLogIn.dart';
 import 'package:recipes_app/screens/home_screen/notesForm.dart';
+import 'package:recipes_app/screens/home_screen/publishGroup2.dart';
+import 'package:recipes_app/screens/home_screen/publishGroups.dart';
 import 'package:recipes_app/screens/home_screen/warchRecipeBody.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
@@ -249,6 +251,24 @@ class _WatchRecipeState extends State<WatchRecipe> {
                     style: TextStyle(fontFamily: 'Raleway'),
                   ),
                   actions: <Widget>[
+                    //צריך למחוק בהמשך
+                    FlatButton.icon(
+                        icon: Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'noa',
+                          style: TextStyle(
+                              fontFamily: 'Raleway', color: Colors.white),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PublishGroup2(
+                                      widget.uid, widget.current.id)));
+                        }),
                     FlatButton.icon(
                         icon: Icon(
                           Icons.edit,
@@ -310,6 +330,12 @@ class _WatchRecipeState extends State<WatchRecipe> {
                               fontFamily: 'Raleway', color: Colors.white),
                         ),
                         onPressed: () {
+                          if (widget.current.publish != '') {
+                            db
+                                .collection('publish recipe')
+                                .document(widget.current.publish)
+                                .delete();
+                          }
                           db
                               .collection('users')
                               .document(user.uid)
@@ -568,5 +594,23 @@ class _WatchRecipeState extends State<WatchRecipe> {
                     notes, id, element.documentID, widget.current.id)));
       }
     });
+  }
+
+  Future<void> _showPublishPanel() async {
+    //print(notes);
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.75,
+            decoration: new BoxDecoration(
+              color: Colors.blueGrey[50],
+              borderRadius: new BorderRadius.only(
+                topLeft: const Radius.circular(25.0),
+                topRight: const Radius.circular(25.0),
+              ),
+            ),
+            child: PublishGroup2(widget.uid, widget.current.id)));
   }
 }

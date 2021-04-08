@@ -313,7 +313,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
       print("i -     " + i.toString());
       print(snap.documents.length);
       // print(snap.documents.length);
-      if ((i + 1) == snap.documents.length) {
+      if ((i) == snap.documents.length) {
         setState(() {
           widget.doneLoadPublishRecipe = true;
         });

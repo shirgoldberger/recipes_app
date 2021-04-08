@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/Setting_form.dart';
 import 'package:recipes_app/models/user.dart';
+import 'package:recipes_app/screens/home_screen/GroupList.dart';
 import 'package:recipes_app/screens/home_screen/logIn/log_in_wrapper.dart';
+import 'package:recipes_app/screens/home_screen/newGroup.dart';
 import 'package:recipes_app/screens/home_screen/plusRecipe.dart';
 import 'package:recipes_app/screens/home_screen/recipesFolder.dart';
 import 'package:recipes_app/services/auth.dart';
@@ -33,6 +35,8 @@ class _HomeLogInState extends State<HomeLogIn> {
     height: 20.0,
   );
   String name = "";
+  List<String> groupName;
+  List<String> groupId;
 
   @override
   void initState() {
@@ -49,6 +53,18 @@ class _HomeLogInState extends State<HomeLogIn> {
     // }
 
     // getData();
+  }
+
+  Future<void> getGroups() async {
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .collection('groups')
+        .getDocuments();
+    snap.documents.forEach((element) async {
+      groupId.add(element.data['groupId']);
+      groupName.add(element.data['groupName']);
+    });
   }
 
   void getData() async {
@@ -196,6 +212,27 @@ class _HomeLogInState extends State<HomeLogIn> {
                   await _auth.signOut();
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => LogInWrapper()));
+                },
+              ),
+              FlatButton.icon(
+                color: Colors.blueGrey[400],
+                icon: Icon(Icons.plus_one, color: Colors.white),
+                label: Text('mew group', style: TextStyle(color: Colors.white)),
+                onPressed: () async {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => NewGroup()));
+                },
+              ),
+              FlatButton.icon(
+                color: Colors.blueGrey[400],
+                icon: Icon(Icons.plus_one, color: Colors.white),
+                label:
+                    Text('watch group', style: TextStyle(color: Colors.white)),
+                onPressed: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => GroupList(widget.uid)));
                 },
               ),
             ])));

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/ingresients.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stages.dart';
+import 'package:recipes_app/services/fireStorageService.dart';
 
 class WatchRecipeBody extends StatefulWidget {
   WatchRecipeBody(Recipe c, List<IngredientsModel> ing, List<Stages> stages,
@@ -22,6 +23,30 @@ class WatchRecipeBody extends StatefulWidget {
 }
 
 class _WatchRecipeBodyState extends State<WatchRecipeBody> {
+  String imagePath;
+  var m;
+  Future<Widget> _getImage(BuildContext context, String image) async {
+    print("imageeeeeeeeeeeeeeeeeeeee" + image);
+    if (image == "") {
+      return null;
+    }
+    if (this.m != null) {
+      return this.m;
+    }
+    image = "uploads/" + image;
+    Image m;
+    await FireStorageService.loadFromStorage(context, image)
+        .then((downloadUrl) {
+      print("downloadUrl:" + downloadUrl.toString());
+      this.m = Image.network(
+        downloadUrl.toString(),
+        fit: BoxFit.scaleDown,
+      );
+    });
+
+    return this.m;
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Container(
@@ -40,6 +65,27 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                 fontFamily: 'Open Sans',
                 fontSize: 40),
           ),
+        ),
+
+        new Padding(padding: EdgeInsets.only(top: 15.0)),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: FutureBuilder(
+              future: _getImage(context, widget.current.imagePath),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done)
+                  return Container(
+                    height: 100,
+                    width: 100,
+                    child: snapshot.data,
+                  );
+
+                if (snapshot.connectionState == ConnectionState.waiting)
+                  return Container(
+                      height: MediaQuery.of(context).size.height / 10,
+                      width: MediaQuery.of(context).size.width / 10,
+                      child: CircularProgressIndicator());
+              }),
         ),
         new Padding(padding: EdgeInsets.only(top: 15.0)),
         new Text(

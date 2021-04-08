@@ -21,100 +21,51 @@ class RecipeList extends StatefulWidget {
 class _RecipeListState extends State<RecipeList> {
   @override
   Widget build(BuildContext context) {
-    if (widget.home) {
-      return Scaffold(
-          backgroundColor: Colors.teal[50],
-          appBar: AppBar(
-            title: Text(
-              widget.head + " recipes:",
-              style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
-            ),
-            backgroundColor: Colors.teal[900],
-            elevation: 0.0,
-            actions: <Widget>[],
+    return Scaffold(
+        backgroundColor: Colors.blueGrey[50],
+        appBar: AppBar(
+          title: Text(
+            widget.head + " recipes:",
+            style: TextStyle(fontFamily: 'Raleway'),
           ),
-          body: Column(children: <Widget>[
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.list.length,
-                itemBuilder: (context, index) {
-                  // print('recipeList');
-                  // print(widget.list[index]);
-                  return Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
+          backgroundColor: Colors.blueGrey[700],
+          elevation: 0.0,
+          actions: <Widget>[],
+        ),
+        body: Column(children: <Widget>[
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.list.length,
+              itemBuilder: (context, index) {
+                // print('recipeList');
+                // print(widget.list[index]);
+                return Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30.0),
+                              topRight: Radius.circular(30.0),
+                              bottomLeft: Radius.circular(30.0),
+                              bottomRight: Radius.circular(30.0)),
+                        ),
+                        child: ClipRRect(
                             borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(30.0),
                                 topRight: Radius.circular(30.0),
                                 bottomLeft: Radius.circular(30.0),
                                 bottomRight: Radius.circular(30.0)),
-                          ),
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(30.0),
-                                  topRight: Radius.circular(30.0),
-                                  bottomLeft: Radius.circular(30.0),
-                                  bottomRight: Radius.circular(30.0)),
-                              child:
-                                  //                       SizedBox(
-                                  //   height: 20.0,
-                                  // );
-                                  RecipeHeadLine(
-                                      widget.list[index], widget.home))));
-                  //return Folder(widget.list, widget.home);
-                },
-              ),
-            )
-          ]));
-    } else {
-      return Scaffold(
-          backgroundColor: Colors.blueGrey[50],
-          appBar: AppBar(
-            title: Text(
-              widget.head + " recipes:",
-              style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+                            child:
+                                //                       SizedBox(
+                                //   height: 20.0,
+                                // );
+                                RecipeHeadLine(
+                                    widget.list[index], widget.home))));
+                //return Folder(widget.list, widget.home);
+              },
             ),
-            backgroundColor: Colors.blueGrey[700],
-            elevation: 0.0,
-            actions: <Widget>[],
-          ),
-          body: Column(children: <Widget>[
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.list.length,
-                itemBuilder: (context, index) {
-                  // print('recipeList');
-                  // print(widget.list[index]);
-                  return Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(30.0),
-                                topRight: Radius.circular(30.0),
-                                bottomLeft: Radius.circular(30.0),
-                                bottomRight: Radius.circular(30.0)),
-                          ),
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(30.0),
-                                  topRight: Radius.circular(30.0),
-                                  bottomLeft: Radius.circular(30.0),
-                                  bottomRight: Radius.circular(30.0)),
-                              child:
-                                  //                       SizedBox(
-                                  //   height: 20.0,
-                                  // );
-                                  RecipeHeadLine(
-                                      widget.list[index], widget.home))));
-                  //return Folder(widget.list, widget.home);
-                },
-              ),
-            )
-          ]));
-    }
+          )
+        ]));
   }
 }
