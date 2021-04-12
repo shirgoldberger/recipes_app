@@ -72,6 +72,7 @@ class DataBaseService {
       String writer = doc.data['writer'] ?? '';
       String writerUid = doc.data['writerUid'] ?? '';
       String publish = doc.data['publishID'] ?? '';
+      String path = doc.data['imagePath'] ?? '';
       int levlelInt = int.parse(level);
       //tags
       var tags = doc.data['tags'];
@@ -101,7 +102,7 @@ class DataBaseService {
       }
 
       Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
-          true, id, publish, '');
+          true, id, publish, path);
       r.setId(id);
       return r;
     }).toList();

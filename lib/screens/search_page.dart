@@ -60,6 +60,7 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    int gridStateLength = 3;
     if (!widget.doneLoadPublishRecipe) {
       return Loading();
     }
@@ -69,60 +70,113 @@ class _SearchPage extends State<SearchPage> {
       //   recipeList = recipeList + widget.publisRecipe;
       // }
 
-      return Scaffold(
-          backgroundColor: Colors.blueGrey[50],
-          appBar: AppBar(
-            backgroundColor: Colors.blueGrey[700],
-            elevation: 0.0,
-            actions: <Widget>[],
-          ),
-          body: Column(children: <Widget>[
-            SearchInput(),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.publisRecipe.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Container(
-                        child: FutureBuilder(
-                            future: _getImage(
-                                context, widget.publisRecipe[index].imagePath),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.done)
-                                return Container(
-                                  height: 100,
-                                  width: 100,
-                                  child: ElevatedButton(
-                                    child: snapshot.data,
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => WatchRecipe(
-                                                  widget.publisRecipe[index],
-                                                  true)));
-                                    },
-                                  ),
-                                );
-
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting)
-                                return Container(
-                                    height:
-                                        MediaQuery.of(context).size.height / 10,
-                                    width:
-                                        MediaQuery.of(context).size.width / 10,
-                                    child: CircularProgressIndicator());
-                            }),
-                      ));
-                  //return Folder(widget.list, widget.home);
-                },
+      return MaterialApp(
+          home: Scaffold(
+              backgroundColor: Colors.blueGrey[50],
+              appBar: AppBar(
+                backgroundColor: Colors.blueGrey[700],
+                elevation: 0.0,
+                actions: <Widget>[],
               ),
-            )
-          ]));
+              body: SafeArea(
+                  child: SingleChildScrollView(
+                      child: Container(
+                          child: Column(children: <Widget>[
+                SearchInput(),
+                box,
+                Container(
+                  height: 1000,
+                  child: GridView.count(
+                    // Create a grid with 2 columns. If you change the scrollDirection to
+                    // horizontal, this produces 2 rows.
+                    crossAxisCount: 3,
+                    // Generate 100 widgets that display their index in the List.
+                    children:
+                        List.generate(widget.publisRecipe.length, (index) {
+                      return Container(
+                          child: Card(
+                        shape: RoundedRectangleBorder(
+                            // borderRadius: BorderRadius.circular(15.0),
+                            ),
+                        child: _buildOneItem(index),
+                      ));
+                    }),
+                  ),
+                  // Expanded(
+                  //     child: Column(children: <Widget>[
+                  //   AspectRatio(
+                  //     aspectRatio: 1.0,
+                  //     child: Container(
+                  //       padding: const EdgeInsets.all(8.0),
+                  //       margin: const EdgeInsets.all(10.0),
+                  //       decoration: BoxDecoration(),
+                  //       child: GridView.builder(
+                  //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  //           crossAxisCount: gridStateLength,
+                  //         ),
+                  //         itemBuilder: _buildGridItems,
+                  //         itemCount: gridStateLength * 9999999,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ])),
+                )
+              ]))))));
     }
+  }
+
+  Widget _buildGridItems(BuildContext context, int index) {
+    return GestureDetector(
+      onTap: () => () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    WatchRecipe(widget.publisRecipe[index], true)));
+      },
+      child: GridTile(
+        child: Container(
+          // padding:
+          //     EdgeInsets.only(top: 1.0, right: 1.0, left: 1.0, bottom: 1.0),
+          decoration: BoxDecoration(border: Border.all(width: 0.1)),
+          child: Center(
+            child: _buildOneItem(index),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOneItem(int index) {
+    if (widget.publisRecipe.length <= index) {
+      return Container();
+    }
+    return FutureBuilder(
+        future: _getImage(context, widget.publisRecipe[index].imagePath),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done)
+            return ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blueGrey[50],
+                // padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                textStyle: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+              child: snapshot.data,
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            WatchRecipe(widget.publisRecipe[index], true)));
+              },
+            );
+
+          if (snapshot.connectionState == ConnectionState.waiting)
+            return Container(
+                height: MediaQuery.of(context).size.height / 10,
+                width: MediaQuery.of(context).size.width / 10,
+                child: CircularProgressIndicator());
+        });
   }
 
   Future<void> loadPublishRecipe() async {
@@ -154,6 +208,7 @@ class _SearchPage extends State<SearchPage> {
       String writer = doc.data['writer'] ?? '';
       String writerUid = doc.data['writerUid'] ?? '';
       String id = doc.data['recipeID'] ?? '';
+      String imagePath = doc.data['imagePath'] ?? '';
       //
       String publish = doc.data['publishID'] ?? '';
       int levlelInt = int.parse(level);
@@ -184,7 +239,7 @@ class _SearchPage extends State<SearchPage> {
         }
       }
       Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
-          true, id, publish, '');
+          true, id, publish, imagePath);
       // r.setId(id);
       // print(publish + "publish");
       //r.publishThisRecipe(publish);

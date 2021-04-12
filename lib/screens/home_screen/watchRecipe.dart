@@ -11,6 +11,7 @@ import 'package:recipes_app/screens/home_screen/homeLogIn.dart';
 import 'package:recipes_app/screens/home_screen/notesForm.dart';
 import 'package:recipes_app/screens/home_screen/publishGroup2.dart';
 import 'package:recipes_app/screens/home_screen/publishGroups.dart';
+import 'package:recipes_app/screens/home_screen/saveGroup.dart';
 import 'package:recipes_app/screens/home_screen/warchRecipeBody.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
@@ -89,10 +90,10 @@ class _WatchRecipeState extends State<WatchRecipe> {
     setState(() {
       widget.uid = user.uid;
       print(widget.uid);
-      print("user uid");
+      //print("user uid");
     });
     if (widget.uid != null) {
-      print("user:   " + widget.uid);
+      // print("user:   " + widget.uid);
       QuerySnapshot snap = await Firestore.instance
           .collection("users")
           .document(widget.uid)
@@ -203,23 +204,11 @@ class _WatchRecipeState extends State<WatchRecipe> {
                       ),
                       onPressed: () {
                         if (widget.uid != null) {
-                          if (widget.saveString == 'save') {
-                            saveRecipe();
-                            setState(() {
-                              widget.iconSave = Icons.favorite;
-                              widget.saveString = 'unsave';
-                            });
-                          } else {
-                            unSaveRecipe();
-                            setState(() {
-                              widget.iconSave = Icons.favorite_border;
-                              widget.saveString = 'save';
-                            });
-                          }
+                          _showSavedFroup();
                         } else {
                           showAlertDialog();
                         }
-                      })
+                      }),
                 ]),
             body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
                 widget.levelColor, widget.levelString));
@@ -251,23 +240,18 @@ class _WatchRecipeState extends State<WatchRecipe> {
                     style: TextStyle(fontFamily: 'Raleway'),
                   ),
                   actions: <Widget>[
-                    //צריך למחוק בהמשך
                     FlatButton.icon(
                         icon: Icon(
                           Icons.edit,
                           color: Colors.white,
                         ),
                         label: Text(
-                          'noa',
+                          'publish',
                           style: TextStyle(
                               fontFamily: 'Raleway', color: Colors.white),
                         ),
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PublishGroup2(
-                                      widget.uid, widget.current.id)));
+                          _showPublishPanel();
                         }),
                     FlatButton.icon(
                         icon: Icon(
@@ -290,37 +274,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
                         }),
                     FlatButton.icon(
                         icon: Icon(
-                          widget.iconPublish,
-                          color: Colors.white,
-                        ),
-                        label: Text(
-                          widget.publishString,
-                          style: TextStyle(
-                              fontFamily: 'Raleway', color: Colors.white),
-                        ),
-                        onPressed: () {
-                          //only id its not publish - publish (only once)
-                          //print(widget.current.publish);
-                          // print(("publish curren"));
-                          if (widget.current.publish == '') {
-                            // print("if");
-                            setState(() {
-                              widget.iconPublish = Icons.public_off;
-                              widget.publishString = "un publish";
-                              publishRecipe();
-                            });
-                            // publishRecipe();
-                          } else {
-                            //print("else");
-                            setState(() {
-                              unPublishRecipe();
-                              widget.iconPublish = Icons.public;
-                              widget.publishString = "publish this recipe";
-                            });
-                          }
-                        }),
-                    FlatButton.icon(
-                        icon: Icon(
                           Icons.delete,
                           color: Colors.white,
                         ),
@@ -330,18 +283,19 @@ class _WatchRecipeState extends State<WatchRecipe> {
                               fontFamily: 'Raleway', color: Colors.white),
                         ),
                         onPressed: () {
-                          if (widget.current.publish != '') {
-                            db
-                                .collection('publish recipe')
-                                .document(widget.current.publish)
-                                .delete();
-                          }
-                          db
-                              .collection('users')
-                              .document(user.uid)
-                              .collection('recipes')
-                              .document(widget.current.id)
-                              .delete();
+                          delete();
+                          // if (widget.current.publish != '') {
+                          //   db
+                          //       .collection('publish recipe')
+                          //       .document(widget.current.publish)
+                          //       .delete();
+                          // }
+                          // db
+                          //     .collection('users')
+                          //     .document(user.uid)
+                          //     .collection('recipes')
+                          //     .document(widget.current.id)
+                          //     .delete();
                           //go back
                           Navigator.push(
                               context,
@@ -611,6 +565,106 @@ class _WatchRecipeState extends State<WatchRecipe> {
                 topRight: const Radius.circular(25.0),
               ),
             ),
-            child: PublishGroup2(widget.uid, widget.current.id)));
+            child:
+                PublishGroup2(widget.uid, widget.current.id, widget.current)));
+  }
+
+  Future<void> _showSavedFroup() async {
+    //print(notes);
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.75,
+            decoration: new BoxDecoration(
+              color: Colors.blueGrey[50],
+              borderRadius: new BorderRadius.only(
+                topLeft: const Radius.circular(25.0),
+                topRight: const Radius.circular(25.0),
+              ),
+            ),
+            child: SaveGroup(widget.uid, widget.current.id, widget.current)));
+  }
+
+  Future<void> delete() async {
+    print("delete 1");
+    final db = Firestore.instance;
+    if (widget.current.publish != '') {
+      // final db = Firestore.instance;
+      DocumentSnapshot snap = await Firestore.instance
+          .collection('publish recipe')
+          .document(widget.current.publish)
+          .get();
+      String recipeID = snap.data['recipeId'];
+      List group = snap.data['saveInGroup'] ?? [];
+      List users = snap.data['saveUser'] ?? [];
+      for (int i = 0; i < group.length; i++) {
+        print(group[i]);
+        QuerySnapshot snap2 = await Firestore.instance
+            .collection('Group')
+            .document(group[i])
+            .collection('recipes')
+            .getDocuments();
+        snap2.documents.forEach((element) async {
+          if (element.data['recipeId'] == widget.current.id) {
+            print("find");
+            db
+                .collection('Group')
+                .document(group[i])
+                .collection('recipes')
+                .document(element.documentID)
+                .delete();
+          }
+        });
+      }
+      for (int i = 0; i < users.length; i++) {
+        QuerySnapshot snap2 = await Firestore.instance
+            .collection('users')
+            .document(users[i])
+            .collection('saved recipe')
+            .getDocuments();
+        snap2.documents.forEach((element) async {
+          if (element.data['recipeId'] == widget.current.id) {
+            db
+                .collection('users')
+                .document(users[i])
+                .collection('saved recipe')
+                .document(element.documentID)
+                .delete();
+          }
+        });
+      }
+    }
+    QuerySnapshot snap2 =
+        await Firestore.instance.collection('Group').getDocuments();
+    snap2.documents.forEach((element) async {
+      QuerySnapshot snap3 = await Firestore.instance
+          .collection('Group')
+          .document(element.documentID)
+          .collection('recipes')
+          .getDocuments();
+      snap3.documents.forEach((element2) {
+        if (element2.data['recipeId'] == widget.current.id) {
+          db
+              .collection('Group')
+              .document(element.documentID)
+              .collection('recipes')
+              .document(element2.documentID)
+              .delete();
+        }
+      });
+    });
+
+    print("delete");
+    if (widget.current.publish != '') {
+      db.collection('publish recipe').document(widget.current.publish).delete();
+    }
+    db
+        .collection('users')
+        .document(widget.uid)
+        .collection('recipes')
+        .document(widget.current.id)
+        .delete();
   }
 }

@@ -41,7 +41,13 @@ class _UploadingImageToFirebaseStorageState
 
   Future pickImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
+    setState(() {
+      _imageFile = File(pickedFile.path);
+    });
+  }
 
+  Future chooseImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
     setState(() {
       _imageFile = File(pickedFile.path);
     });
@@ -100,17 +106,27 @@ class _UploadingImageToFirebaseStorageState
                         margin: const EdgeInsets.only(
                             left: 30.0, right: 30.0, top: 10.0),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(30.0),
-                          child: _imageFile != null
-                              ? Image.file(_imageFile)
-                              : FlatButton(
-                                  child: Icon(
-                                    Icons.add_a_photo,
-                                    size: 50,
-                                  ),
-                                  onPressed: pickImage,
-                                ),
-                        ),
+                            borderRadius: BorderRadius.circular(30.0),
+                            child: _imageFile != null
+                                ? Image.file(_imageFile)
+                                : ListView(children: [
+                                    FlatButton.icon(
+                                      icon: Icon(
+                                        Icons.add_a_photo,
+                                        size: 50,
+                                      ),
+                                      label: Text('Take a picture'),
+                                      onPressed: pickImage,
+                                    ),
+                                    FlatButton.icon(
+                                      icon: Icon(
+                                        Icons.photo_album,
+                                        size: 50,
+                                      ),
+                                      label: Text('Choose from gallery'),
+                                      onPressed: chooseImage,
+                                    ),
+                                  ])),
                       ),
                     ],
                   ),

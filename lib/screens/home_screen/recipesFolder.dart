@@ -275,6 +275,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
       String id = doc.data['recipeID'] ?? '';
       //
       String publish = doc.data['publishID'] ?? '';
+      String path = doc.data['imagePath'] ?? '';
       int levlelInt = int.parse(level);
       //tags
       var tags = doc.data['tags'];
@@ -303,7 +304,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
         }
       }
       Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
-          true, id, publish, '');
+          true, id, publish, path);
       // r.setId(id);
       // print(publish + "publish");
       //r.publishThisRecipe(publish);
@@ -369,6 +370,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
         String id = doc.data['recipeID'] ?? '';
         //
         String publish = doc.data['publishID'] ?? '';
+        String path = doc.data['imagePath'] ?? '';
         int levlelInt = int.parse(level);
         //tags
         var tags = doc.data['tags'];
@@ -398,7 +400,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
         }
         print(n + "   " + de);
         r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, true,
-            id, publish, '');
+            id, publish, path);
       }
       //from recipe
       else {
@@ -421,6 +423,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
         String id = doc.data['recipeID'] ?? '';
         //
         String publish = doc.data['publishID'] ?? '';
+        String path = doc.data['imagePath'] ?? '';
         int levlelInt = int.parse(level);
         //tags
         var tags = doc.data['tags'];
@@ -450,7 +453,7 @@ class _RecipeFolderState extends State<RecipeFolder> {
         }
         print(n + "   " + de);
         r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, false,
-            id, publish, '');
+            id, publish, path);
       }
       // r.setId(id);
       // print(publish + "publish");

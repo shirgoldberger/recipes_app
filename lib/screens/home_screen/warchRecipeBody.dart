@@ -8,6 +8,7 @@ class WatchRecipeBody extends StatefulWidget {
   WatchRecipeBody(Recipe c, List<IngredientsModel> ing, List<Stages> stages,
       Color levelColor, String levelString) {
     this.current = c;
+    print("sssssssssssssssssssssssssssssssssssssss: " + c.imagePath);
     this.ing = ing;
     this.stages = stages;
     this.levelColor = levelColor;
@@ -23,7 +24,6 @@ class WatchRecipeBody extends StatefulWidget {
 }
 
 class _WatchRecipeBodyState extends State<WatchRecipeBody> {
-  String imagePath;
   var m;
   Future<Widget> _getImage(BuildContext context, String image) async {
     print("imageeeeeeeeeeeeeeeeeeeee" + image);
@@ -34,7 +34,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
       return this.m;
     }
     image = "uploads/" + image;
-    Image m;
     await FireStorageService.loadFromStorage(context, image)
         .then((downloadUrl) {
       print("downloadUrl:" + downloadUrl.toString());

@@ -9,7 +9,7 @@ class NewGroup extends StatefulWidget {
 class _NewGroupState extends State<NewGroup> {
   List<String> usersID = [];
   List<String> userEmail = [];
-  String groupName;
+  String groupName = "";
   String error = '';
   bool findUser = false;
   String emailTocheck;
@@ -113,6 +113,7 @@ class _NewGroupState extends State<NewGroup> {
 
   Future<void> SaveGroup() async {
     // print(usersID);
+    //usersID.add()
     final db = Firestore.instance;
     var currentRecipe = await db
         .collection('Group')

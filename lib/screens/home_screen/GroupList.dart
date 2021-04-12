@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/screens/home_screen/groupRecipeList.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
 class GroupList extends StatefulWidget {
@@ -25,6 +26,7 @@ class _GroupListState extends State<GroupList> {
         .getDocuments();
     snap.documents.forEach((element) async {
       setState(() {
+        print(element.data);
         widget.groupId.add(element.data['groupId']);
         widget.groupName.add(element.data['groupName']);
       });
@@ -41,12 +43,14 @@ class _GroupListState extends State<GroupList> {
       getGroups();
       return Loading();
     } else {
+      print("group name");
+      print(widget.groupName);
       // return Text("A");
       return Scaffold(
           backgroundColor: Colors.teal[50],
           appBar: AppBar(
             title: Text(
-              'cook book',
+              'your recipe groups',
               style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
             ),
             backgroundColor: Colors.teal[900],
@@ -58,7 +62,15 @@ class _GroupListState extends State<GroupList> {
                 child: ListView.builder(
                     itemCount: widget.groupId.length,
                     itemBuilder: (context, index) {
-                      return Text(widget.groupName[index]);
+                      return ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GroupRecipeList(
+                                        widget.groupId[index], widget.uid)));
+                          },
+                          child: Text(widget.groupName[index]));
                     }))
           ]));
     }
