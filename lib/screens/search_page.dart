@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,13 +7,15 @@ import 'package:recipes_app/screens/home_screen/watchRecipe.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
+import '../searchAlgorithm.dart';
+
 class SearchPage extends StatefulWidget {
   bool home;
   List<Recipe> publisRecipe = [];
-  List<Recipe> savedRecipe = [];
-  bool doneLoadPublishRecipe = false;
+  bool doneLoadPublishRecipe = true;
   bool doneGetUser = false;
   String uid;
+  bool getUser = false;
   @override
   _SearchPage createState() => _SearchPage();
 }
@@ -20,15 +23,28 @@ class SearchPage extends StatefulWidget {
 class _SearchPage extends State<SearchPage> {
   void initState() {
     super.initState();
+    getuser();
+
     changeState();
+  }
+
+  void getuser() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final FirebaseUser user = await auth.currentUser();
+    setState(() {
+      widget.uid = user.uid;
+      widget.getUser = true;
+    });
   }
 
   void changeState() {
     widget.publisRecipe = [];
-    widget.savedRecipe = [];
-    widget.doneLoadPublishRecipe = false;
+    // widget.doneLoadPublishRecipe = false;
     if (!widget.doneLoadPublishRecipe) {
-      loadPublishRecipe();
+      setState(() {
+        widget.doneLoadPublishRecipe = true;
+      });
+      // loadPublishRecipe();
     }
   }
 
@@ -56,6 +72,14 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.getUser) {
+      Algoritem a = new Algoritem(widget.uid);
+      a.allRecipe().whenComplete(() {
+        print("shir");
+        widget.publisRecipe.addAll(a.recipes);
+      });
+      print("saerch");
+    }
     if (!widget.doneLoadPublishRecipe) {
       return Loading();
     } else {
