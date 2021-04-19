@@ -1,13 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/home_screen/watchRecipe.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
-
-import 'home_screen/RecipeList.dart';
 
 class SearchPage extends StatefulWidget {
   bool home;
@@ -40,36 +37,28 @@ class _SearchPage extends State<SearchPage> {
   );
 
   Future<Widget> _getImage(BuildContext context, String image) async {
-    print("imageeeeeeeeeeeeeeeeeeeee" + image);
     if (image == "") {
-      return null;
+      return Image.asset('lib/images/no_image.jpg', fit: BoxFit.fill);
     }
     image = "uploads/" + image;
     Image m;
     await FireStorageService.loadFromStorage(context, image)
         .then((downloadUrl) {
-      print("downloadUrl:" + downloadUrl.toString());
       m = Image.network(
         downloadUrl.toString(),
-        fit: BoxFit.scaleDown,
+        fit: BoxFit.fitHeight,
+        // height: 100,
+        // width: 100,
       );
     });
-
     return m;
   }
 
   @override
   Widget build(BuildContext context) {
-    int gridStateLength = 3;
     if (!widget.doneLoadPublishRecipe) {
       return Loading();
-    }
-
-    if (widget.doneLoadPublishRecipe) {
-      // if (widget.publisRecipe != null) {
-      //   recipeList = recipeList + widget.publisRecipe;
-      // }
-
+    } else {
       return MaterialApp(
           home: Scaffold(
               backgroundColor: Colors.blueGrey[50],
@@ -85,66 +74,24 @@ class _SearchPage extends State<SearchPage> {
                 SearchInput(),
                 box,
                 Container(
-                  height: 1000,
+                  height: 500,
                   child: GridView.count(
-                    // Create a grid with 2 columns. If you change the scrollDirection to
-                    // horizontal, this produces 2 rows.
                     crossAxisCount: 3,
-                    // Generate 100 widgets that display their index in the List.
                     children:
                         List.generate(widget.publisRecipe.length, (index) {
                       return Container(
+                          height: 500,
+                          width: 500,
                           child: Card(
-                        shape: RoundedRectangleBorder(
-                            // borderRadius: BorderRadius.circular(15.0),
-                            ),
-                        child: _buildOneItem(index),
-                      ));
+                            shape:
+                                RoundedRectangleBorder(side: BorderSide.none),
+                            child: _buildOneItem(index),
+                          ));
                     }),
                   ),
-                  // Expanded(
-                  //     child: Column(children: <Widget>[
-                  //   AspectRatio(
-                  //     aspectRatio: 1.0,
-                  //     child: Container(
-                  //       padding: const EdgeInsets.all(8.0),
-                  //       margin: const EdgeInsets.all(10.0),
-                  //       decoration: BoxDecoration(),
-                  //       child: GridView.builder(
-                  //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  //           crossAxisCount: gridStateLength,
-                  //         ),
-                  //         itemBuilder: _buildGridItems,
-                  //         itemCount: gridStateLength * 9999999,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ])),
                 )
               ]))))));
     }
-  }
-
-  Widget _buildGridItems(BuildContext context, int index) {
-    return GestureDetector(
-      onTap: () => () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    WatchRecipe(widget.publisRecipe[index], true)));
-      },
-      child: GridTile(
-        child: Container(
-          // padding:
-          //     EdgeInsets.only(top: 1.0, right: 1.0, left: 1.0, bottom: 1.0),
-          decoration: BoxDecoration(border: Border.all(width: 0.1)),
-          child: Center(
-            child: _buildOneItem(index),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _buildOneItem(int index) {

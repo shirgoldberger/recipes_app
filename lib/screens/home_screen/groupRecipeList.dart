@@ -5,18 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/groupRecipeHeadLine.dart';
 import 'package:recipes_app/screens/home_screen/ParticipentsWatch.dart';
+import 'package:recipes_app/screens/home_screen/addParticipent.dart';
 import 'package:recipes_app/screens/home_screen/homeLogIn.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
 class GroupRecipeList extends StatefulWidget {
-  GroupRecipeList(String _groupId, String _myUid) {
+  GroupRecipeList(String _groupId, String _groupName, String _myUid) {
     this.groupId = _groupId;
     this.myUid = _myUid;
+    this.groupName = _groupName;
   }
   String groupId;
+  String groupName;
   List<Recipe> recipeList = [];
   List<Recipe> a = [];
   List usersName = [];
+  List userId = [];
   String myUid;
 
   bool doneLoad = false;
@@ -38,43 +42,80 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
     if (!widget.doneLoad) {
       return Loading();
     } else {
+      int _value = 4;
       print(widget.usersName);
       if (widget.a.length == 0) {
         return Scaffold(
             backgroundColor: Colors.blueGrey[50],
             appBar: AppBar(
                 title: Text(
-                  " recipes:",
+                  widget.groupName,
                   style: TextStyle(fontFamily: 'Raleway'),
                 ),
                 backgroundColor: Colors.blueGrey[700],
                 elevation: 0.0,
                 actions: <Widget>[
-                  FlatButton.icon(
-                      icon: Icon(
-                        Icons.people,
-                        color: Colors.white,
-                      ),
-                      label: Text(
-                        "people in this group",
-                        style: TextStyle(
-                            fontFamily: 'Raleway', color: Colors.white),
-                      ),
-                      onPressed: () {
-                        showParticipents();
-                      }),
-                  FlatButton.icon(
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                      label: Text(
-                        "delete me",
-                        style: TextStyle(
-                            fontFamily: 'Raleway', color: Colors.white),
-                      ),
-                      onPressed: () {
-                        delete();
+                  DropdownButton(
+                      value: _value,
+                      items: [
+                        DropdownMenuItem(
+                          child: Text('setting:'),
+                          value: 4,
+                        ),
+                        DropdownMenuItem(
+                          child: FlatButton.icon(
+                              color: Colors.black,
+                              icon: Icon(
+                                Icons.people,
+                                color: Colors.white,
+                              ),
+                              label: Text(
+                                "people ",
+                                style: TextStyle(
+                                    fontFamily: 'Raleway', color: Colors.white),
+                              ),
+                              onPressed: () {
+                                showParticipents();
+                              }),
+                          value: 1,
+                        ),
+                        DropdownMenuItem(
+                          child: FlatButton.icon(
+                              color: Colors.black,
+                              icon: Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                              ),
+                              label: Text(
+                                "add",
+                                style: TextStyle(
+                                    fontFamily: 'Raleway', color: Colors.white),
+                              ),
+                              onPressed: () {
+                                addParticipents();
+                              }),
+                          value: 2,
+                        ),
+                        DropdownMenuItem(
+                            child: FlatButton.icon(
+                                color: Colors.black,
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                                label: Text(
+                                  "delete me",
+                                  style: TextStyle(
+                                      fontFamily: 'Raleway',
+                                      color: Colors.white),
+                                ),
+                                onPressed: () {
+                                  delete();
+                                }),
+                            value: 3),
+                      ],
+                      onChanged: (value) {
+                        setState(() {});
                       }),
                 ]),
             body: Column(children: <Widget>[
@@ -86,37 +127,72 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
           backgroundColor: Colors.blueGrey[50],
           appBar: AppBar(
             title: Text(
-              " recipes:",
+              widget.groupName,
               style: TextStyle(fontFamily: 'Raleway'),
             ),
             backgroundColor: Colors.blueGrey[700],
             elevation: 0.0,
             actions: <Widget>[
-              FlatButton.icon(
-                  icon: Icon(
-                    Icons.people,
-                    color: Colors.white,
-                  ),
-                  label: Text(
-                    "people in this group",
-                    style:
-                        TextStyle(fontFamily: 'Raleway', color: Colors.white),
-                  ),
-                  onPressed: () {
-                    showParticipents();
-                  }),
-              FlatButton.icon(
-                  icon: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
-                  label: Text(
-                    "delete me",
-                    style:
-                        TextStyle(fontFamily: 'Raleway', color: Colors.white),
-                  ),
-                  onPressed: () {
-                    delete();
+              DropdownButton(
+                  value: _value,
+                  items: [
+                    DropdownMenuItem(
+                      child: Text('setting:'),
+                      value: 4,
+                    ),
+                    DropdownMenuItem(
+                      child: FlatButton.icon(
+                          color: Colors.black,
+                          icon: Icon(
+                            Icons.people,
+                            color: Colors.white,
+                          ),
+                          label: Text(
+                            "people ",
+                            style: TextStyle(
+                                fontFamily: 'Raleway', color: Colors.white),
+                          ),
+                          onPressed: () {
+                            showParticipents();
+                          }),
+                      value: 1,
+                    ),
+                    DropdownMenuItem(
+                      child: FlatButton.icon(
+                          color: Colors.black,
+                          icon: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                          label: Text(
+                            "add",
+                            style: TextStyle(
+                                fontFamily: 'Raleway', color: Colors.white),
+                          ),
+                          onPressed: () {
+                            addParticipents();
+                          }),
+                      value: 2,
+                    ),
+                    DropdownMenuItem(
+                        child: FlatButton.icon(
+                            color: Colors.black,
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              "delete me",
+                              style: TextStyle(
+                                  fontFamily: 'Raleway', color: Colors.white),
+                            ),
+                            onPressed: () {
+                              delete();
+                            }),
+                        value: 3),
+                  ],
+                  onChanged: (value) {
+                    setState(() {});
                   }),
             ],
           ),
@@ -164,6 +240,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
         .document(widget.groupId)
         .get();
     List user = snap2.data['users'] ?? [];
+    widget.userId = user;
     for (int i = 0; i < user.length; i++) {
       DocumentSnapshot snap3 =
           await Firestore.instance.collection('users').document(user[i]).get();
@@ -244,8 +321,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
       //widget.a.add(a);
 
       widget.a.add(r);
-      print("tatdtmmm");
-      print(widget.a);
+
       //widget.recipeList.add(a);
 
       i++;
@@ -292,8 +368,28 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
             child: ParticipentsWatch(widget.usersName)));
   }
 
+  Future<void> addParticipents() async {
+    //print(notes);
+    showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                decoration: new BoxDecoration(
+                  color: Colors.blueGrey[50],
+                  borderRadius: new BorderRadius.only(
+                    topLeft: const Radius.circular(25.0),
+                    topRight: const Radius.circular(25.0),
+                  ),
+                ),
+                child: AddParticipent(
+                    widget.userId, widget.groupId, widget.groupName)))
+        .then((value) => cameBack(value));
+  }
+
   Future<void> delete() async {
-    print("delete");
+    // print("delete");
     DocumentSnapshot snap2 = await Firestore.instance
         .collection('Group')
         .document(widget.groupId)
@@ -326,5 +422,58 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
 
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => HomeLogIn(widget.myUid)));
+  }
+
+  Future<void> cameBack(var value) async {
+    print("value");
+    //  print(value);
+
+    var a = value.toString();
+    print(a);
+    if (value["a"] != null) {
+      if (widget.userId.toString() != value["a"].toString()) {
+        setState(() {
+          widget.userId = value["a"];
+        });
+
+        //if (widget.userId != value["a"]) {
+        DocumentSnapshot snap3 = await Firestore.instance
+            .collection('users')
+            .document(widget.userId[widget.userId.length - 1])
+            .get();
+        setState(() {
+          widget.usersName
+              .add(snap3.data['firstName'] + " " + snap3.data['lastName']);
+        });
+      }
+    }
+    if (value["b"] != widget.groupName) {
+      final db = Firestore.instance;
+      setState(() {
+        widget.groupName = value["b"];
+      });
+      db
+          .collection('Group')
+          .document(widget.groupId)
+          .updateData({'groupName': widget.groupName});
+
+      for (int i = 0; i < widget.userId.length; i++) {
+        QuerySnapshot a = await Firestore.instance
+            .collection('users')
+            .document(widget.userId[i])
+            .collection('groups')
+            .getDocuments();
+        a.documents.forEach((element) {
+          if (element.data['groupId'] == widget.groupId) {
+            db
+                .collection('users')
+                .document(widget.userId[i])
+                .collection('groups')
+                .document(element.documentID)
+                .updateData({'groupName': widget.groupName});
+          }
+        });
+      }
+    }
   }
 }

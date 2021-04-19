@@ -2,6 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class NewGroup extends StatefulWidget {
+  NewGroup(String _uid) {
+    this.uid = _uid;
+  }
+  String uid;
   @override
   _NewGroupState createState() => _NewGroupState();
 }
@@ -113,7 +117,7 @@ class _NewGroupState extends State<NewGroup> {
 
   Future<void> SaveGroup() async {
     // print(usersID);
-    //usersID.add()
+    usersID.add(widget.uid);
     final db = Firestore.instance;
     var currentRecipe = await db
         .collection('Group')

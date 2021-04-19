@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 
 import 'package:recipes_app/screens/home_screen/watchRecipe.dart';
+import 'package:recipes_app/screens/home_screen/watchRecipe2.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 
-class RecipeHeadLine extends StatelessWidget {
+class RecipeHeadLine extends StatefulWidget {
   Recipe recipe;
   Color circleColor;
   String level;
   bool home;
+  Color colorName = Colors.blue;
   String image = "";
   RecipeHeadLine(Recipe r, bool home) {
     this.recipe = r;
@@ -32,30 +34,15 @@ class RecipeHeadLine extends StatelessWidget {
         level = 'easy';
         break;
     }
-    // print("head line");
-    // print(r.publish);
   }
-  Future<Widget> _getImage(BuildContext context, String image) async {
-    print("imageeeeeeeeeeeeeeeeeeeee " + image);
-    if (image == "") {
-      return null;
-    }
-    image = "uploads/" + image;
-    Image m;
-    await FireStorageService.loadFromStorage(context, image)
-        .then((downloadUrl) {
-      print("downloadUrl:" + downloadUrl.toString());
-      m = Image.network(
-        downloadUrl.toString(),
-        fit: BoxFit.scaleDown,
-      );
-    });
+  @override
+  _RecipeHeadLineState createState() => _RecipeHeadLineState();
+}
 
-    return m;
-  }
-
+class _RecipeHeadLineState extends State<RecipeHeadLine> {
   @override
   Widget build(BuildContext context) {
+    _getImage(context, widget.image);
     return Padding(
       padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
       child: InkWell(
@@ -64,49 +51,43 @@ class RecipeHeadLine extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => WatchRecipe(recipe, home)));
+                  builder: (context) =>
+                      WatchRecipe2(widget.recipe, widget.home)));
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Row(
               children: <Widget>[
+                // image
                 CircleAvatar(
-                  child: FutureBuilder(
-                      future: _getImage(context, image),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done)
-                          return Container(
-                            // height: MediaQuery.of(context).size.height / 1.25,
-                            // width: MediaQuery.of(context).size.width / 1.25,
-                            child: snapshot.data,
-                          );
-
-                        if (snapshot.connectionState == ConnectionState.waiting)
-                          return Container(
-                              height: MediaQuery.of(context).size.height / 1.25,
-                              width: MediaQuery.of(context).size.width / 1.25,
-                              child: CircularProgressIndicator());
-                      }),
+                  backgroundImage: (widget.image == "")
+                      ? ExactAssetImage('lib/images/no_image.jpg')
+                      : NetworkImage(widget.image),
                   radius: 35.0,
                 ),
                 SizedBox(width: 10.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    // name
                     Text(
-                      recipe.name,
+                      widget.recipe.name == ""
+                          ? "This recipe has no name"
+                          : widget.recipe.name,
                       style: TextStyle(
-                        color: Colors.grey,
+                        color: widget.colorName,
                         fontSize: 15.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 5.0),
                     Container(
-                      // width: MediaQuery.of(context).size.width * 0.45,
+                      // description
                       child: Text(
-                        recipe.description,
+                        widget.recipe.description == ""
+                            ? "This recipe has no description"
+                            : widget.recipe.description,
                         style: TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 15.0,
@@ -122,7 +103,7 @@ class RecipeHeadLine extends StatelessWidget {
             Column(
               children: <Widget>[
                 Text(
-                  recipe.writer,
+                  widget.recipe.writer,
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 10.0,
@@ -134,13 +115,12 @@ class RecipeHeadLine extends StatelessWidget {
                   width: 80.0,
                   height: 20.0,
                   decoration: BoxDecoration(
-                    color: circleColor,
+                    color: widget.circleColor,
                     borderRadius: BorderRadius.circular(30.0),
                   ),
-                  // hard();
                   alignment: Alignment.center,
                   child: Text(
-                    level,
+                    widget.level,
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 12.0,
@@ -154,5 +134,20 @@ class RecipeHeadLine extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _getImage(BuildContext context, String image) async {
+    if (image == "") {
+      setState(() {
+        widget.image = "";
+      });
+      return null;
+    }
+    image = "uploads/" + image;
+    String downloadUrl =
+        await FireStorageService.loadFromStorage(context, image);
+    setState(() {
+      widget.image = downloadUrl;
+    });
   }
 }

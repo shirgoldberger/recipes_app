@@ -215,7 +215,7 @@ class _PublishGroup2State extends State<PublishGroup2> {
         .collection('Group')
         .document(widget.groupId[index])
         .collection('recipes')
-        .add({'userId': widget.uid, 'recipeId': widget.recipeId});
+        .add({'userId': widget.uid, 'recipeId': widget.recipeId, 'likes': []});
   }
 
   Future<void> unPublishGroup(int index) async {
@@ -250,7 +250,8 @@ class _PublishGroup2State extends State<PublishGroup2> {
     final db = Firestore.instance;
     Map<String, dynamic> publishRecipe = {
       'recipeId': widget.recipeId,
-      'userID': user.uid
+      'userID': user.uid,
+      'likes': []
     };
     //save this recipe in the publish folder
     var currentRecipe =

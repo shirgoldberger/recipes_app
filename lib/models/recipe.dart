@@ -17,6 +17,7 @@ class Recipe {
   String publish = '';
   bool saveRecipe;
   String imagePath;
+  List<String> likes;
 
   Recipe(
       String n,
@@ -43,7 +44,7 @@ class Recipe {
     this.id = id;
     this.publish = publish;
     this.imagePath = path;
-
+    this.likes = new List();
     //this.ingredients = ing;
   }
 
@@ -71,6 +72,7 @@ class Recipe {
         'recipeID': id,
         'tags': (myTag.map((e) => e).toList()),
         'notes': (notes.map((e) => e).toList()),
-        'imagePath': imagePath
+        'imagePath': imagePath,
+        'likes': (likes.map((e) => e).toList())
       };
 }

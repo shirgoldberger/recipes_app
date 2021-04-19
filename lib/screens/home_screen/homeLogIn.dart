@@ -16,6 +16,7 @@ import 'package:recipes_app/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
+import '../../searchAlgorithm.dart';
 import '../book_page.dart';
 
 class HomeLogIn extends StatefulWidget {
@@ -219,8 +220,10 @@ class _HomeLogInState extends State<HomeLogIn> {
                 icon: Icon(Icons.plus_one, color: Colors.white),
                 label: Text('mew group', style: TextStyle(color: Colors.white)),
                 onPressed: () async {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => NewGroup()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NewGroup(widget.uid)));
                 },
               ),
               FlatButton.icon(

@@ -10,7 +10,6 @@ import 'package:recipes_app/screens/home_screen/editRecipe.dart';
 import 'package:recipes_app/screens/home_screen/homeLogIn.dart';
 import 'package:recipes_app/screens/home_screen/notesForm.dart';
 import 'package:recipes_app/screens/home_screen/publishGroup2.dart';
-import 'package:recipes_app/screens/home_screen/publishGroups.dart';
 import 'package:recipes_app/screens/home_screen/saveGroup.dart';
 import 'package:recipes_app/screens/home_screen/warchRecipeBody.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
@@ -44,6 +43,10 @@ class WatchRecipe extends StatefulWidget {
   String saveRecipe = '';
   IconData iconSave = Icons.favorite_border;
   String saveString = 'save';
+
+  List usernames = [];
+  bool likeRecipe = false;
+  List recipeLikes;
   //bool publish = false;
 
   @override
@@ -57,6 +60,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
   void initState() {
     super.initState();
     getuser();
+    getUsersLikeRecipe();
     makeList();
     print("init state");
     // print(widget.current.publish);
@@ -68,20 +72,18 @@ class _WatchRecipeState extends State<WatchRecipe> {
       widget.publishString = "un publish";
     }
     print(widget.uid);
-    // if (widget.uid != null) {
-    //   print("user:   " + widget.uid);
-    //   Firestore.instance
-    //       .collection("users")
-    //       .document(widget.uid)
-    //       .get()
-    //       .then((doc) {
-    //     if (doc.data['recipeID'] == widget.current.id) {
-    //       print("save");
-    //     } else {
-    //       print("unsave");
-    //     }
-    //   });
-    // }
+  }
+
+  getUsersLikeRecipe() async {
+    final db = Firestore.instance;
+    var users = await db.collection('users').getDocuments();
+    users.documents.forEach((element) async {
+      DocumentSnapshot currentUser = await Firestore.instance
+          .collection("users")
+          .document(element.documentID.toString())
+          .get();
+      widget.usernames.add(currentUser.data['firstName']);
+    });
   }
 
   void getuser() async {
@@ -106,6 +108,32 @@ class _WatchRecipeState extends State<WatchRecipe> {
           print("unsave");
         }
       });
+      if (widget.home) {
+        QuerySnapshot snap = await Firestore.instance
+            .collection('publish recipe')
+            .getDocuments();
+        String id;
+        snap.documents.forEach((element) async {
+          if (element.data['recipeId'] == widget.current.id) {
+            id = element.documentID.toString();
+            DocumentSnapshot currentUser = await Firestore.instance
+                .collection("users")
+                .document(widget.uid)
+                .get();
+            List userLikes = currentUser.data['likes'] ?? [];
+            if (userLikes.contains(id)) {
+              widget.likeRecipe = true;
+            }
+
+            DocumentSnapshot currentPublishRecipe = await Firestore.instance
+                .collection('publish recipe')
+                .document(id)
+                .get();
+            widget.recipeLikes = currentPublishRecipe.data['likes'] ?? [];
+          }
+        });
+      }
+
       print(widget.saveString);
 
       //     .then((doc) {
@@ -192,6 +220,38 @@ class _WatchRecipeState extends State<WatchRecipe> {
                 ),
                 backgroundColor: Colors.teal[900],
                 actions: <Widget>[
+                  FlatButton.icon(
+                      icon: Icon(
+                        widget.likeRecipe
+                            ? Icons.favorite
+                            : Icons.favorite_border_outlined,
+                        color: Colors.red,
+                      ),
+                      label: Text(
+                        widget.likeRecipe ? 'UNLIKE' : 'LIKE',
+                        style: TextStyle(
+                            fontFamily: 'Raleway', color: Colors.redAccent),
+                      ),
+                      onPressed: () {
+                        if (widget.uid != null) {
+                          _likeRecipe();
+                        } else {
+                          showAlertDialog();
+                        }
+                      }),
+                  TextButton(
+                      onPressed: () {
+                        if (widget.uid != null) {
+                          _showLikesList();
+                        } else {
+                          showAlertDialog();
+                        }
+                      },
+                      child: Text(
+                        'show likes',
+                        style: TextStyle(
+                            fontFamily: 'Raleway', color: Colors.white),
+                      )),
                   FlatButton.icon(
                       icon: Icon(
                         widget.iconSave,
@@ -515,8 +575,10 @@ class _WatchRecipeState extends State<WatchRecipe> {
             .delete();
       }
     });
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => HomeLogIn(widget.uid)));
+    int count = 0;
+    Navigator.popUntil(context, (route) {
+      return count++ == 3;
+    });
   }
 
   Future<void> _showNotesPanel(String id) async {
@@ -567,6 +629,75 @@ class _WatchRecipeState extends State<WatchRecipe> {
             ),
             child:
                 PublishGroup2(widget.uid, widget.current.id, widget.current)));
+  }
+
+  Future<void> _likeRecipe() async {
+    String id;
+    final db = Firestore.instance;
+    // final user = Provider.of<User>(context);
+    QuerySnapshot snap =
+        await Firestore.instance.collection('publish recipe').getDocuments();
+    snap.documents.forEach((element) async {
+      //id = element.documentID;
+      if (element.data['recipeId'] == widget.current.id) {
+        id = element.documentID.toString();
+        // go to specific publish recipe
+        var currentRecipe2 =
+            await db.collection('publish recipe').document(id).get();
+        DocumentSnapshot currentUser = await Firestore.instance
+            .collection('users')
+            .document(widget.uid.toString())
+            .get();
+        List likes = [];
+        List loadList = currentUser.data['likes'] ?? [];
+        likes.addAll(loadList);
+        likes.add(id);
+        db
+            .collection('users')
+            .document(widget.uid.toString())
+            .updateData({'likes': likes});
+        likes = [];
+        loadList = currentRecipe2.data['likes'] ?? [];
+        likes.addAll(loadList);
+        likes.add(widget.uid.toString());
+        db
+            .collection('publish recipe')
+            .document(id)
+            .updateData({'likes': likes});
+      }
+      setState(() {
+        widget.likeRecipe = !widget.likeRecipe;
+      });
+    });
+  }
+
+  Future<void> _showLikesList() async {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              decoration: new BoxDecoration(
+                color: Colors.blueGrey[50],
+                borderRadius: new BorderRadius.only(
+                  topLeft: const Radius.circular(25.0),
+                  topRight: const Radius.circular(25.0),
+                ),
+              ),
+              child: ListView.separated(
+                padding: const EdgeInsets.all(8),
+                itemCount: widget.recipeLikes.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    height: 50,
+                    child: Center(child: Text(widget.usernames[index])),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) =>
+                    const Divider(),
+              ),
+            ));
   }
 
   Future<void> _showSavedFroup() async {
