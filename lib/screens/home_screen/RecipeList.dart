@@ -26,7 +26,7 @@ class _RecipeListState extends State<RecipeList> {
         appBar: AppBar(
           title: Text(
             widget.head + " recipes:",
-            style: TextStyle(fontFamily: 'Raleway'),
+            style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
           ),
           backgroundColor: Colors.blueGrey[700],
           elevation: 0.0,
@@ -35,20 +35,21 @@ class _RecipeListState extends State<RecipeList> {
         body: Column(children: <Widget>[
           Expanded(
             child: ListView.builder(
+              padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
               itemCount: widget.list.length,
               itemBuilder: (context, index) {
                 // print('recipeList');
                 // print(widget.list[index]);
                 return Padding(
-                    padding: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(5),
                     child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(30.0),
-                              topRight: Radius.circular(30.0),
-                              bottomLeft: Radius.circular(30.0),
-                              bottomRight: Radius.circular(30.0)),
+                              topLeft: Radius.circular(10.0),
+                              topRight: Radius.circular(10.0),
+                              bottomLeft: Radius.circular(10.0),
+                              bottomRight: Radius.circular(10.0)),
                         ),
                         child: ClipRRect(
                             borderRadius: BorderRadius.only(

@@ -63,18 +63,6 @@ class _RecipeFolderState extends State<RecipeFolder> {
 
   @override
   Widget build(BuildContext context) {
-    // @override
-    // void initState() {
-    //   super.initState();
-    //   if (!widget.home) {
-    //     print("iinniitt");
-    //     widget.doneLoadPublishRecipe = true;
-    //     getuser();
-    //     loadSavedRecipe();
-    //   } else {
-    //     loadPublishRecipe();
-    //   }
-    // }
     //הסבר לגבי הרשימה של המתכונים -
     //אם אנחנו מגיעים מעמוד האישי של המשתמש יהיה כאן את כל רשימת המתכונים שלו,
     //אם אנחנו מגיעים מעמוד הבית יהיה כאן כל המתכונים שנמצאים בתיקית המתכונים בדאטה בייס,
@@ -82,38 +70,17 @@ class _RecipeFolderState extends State<RecipeFolder> {
     var recipeList = Provider.of<List<Recipe>>(context);
     //אם לא הגעת מעמוד הבית אין סיבה לטעון את כל המתכונים -
     // לכן מיד נשנה את הערך הבוליאני ל- נכון, ולא נקרא לפונקציה.
-    // widget.publisRecipe = [];
-    // widget.savedRecipe = [];
-
-    // if ((!widget.doneLoadPublishRecipe) && (!widget.doneLoadSavedRecipe)) {
-    //   if (!widget.home) {
-    //     print("iinniitt");
-    //     widget.doneLoadPublishRecipe = true;
-    //     getuser();
-    //     print("if");
-    //     if (widget.uid != null) {
-    //       loadSavedRecipe();
-    //     }
-    //   } else {
-    //     loadPublishRecipe();
-    //   }
-    //   print("aaaaaaaaaaaaaaaaaaaaa");
-    // }
     if (!widget.doneLoadPublishRecipe) {
       return Loading();
     }
-
     if (widget.doneLoadPublishRecipe) {
       if (widget.publisRecipe != null) {
         recipeList = recipeList + widget.publisRecipe;
       }
       if (widget.doneLoadSavedRecipe) {
         recipeList = recipeList + widget.savedRecipe;
-        // print("plus   " + recipeList.length.toString());
       }
 
-      //print("aaaaaaaaaaaaaaaaaaaaa");
-      int i;
       List<Recipe> fish = [];
       List<Recipe> other = [];
       List<Recipe> meet = [];
@@ -228,16 +195,21 @@ class _RecipeFolderState extends State<RecipeFolder> {
               }),
         //other
         if (!other.isEmpty)
-          IconButton(
-              icon: Icon(Icons.sentiment_neutral),
-              iconSize: 50,
-              onPressed: () {
+          Container(
+              width: 500,
+              height: 100,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: ExactAssetImage('lib/images/fish.jpg'),
+                      fit: BoxFit.cover),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
+              child: FlatButton(onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
                             RecipeList(other, "other", widget.home)));
-              }),
+              }))
       ]);
     }
   }

@@ -89,11 +89,12 @@ class _UploadingImageToFirebaseStorageState
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
                     child: Text(
-                      "Uploading Image to Firebase Storage",
+                      "Uploading your Image",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                           fontSize: 28,
-                          fontStyle: FontStyle.italic),
+                          fontFamily: 'Raleway'),
                     ),
                   ),
                 ),
@@ -131,7 +132,9 @@ class _UploadingImageToFirebaseStorageState
                     ],
                   ),
                 ),
-                uploadImageButton(context),
+                Row(
+                  children: [uploadImageButton(context), cancleButton(context)],
+                )
               ],
             ),
           ),
@@ -151,13 +154,40 @@ class _UploadingImageToFirebaseStorageState
                 top: 30, left: 20.0, right: 20.0, bottom: 20.0),
             decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [yellow, orange],
+                  colors: [Colors.blueGrey, Colors.grey, Colors.blueGrey],
                 ),
                 borderRadius: BorderRadius.circular(30.0)),
             child: FlatButton(
               onPressed: () => uploadImageToFirebase(context),
               child: Text(
                 "Upload Image",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget cancleButton(BuildContext context) {
+    return Container(
+      child: Stack(
+        children: <Widget>[
+          Container(
+            padding:
+                const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),
+            margin: const EdgeInsets.only(
+                top: 30, left: 20.0, right: 20.0, bottom: 20.0),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [yellow, orange],
+                ),
+                borderRadius: BorderRadius.circular(30.0)),
+            child: FlatButton(
+              onPressed: () => {Navigator.pop(context, "")},
+              child: Text(
+                "Cancle",
                 style: TextStyle(fontSize: 20),
               ),
             ),

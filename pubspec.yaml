@@ -63,6 +63,7 @@ flutter:
     - lib/images/cookbook.jpg
     - lib/images/chef.png
     - lib/images/no_image.jpg
+    - lib/images/fish.jpg
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

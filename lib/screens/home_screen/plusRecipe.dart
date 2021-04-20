@@ -25,13 +25,29 @@ class _PlusRecipeState extends State<PlusRecipe> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   List tagList = [
+    'choose recipe tag',
     'fish',
     'meat',
     'dairy',
     'desert',
     'for children',
     'other',
-    'choose recipe tag'
+    //
+    'vegetarian',
+    'Gluten free',
+    'without sugar',
+    'vegan',
+    'Without milk',
+    'No eggs',
+    'kosher',
+    'baking',
+    'cakes and cookies',
+    'Food toppings',
+    'Salads',
+    'Soups',
+    'Pasta',
+    'No carbs',
+    'Spreads',
   ];
   List<IngredientsModel> ingredientsList = [];
   bool loading = false;
@@ -198,33 +214,6 @@ class _PlusRecipeState extends State<PlusRecipe> {
                             setState(() => recipe_description = val);
                           },
                         ),
-
-                        // imageBox(),
-                        // name recipe
-                        // TextFormField(
-                        //   decoration: InputDecoration(
-                        //     hintText: 'Recipe Name',
-                        //   ),
-                        //   validator: (val) => val.isEmpty
-                        //       ? 'Enter a name of your recipe'
-                        //       : null,
-                        //   onChanged: (val) {
-                        //     setState(() => recipe_name = val);
-                        //   },
-                        // ),
-                        // box,
-                        // // description recipe
-                        // TextFormField(
-                        //   decoration: InputDecoration(
-                        //     hintText: 'Description',
-                        //   ),
-                        //   validator: (val) => val.length < 6
-                        //       ? 'Enter a description with 6 letter at least'
-                        //       : null,
-                        //   onChanged: (val) {
-                        //     setState(() => recipe_description = val);
-                        //   },
-                        // ),
                         box,
                         // ingredients plus buttom and text explanation
                         Row(children: <Widget>[

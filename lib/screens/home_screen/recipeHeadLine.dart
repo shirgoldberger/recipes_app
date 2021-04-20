@@ -46,6 +46,10 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
     return Padding(
       padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
       child: InkWell(
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        borderRadius: BorderRadius.circular(5),
         highlightColor: Colors.blueGrey,
         onTap: () {
           Navigator.push(
