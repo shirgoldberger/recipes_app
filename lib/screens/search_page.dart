@@ -2,12 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/screens/home_screen/watchRecipe.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
-
 import '../searchAlgorithm.dart';
+import 'recipes/watch_recipes/watchRecipe.dart';
 
 class SearchPage extends StatefulWidget {
   bool home;
@@ -30,10 +30,19 @@ class _SearchPage extends State<SearchPage> {
 
   void getuser() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
-    final FirebaseUser user = await auth.currentUser();
-    setState(() {
-      widget.uid = user.uid;
-      widget.getUser = true;
+    await auth.currentUser().then((value) {
+      Algoritem a = new Algoritem(widget.uid);
+      a.allRecipe().whenComplete(() {
+        setState(() {
+          widget.publisRecipe.addAll(a.recipes);
+        });
+        if (value != null) {
+          setState(() {
+            widget.uid = value.uid;
+            widget.getUser = true;
+          });
+        }
+      });
     });
   }
 
@@ -54,7 +63,7 @@ class _SearchPage extends State<SearchPage> {
 
   Future<Widget> _getImage(BuildContext context, String image) async {
     if (image == "") {
-      return Image.asset('lib/images/no_image.jpg', fit: BoxFit.fill);
+      return Image.asset(noImagePath, fit: BoxFit.fill);
     }
     image = "uploads/" + image;
     Image m;
@@ -63,8 +72,6 @@ class _SearchPage extends State<SearchPage> {
       m = Image.network(
         downloadUrl.toString(),
         fit: BoxFit.fitHeight,
-        // height: 100,
-        // width: 100,
       );
     });
     return m;
@@ -72,14 +79,6 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.getUser) {
-      Algoritem a = new Algoritem(widget.uid);
-      a.allRecipe().whenComplete(() {
-        print("shir");
-        widget.publisRecipe.addAll(a.recipes);
-      });
-      print("saerch");
-    }
     if (!widget.doneLoadPublishRecipe) {
       return Loading();
     } else {

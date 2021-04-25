@@ -1,12 +1,8 @@
-import 'dart:developer';
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:recipes_app/models/ingresients.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/screens/home_screen/ingredients.dart';
+import 'package:recipes_app/screens/recipes/ingredients.dart';
 
 class DataBaseService {
   String uid;
@@ -25,13 +21,14 @@ class DataBaseService {
       Firestore.instance.collection('users');
 
   Future updateUserData(String firstName, String lastName, String phone,
-      int age, String email) async {
+      int age, String email, String imagePath) async {
     return await userCollection.document(uid).setData({
       'firstName': firstName,
       'lastName': lastName,
       'Email': email,
       'age': age,
-      'phone': phone
+      'phone': phone,
+      'imagePath': imagePath
     });
   }
 
@@ -47,7 +44,8 @@ class DataBaseService {
         lastName: snapshot.data['lastName'],
         email: snapshot.data['Email'],
         age: snapshot.data['age'],
-        phone: snapshot.data['phone']);
+        phone: snapshot.data['phone'],
+        imagePath: snapshot.data['imagePath']);
   }
 
   //get user doc stream

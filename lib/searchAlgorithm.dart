@@ -18,7 +18,7 @@ class Algoritem {
   Map<String, int> amountLikesOfRecipe = {};
   Map<String, int> amountGroupsOfRecipe = {};
   Map<String, int> amountUsersOfRecipe = {};
-  List popular;
+  List popular = [];
   String uid;
   Algoritem(String _uid) {
     uid = _uid;
@@ -36,13 +36,13 @@ class Algoritem {
   }
 
   Future<void> getPopularRecipes() async {
-    getUserAmount();
-    getGroupsAmount();
-    getLikesAmount();
-    getUserAndRecipe(amountLikesOfRecipe);
-    getUserAndRecipe(amountGroupsOfRecipe);
-    getUserAndRecipe(amountUsersOfRecipe);
-    convertToRecipe(popular);
+    // await getUserAmount();
+    // await getGroupsAmount();
+    // await getLikesAmount();
+    // await getUserAndRecipe(amountLikesOfRecipe);
+    // await getUserAndRecipe(amountGroupsOfRecipe);
+    // await getUserAndRecipe(amountUsersOfRecipe);
+    // await convertToRecipe(popular);
   }
 
   getUserAndRecipe(Map<String, int> map) async {

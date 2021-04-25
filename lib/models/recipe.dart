@@ -1,5 +1,4 @@
 import 'package:recipes_app/models/ingresients.dart';
-import 'package:recipes_app/screens/home_screen/ingredients.dart';
 
 class Recipe {
   String writer;

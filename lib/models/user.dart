@@ -12,12 +12,13 @@ class UserData {
   final int age;
   final String email;
   List<String> likes = new List<String>();
-
+  String imagePath = "";
   UserData(
       {this.uid,
       this.firstName,
       this.lastName,
       this.email,
       this.age,
-      this.phone});
+      this.phone,
+      this.imagePath});
 }

@@ -45,11 +45,14 @@ class AuthService {
           email: email, password: pass);
       FirebaseUser user = result.user;
       //create an new document fot the new user with this uid
-      await DataBaseService(user.uid).updateUserData('', '', '', 0, user.email);
+      await DataBaseService(user.uid)
+          .updateUserData('', '', '', 0, user.email, '');
       return _userFromFirebaseUser(user);
     } catch (e) {
-      print(e.toString());
-      return null;
+      print("errorrrr: " + e.toString());
+      //PlatformException(ERROR_INVALID_EMAIL, The email address is badly formatted., null, null)
+      ////PlatformException(ERROR_EMAIL_ALREADY_IN_USE, The email address is already in use by another account., null, null)
+      return e.toString();
     }
   }
 

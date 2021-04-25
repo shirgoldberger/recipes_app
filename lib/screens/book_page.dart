@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/models/user.dart';
-import 'package:recipes_app/screens/home_screen/logIn/register.dart';
-import 'package:recipes_app/screens/home_screen/recipesFolder.dart';
+import 'package:recipes_app/screens/personal_screen/logIn/register.dart';
+import 'package:recipes_app/screens/recipes/recipesFolder.dart';
 import 'package:recipes_app/services/database.dart';
-
 import '../main.dart';
-import 'home_screen/logIn/log_in_wrapper.dart';
 
 class RecipesBookPage extends StatelessWidget {
   static String tag = 'book-page';
