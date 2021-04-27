@@ -1,15 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recipes_app/screens/personal_screen/uploadImage.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/addRecipeIngredients.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import '../../../config.dart';
 
 class UploadRecipeImage extends StatefulWidget {
-  final db = Firestore.instance;
+  String username;
+  String uid;
   String name;
   String description;
-  UploadRecipeImage(String _name, String _description) {
+  UploadRecipeImage(
+      String _username, String _uid, String _name, String _description) {
+    username = _username;
+    uid = _uid;
     name = _name;
     description = _description;
   }
@@ -24,22 +30,41 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: backgroundColor,
-        body: Container(
-            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-            child: Column(children: [
-              box,
-              box,
-              imageBox(),
-              box,
-              box,
-              Row(children: [
-                previousLevelButton(),
-                SizedBox(
-                  width: 260,
+        body: ListView(children: [
+          Container(
+            height: 500,
+            child: imageBox(),
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: 20,
+              ),
+              previousLevelButton(),
+              SizedBox(
+                width: 10,
+              ),
+              LinearPercentIndicator(
+                width: 250,
+                animation: true,
+                lineHeight: 18.0,
+                animationDuration: 500,
+                percent: 0.125,
+                center: Text(
+                  "12.5%",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
                 ),
-                nextLevelButton()
-              ])
-            ])));
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: Colors.grey[600],
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              nextLevelButton()
+            ],
+          )
+        ]));
   }
 
   Widget nextLevelButton() {
@@ -53,9 +78,11 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
               : () {
                   Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => AddRecipeIngredients(
-                              widget.name, widget.description, imagePath)));
+                      PageRouteBuilder(
+                          transitionDuration: Duration(seconds: 0),
+                          pageBuilder: (context, animation1, animation2) =>
+                              AddRecipeIngredients(widget.username, widget.uid,
+                                  widget.name, widget.description, imagePath)));
                 },
           tooltip: 'next',
           child: Icon(Icons.navigate_next),
@@ -77,11 +104,19 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
   Widget imageBox() {
     if (imagePath == "") {
       // upload image button
-      return FlatButton(
-        height: 10,
-        child: Image.asset(uploadImagePath),
-        onPressed: uploadImagePressed,
-      );
+      return ListView(children: [
+        box,
+        box,
+        title(),
+        FlatButton(
+          height: 10,
+          child: CircleAvatar(
+              radius: 100,
+              foregroundColor: Colors.black,
+              child: Image.asset(uploadImagePath)),
+          onPressed: uploadImagePressed,
+        )
+      ]);
     } else {
       hasImage = true;
       // show the image
@@ -100,6 +135,7 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done)
                     return CircleAvatar(
+                      backgroundColor: backgroundColor,
                       backgroundImage: snapshot.data,
                       radius: 150,
                     );
@@ -146,5 +182,11 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
                 imagePath = value.toString();
               })
             });
+  }
+
+  Widget title() {
+    return Text('Add Image to your recipe',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 20, fontFamily: 'Raleway'));
   }
 }

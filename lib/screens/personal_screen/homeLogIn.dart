@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/screens/personal_screen/Setting_form.dart';
+import '../../main.dart';
 import '../groups/GroupList.dart';
 import 'logIn/logInWrapper.dart';
 import '../groups/newGroup.dart';
@@ -187,8 +189,7 @@ class _HomeLogInState extends State<HomeLogIn> {
       label: Text('Log Out', style: TextStyle(color: Colors.black)),
       onPressed: () async {
         await _auth.signOut();
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LogInWrapper()));
+        Phoenix.rebirth(context);
       },
     );
   }
@@ -198,7 +199,9 @@ class _HomeLogInState extends State<HomeLogIn> {
       backgroundColor: Colors.black,
       onPressed: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => PlusRecipe()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => MainCreateRecipe(name, widget.uid)));
       },
       tooltip: 'Add New Recipe',
       child: Icon(Icons.add),

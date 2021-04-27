@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:recipes_app/models/ingresients.dart';
+import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stages.dart';
 import 'package:recipes_app/models/user.dart';
@@ -477,7 +477,7 @@ class _EditRecipeState extends State<EditRecipe> {
                     ),
                   ]),
                 ),
-                resizeToAvoidBottomPadding: false,
+                resizeToAvoidBottomInset: false,
               )));
     }
   }

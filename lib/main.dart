@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/screens/book_page.dart';
 import 'package:recipes_app/screens/home.dart';
 import 'package:recipes_app/screens/personal_screen/logIn/logInWrapper.dart';
@@ -8,7 +9,7 @@ import 'models/user.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(Phoenix(child: MyApp()));
 }
 
 /// This is the main application widget.

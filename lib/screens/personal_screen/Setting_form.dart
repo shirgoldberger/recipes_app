@@ -77,7 +77,7 @@ class _SettingFormState extends State<SettingForm> {
                       updateButton(userData)
                     ],
                   ),
-                  resizeToAvoidBottomPadding: false,
+                  resizeToAvoidBottomInset: false,
                 ));
           } else {
             Loading();

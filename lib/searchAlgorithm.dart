@@ -1,9 +1,8 @@
 import 'dart:collection';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'models/recipe.dart';
 
+// <userId, recipeId>
 class Pair<T1, T2> {
   final String user;
   final String recipe;
@@ -24,25 +23,23 @@ class Algoritem {
     uid = _uid;
   }
 
-  Future<List<Recipe>> allRecipe() async {
+  Stream<void> allRecipe() async* {
     if (uid != null) {
       await myFriends(uid);
     }
-    await getPopularRecipes().whenComplete(() {
-      return recipes;
-    });
+    await getPopularRecipes();
 
-    ///return recipes;
+    // return recipes;
   }
 
-  Future<void> getPopularRecipes() async {
-    // await getUserAmount();
-    // await getGroupsAmount();
-    // await getLikesAmount();
-    // await getUserAndRecipe(amountLikesOfRecipe);
-    // await getUserAndRecipe(amountGroupsOfRecipe);
-    // await getUserAndRecipe(amountUsersOfRecipe);
-    // await convertToRecipe(popular);
+  Stream<void> getPopularRecipes() async* {
+    await getUserAmount();
+    await getGroupsAmount();
+    await getLikesAmount();
+    await getUserAndRecipe(amountLikesOfRecipe);
+    await getUserAndRecipe(amountGroupsOfRecipe);
+    await getUserAndRecipe(amountUsersOfRecipe);
+    await convertToRecipe(popular);
   }
 
   getUserAndRecipe(Map<String, int> map) async {

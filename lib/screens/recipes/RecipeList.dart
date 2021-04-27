@@ -49,60 +49,35 @@ class _RecipeListState extends State<RecipeList> {
   @override
   Widget build(BuildContext context) {
     Widget tags(int index) {
-      //   return Card(
-      //       child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-      //     Expanded(child: Text(widget.myTags[index])),
-      //     ButtonBar(children: <Widget>[
-      //       FlatButton.icon(
-      //           icon: Icon(
-      //             Icons.delete,
-      //             color: Colors.black,
-      //           ),
-      //           label: Text(
-      //             '',
-      //             style: TextStyle(color: Colors.white),
-      //           ),
-      //           onPressed: () {
-      //             deleteTag(widget.myTags[index]);
-      //           }),
-      //     ])
-      //   ]));
-      // }
-
-      return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Text(widget.myTags[index]),
-        FlatButton.icon(
-            icon: Icon(
-              Icons.delete,
-              color: Colors.black,
+      return Card(
+        clipBehavior: Clip.antiAlias,
+        child: Row(
+          children: [
+            Flexible(
+              child: Text(
+                widget.myTags[index],
+                style: TextStyle(
+                    fontFamily: 'Raleway', color: Colors.black, fontSize: 13),
+              ),
             ),
-            label: Text(
-              '',
-              style: TextStyle(color: Colors.white),
+            Expanded(
+              child: FlatButton(
+                child: Icon(Icons.cancel, size: 20),
+                onPressed: () {
+                  deleteTag(widget.myTags[index]);
+                },
+              ),
             ),
-            onPressed: () {
-              deleteTag(widget.myTags[index]);
-            }),
-      ]);
+          ],
+        ),
+      );
     }
 
     String selectedSubject;
 
-    // void onDelteTags(int i) {
-    //   setState(() {
-    //     myTags.removeAt(i);
-    //   });
-    // }
-
-    // void addTags() {
-    //   print("add tags");
-    //   setState(() {
-    //     myTags.add('choose recipe tag');
-    //   });
-    // }
-
     setState(() {
       widget.list = (widget.map[widget.head]);
+      tagList.remove(widget.head);
       if (!widget.myTags.contains(widget.head)) {
         widget.myTags.add(widget.head);
       }
@@ -118,44 +93,38 @@ class _RecipeListState extends State<RecipeList> {
           elevation: 0.0,
           actions: <Widget>[],
         ),
-        body: ListView(children: <Widget>[
-          //tags
-          Container(
-            // width: double.infinity,
-            // height: double.infinity,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  DropdownButton<String>(
-                    value: selectedSubject,
-                    onChanged: (value) {
-                      ///print(value);
-                      // print(widget.myTags);
-                      setState(() {
-                        widget.myTags.add(value);
-                        addtag(value);
-                      });
-                    },
-                    items: tagList.map<DropdownMenuItem<String>>((value) {
-                      return DropdownMenuItem(value: value, child: Text(value));
-                    }).toList(),
-                  ),
-                ]),
+        body: Column(children: <Widget>[
+          DropdownButton<String>(
+            value: selectedSubject,
+            onChanged: (value) {
+              setState(() {
+                tagList.remove(value);
+                widget.myTags.add(value);
+                addtag(value);
+              });
+            },
+            items: tagList.map<DropdownMenuItem<String>>((value) {
+              return DropdownMenuItem(value: value, child: Text(value));
+            }).toList(),
           ),
-
-          Expanded(
-            child: Container(
-                height: 100,
-                width: 500,
-                child: GridView.count(
-                    crossAxisCount: 3,
-                    children: List.generate(widget.myTags.length, (index) {
-                      return tags(index);
-                    }))),
+          Flexible(
+            //flex: (widget.myTags.length % 3) * 10,
+            child: GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 3,
+                childAspectRatio: (30 / 10),
+                children: List.generate(widget.myTags.length, (index) {
+                  return Flexible(child: tags(index));
+                })),
           ),
-
-          Expanded(
+          // SizedBox(
+          //   height: 10,
+          // ),
+          // Container(
+          //   height: MediaQuery.of(context).size.height *
+          //       (1 - (widget.myTags.length * 0.1)),
+          Flexible(
+            // flex: 100 - ((widget.myTags.length % 3) * 10),
             child: ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
@@ -180,13 +149,8 @@ class _RecipeListState extends State<RecipeList> {
                                 topRight: Radius.circular(30.0),
                                 bottomLeft: Radius.circular(30.0),
                                 bottomRight: Radius.circular(30.0)),
-                            child:
-                                //                       SizedBox(
-                                //   height: 20.0,
-                                // );
-                                RecipeHeadLine(
-                                    widget.list[index], widget.home))));
-                //return Folder(widget.list, widget.home);
+                            child: RecipeHeadLine(
+                                widget.list[index], widget.home))));
               },
             ),
           )
@@ -195,20 +159,25 @@ class _RecipeListState extends State<RecipeList> {
 
   void addtag(String value) {
     List valueList = widget.map[value];
-    for (int i = 0; i < valueList.length; i++) {
-      Recipe recipe = valueList[i];
-      if (!widget.list.contains(recipe)) {
-        widget.list.add(recipe);
+    if (valueList != null) {
+      for (int i = 0; i < valueList.length; i++) {
+        Recipe recipe = valueList[i];
+        if (!widget.list.contains(recipe)) {
+          widget.list.add(recipe);
+        }
       }
     }
   }
 
   void deleteTag(String value) {
-    print(value);
-    print("my tags");
-    print(widget.myTags);
+    //  print(value);
+    //  print("my tags");
+    //  print(widget.myTags);
     setState(() {
       widget.myTags.remove(value);
+    });
+    setState(() {
+      tagList.add(value);
     });
     print(widget.myTags);
     List valueList = widget.map[value];

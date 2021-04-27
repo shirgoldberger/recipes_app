@@ -31,7 +31,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
     changeState();
   }
 
-  void changeState() {
+  Future<void> changeState() async {
     widget.publisRecipe = [];
     widget.savedRecipe = [];
     widget.doneLoadPublishRecipe = false;
@@ -77,7 +77,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
     //אם אנחנו מגיעים מעמוד האישי של המשתמש יהיה כאן את כל רשימת המתכונים שלו,
     //אם אנחנו מגיעים מעמוד הבית יהיה כאן כל המתכונים שנמצאים בתיקית המתכונים בדאטה בייס,
     //לכן נצטרך להוסיף אליהם גם את רשימת המתכונים המפורסמים - מתיקית המתכונים המפורסמים.
-    var recipeList = Provider.of<List<Recipe>>(context);
+    var recipeList = Provider.of<List<Recipe>>(context) ?? [];
     //אם לא הגעת מעמוד הבית אין סיבה לטעון את כל המתכונים -
     // לכן מיד נשנה את הערך הבוליאני ל- נכון, ולא נקרא לפונקציה.
     // widget.publisRecipe = [];
@@ -235,6 +235,11 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
           }
         }
       }
+      Future<bool> refresh() async {
+        await Future.delayed(Duration(seconds: 3));
+        changeState();
+        return true;
+      }
 
       Widget categoryButtom(String cat, List listCat) {
         return InkWell(
@@ -262,19 +267,21 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
                       .get();
                   Map<dynamic, dynamic> tagsCount = snap.data['tags'];
                   print("before pushhhhhhhhhhhhhhhhhh");
-                  int count = tagsCount['cat'];
-
+                  print(cat);
+                  int count = tagsCount[cat];
+                  print(count);
+                  print(tagsCount);
                   if (count == null) {
                     count = 0;
                   }
                   count++;
-                  tagsCount['cat'] = count;
+                  tagsCount[cat] = count;
                   db
                       .collection('users')
                       .document(widget.uid)
                       .updateData({'tags': tagsCount});
                 }
-                print("pushhhhhhhhhhhhhhhhhh");
+                //print("pushhhhhhhhhhhhhhhhhh");
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -284,37 +291,41 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
         );
       }
 
-      return ListView(children: <Widget>[
-        FlatButton.icon(
-          color: Colors.blueGrey[400],
-          icon: Icon(
-            Icons.refresh,
-            color: Colors.white,
-          ),
-          label: Text(
-            'Refresh',
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () => {changeState()},
-        ),
+      return ListView(shrinkWrap: true, primary: false, children: <Widget>[
+        // FlatButton.icon(
+        //   color: Colors.blueGrey[400],
+        //   icon: Icon(
+        //     Icons.refresh,
+        //     color: Colors.white,
+        //   ),
+        //   label: Text(
+        //     'Refresh',
+        //     style: TextStyle(color: Colors.white),
+        //   ),
+        //   onPressed: () => {changeState()},
+        // ),
         // Folder(recipeList),
         //fish
         SizedBox(
           height: 10.0,
         ),
-        Container(
-          height: 500,
-          child: GridView.count(
-            crossAxisCount: 3,
-            children: List.generate(mapCat.length, (index) {
-              return Container(
-                  height: 500,
-                  width: 500,
-                  child: Card(
-                      shape: RoundedRectangleBorder(side: BorderSide.none),
-                      child: categoryButtom(mapCat.keys.elementAt(index),
-                          mapCat.values.elementAt(index))));
-            }),
+        RefreshIndicator(
+          color: Colors.blue,
+          onRefresh: refresh,
+          child: Container(
+            height: 500,
+            child: GridView.count(
+              crossAxisCount: 3,
+              children: List.generate(mapCat.length, (index) {
+                return Container(
+                    height: 500,
+                    width: 500,
+                    child: Card(
+                        shape: RoundedRectangleBorder(side: BorderSide.none),
+                        child: categoryButtom(mapCat.keys.elementAt(index),
+                            mapCat.values.elementAt(index))));
+              }),
+            ),
           ),
         )
       ]);
@@ -327,7 +338,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
     if (user != null) {
       setState(() {
         widget.uid = user.uid;
-        print("set statae user");
+        // print("set statae user");
       });
     }
     String uid;
@@ -398,8 +409,8 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
       widget.publisRecipe.add(r);
       // print(r.publish);
       i++;
-      print("i -     " + i.toString());
-      print(snap.documents.length);
+      // print("i -     " + i.toString());
+      //  print(snap.documents.length);
       // print(snap.documents.length);
       if ((i) == snap.documents.length) {
         setState(() {
@@ -421,9 +432,9 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
         .collection('saved recipe')
         .getDocuments();
     widget.savedRecipe = [];
-    print("check");
-    print(widget.uid);
-    print(snap.documents.length);
+    //   print("check");
+    //   print(widget.uid);
+    //   print(snap.documents.length);
     if (snap.documents.length == 0) {
       setState(() {
         widget.doneLoadSavedRecipe = true;
@@ -434,9 +445,9 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
       uid = element.data['userID'] ?? '';
       recipeId = element.data['recipeID'] ?? '';
       saveInUser = element.data['saveInUser'] ?? true;
-      print(uid);
-      print(recipeId);
-      print(saveInUser);
+      //   print(uid);
+      //   print(recipeId);
+      //  print(saveInUser);
       if (saveInUser) {
         DocumentSnapshot doc = await Firestore.instance
             .collection('users')
@@ -485,21 +496,21 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
             }
           }
         }
-        print(n + "   " + de);
+        //   print(n + "   " + de);
         r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, true,
             id, publish, path);
       }
       //from recipe
       else {
-        print("else" + recipeId);
-        print(recipeId);
+        //   print("else" + recipeId);
+        //  print(recipeId);
         DocumentSnapshot doc = await Firestore.instance
             .collection('recipes')
             .document(recipeId)
             .get();
         //check if in the user;
-        print(doc.data.length.toString() +
-            "   .....................................");
+        //   print(doc.data.length.toString() +
+        //      "   .....................................");
         String n = doc.data['name'] ?? '';
         String de = doc.data['description'] ?? '';
         String level = doc.data['level'] ?? 0;
@@ -538,7 +549,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
             }
           }
         }
-        print(n + "   " + de);
+        //   print(n + "   " + de);
         r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, false,
             id, publish, path);
       }
@@ -546,7 +557,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
       // print(publish + "publish");
       //r.publishThisRecipe(publish);
       widget.savedRecipe.add(r);
-      print("plus ");
+      //  print("plus ");
       // print(r.publish);
       i++;
 
@@ -554,7 +565,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
       if ((i) == snap.documents.length) {
         setState(() {
           widget.doneLoadSavedRecipe = true;
-          print("done save");
+          //      print("done save");
         });
       }
     });

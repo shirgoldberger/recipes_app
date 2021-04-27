@@ -72,7 +72,7 @@ class _SignInState extends State<SignIn> {
                     ],
                   ),
                 )),
-            resizeToAvoidBottomPadding: false,
+            resizeToAvoidBottomInset: false,
           );
   }
 

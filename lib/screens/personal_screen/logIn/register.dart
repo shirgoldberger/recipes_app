@@ -88,7 +88,7 @@ class _RegisterState extends State<Register> {
                     ],
                   ),
                 )),
-            resizeToAvoidBottomPadding: false,
+            resizeToAvoidBottomInset: false,
           );
   }
 

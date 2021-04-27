@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recipes_app/models/ingresients.dart';
+import 'package:recipes_app/models/ingredient.dart';
 
 typedef OnDelete();
 

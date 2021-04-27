@@ -49,25 +49,38 @@ class _NewGroupState extends State<NewGroup> {
               child: Column(children: <Widget>[
                 Flexible(
                     child: ListView(children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: 'Group Name',
-                    ),
-                    validator: (val) =>
-                        val.isEmpty ? 'Enter a name of your recipe' : null,
-                    onChanged: (val) {
-                      setState(() => groupName = val);
-                    },
+                  Text(
+                    'Hey let\'s create a new group!',
+                    style: TextStyle(
+                        fontFamily: 'Raleway',
+                        fontSize: 25,
+                        color: Colors.blueGrey[800]),
+                    textAlign: TextAlign.center,
                   ),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: 'email Name',
-                    ),
-                    validator: (val) =>
-                        val.isEmpty ? 'Enter a name of your recipe' : null,
-                    onChanged: (val) {
-                      setState(() => emailTocheck = val);
-                    },
+                  SizedBox(
+                    height: 30.0,
+                  ),
+                  groupNameField(),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Text(
+                    'Adding participants:',
+                    style: TextStyle(
+                        fontFamily: 'Raleway',
+                        fontSize: 20,
+                        color: Colors.blueGrey[800]),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  groupEmailField(),
+                  SizedBox(
+                    height: 20.0,
                   ),
                   Text(
                     error,
@@ -75,11 +88,11 @@ class _NewGroupState extends State<NewGroup> {
                   ),
                   RawMaterialButton(
                     onPressed: () => saveUser(emailTocheck),
-                    elevation: 0.2,
-                    fillColor: Colors.brown[300],
+                    elevation: 0.9,
+                    fillColor: Colors.blueGrey[300],
                     child: Icon(
-                      Icons.add,
-                      size: 18.0,
+                      Icons.person_add_alt_1,
+                      size: 30.0,
                     ),
                     padding: EdgeInsets.all(5.0),
                     shape: CircleBorder(),
@@ -87,28 +100,66 @@ class _NewGroupState extends State<NewGroup> {
                   SizedBox(
                     height: 20.0,
                   ),
-                  new Text(
-                    'Users in this group:',
-                    style: new TextStyle(
-                        color: Colors.black,
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.w700),
-                  ),
+                  // Text(
+                  //   'Participants:',
+                  //   style: TextStyle(
+                  //       fontFamily: 'Raleway',
+                  //       fontSize: 20,
+                  //       color: Colors.blueGrey[800]),
+                  //   textAlign: TextAlign.center,
+                  // ),
                   new Padding(padding: EdgeInsets.only(top: 10.0)),
                   Column(children: <Widget>[
-                    for (var j = 0; j < userEmail.length; j++)
-                      Text(
-                        (j + 1).toString() + "." + "  " + userEmail[j],
-                        textAlign: TextAlign.left,
-                        style: new TextStyle(
-                            color: Colors.grey[800], fontSize: 25.0),
-                      ),
+                    ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: userEmail.length,
+                        itemBuilder: (context, index) {
+                          return Text(
+                            (index + 1).toString() +
+                                "." +
+                                "  " +
+                                userEmail[index],
+                            textAlign: TextAlign.left,
+                            style: new TextStyle(
+                                fontSize: 20, color: Colors.blueGrey[800]),
+                          );
+                        }),
                     new Padding(padding: EdgeInsets.only(top: 20.0)),
                   ]),
                 ])),
               ])),
-          resizeToAvoidBottomPadding: false,
+          //   resizeToAvoidBottomPadding: false,
         ));
+  }
+
+  Widget groupNameField() {
+    return TextFormField(
+      cursorWidth: 10,
+      decoration: InputDecoration(
+        suffixIcon: Icon(Icons.edit),
+        icon: Icon(Icons.closed_caption),
+        hintText: 'Group Name',
+      ),
+      validator: (val) => val.isEmpty ? 'Enter a name of your group' : null,
+      onChanged: (val) {
+        setState(() => groupName = val);
+      },
+    );
+  }
+
+  Widget groupEmailField() {
+    return TextFormField(
+      cursorWidth: 10,
+      decoration: InputDecoration(
+        suffixIcon: Icon(Icons.edit),
+        icon: Icon(Icons.contact_mail),
+        hintText: 'email adress',
+      ),
+      validator: (val) => val.isEmpty ? 'Enter an email of your friend' : null,
+      onChanged: (val) {
+        setState(() => emailTocheck = val);
+      },
+    );
   }
 
   Future<void> SaveGroup() async {
@@ -129,13 +180,15 @@ class _NewGroupState extends State<NewGroup> {
   }
 
   Future<void> saveUser(String email) async {
+    //print("save user");
+    //print(email);
     String mailCheck;
     // print(email);
     QuerySnapshot snap =
         await Firestore.instance.collection('users').getDocuments();
     snap.documents.forEach((element) async {
       mailCheck = element.data['Email'] ?? '';
-      print(mailCheck);
+      //print(mailCheck);
       if (mailCheck == email) {
         //print("sucsses");
         findUser = true;
@@ -144,9 +197,17 @@ class _NewGroupState extends State<NewGroup> {
           error = '';
           String firstName = element.data['firstName'] ?? '';
           String lastName = element.data['lastName'] ?? '';
-          String mailName = mailCheck + " = " + firstName + " " + lastName;
-          userEmail.add(mailName);
-          usersID.add(element.documentID);
+          String mailName = firstName + " " + lastName;
+
+          if (mailName == ' ') {
+            mailName = 'this user has no name:(';
+          }
+          if (!userEmail.contains(mailName)) {
+            userEmail.add(mailName);
+            usersID.add(element.documentID);
+          } else {
+            error = 'This user is already in this group';
+          }
         });
       }
     });

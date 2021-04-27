@@ -1,8 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/uploadRecipeImage.dart';
 import '../../../config.dart';
 
 class SetRecipeDetails extends StatefulWidget {
+  String uid;
+  String username;
+  SetRecipeDetails(String _username, String _uid) {
+    uid = _uid;
+    username = _username;
+  }
   @override
   _SetRecipeDetailsState createState() => _SetRecipeDetailsState();
 }
@@ -18,7 +26,7 @@ class _SetRecipeDetailsState extends State<SetRecipeDetails> {
       key: _formKey,
       child: Scaffold(
         backgroundColor: backgroundColor,
-        body: Column(
+        body: ListView(
           children: <Widget>[
             box,
             box,
@@ -29,26 +37,44 @@ class _SetRecipeDetailsState extends State<SetRecipeDetails> {
               style: TextStyle(fontSize: 25, fontFamily: 'Raleway'),
             ),
             box,
-            recipeNameField(),
-            box,
-            box,
-            recipeDescriptionField(),
-            SizedBox(
-              height: 160,
-            ),
+            Container(
+                height: 360,
+                child: ListView(children: [
+                  recipeNameField(),
+                  box,
+                  box,
+                  recipeDescriptionField(),
+                ])),
             Row(children: [
               SizedBox(
                 width: 20,
               ),
               previousLevelButton(),
               SizedBox(
-                width: 260,
+                width: 10,
+              ),
+              LinearPercentIndicator(
+                width: 250,
+                animation: true,
+                lineHeight: 18.0,
+                animationDuration: 1000,
+                percent: 0.0,
+                center: Text(
+                  "0%",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: Colors.grey[600],
+              ),
+              SizedBox(
+                width: 10,
               ),
               nextLevelButton()
             ])
           ],
         ),
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: false,
       ),
     );
   }
@@ -95,9 +121,11 @@ class _SetRecipeDetailsState extends State<SetRecipeDetails> {
             if (_formKey.currentState.validate()) {
               Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          UploadRecipeImage(recipeName, recipeDescription)));
+                  PageRouteBuilder(
+                      transitionDuration: Duration(seconds: 0),
+                      pageBuilder: (context, animation1, animation2) =>
+                          UploadRecipeImage(widget.username, widget.uid,
+                              recipeName, recipeDescription)));
             }
           },
           tooltip: 'next',

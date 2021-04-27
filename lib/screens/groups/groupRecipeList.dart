@@ -1,9 +1,13 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/screens/groups/changeNameGroup.dart';
 import 'package:recipes_app/screens/groups/groupRecipeHeadLine.dart';
+import '../../config.dart';
+import '../../config.dart';
 import 'ParticipentsWatch.dart';
 import 'addParticipent.dart';
 import '../personal_screen/homeLogIn.dart';
@@ -54,72 +58,24 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
                 ),
                 backgroundColor: Colors.blueGrey[700],
                 elevation: 0.0,
-                actions: <Widget>[
-                  DropdownButton(
-                      value: _value,
-                      items: [
-                        DropdownMenuItem(
-                          child: Text('setting:'),
-                          value: 4,
-                        ),
-                        DropdownMenuItem(
-                          child: FlatButton.icon(
-                              color: Colors.black,
-                              icon: Icon(
-                                Icons.people,
-                                color: Colors.white,
-                              ),
-                              label: Text(
-                                "people ",
-                                style: TextStyle(
-                                    fontFamily: 'Raleway', color: Colors.white),
-                              ),
-                              onPressed: () {
-                                showParticipents();
-                              }),
-                          value: 1,
-                        ),
-                        DropdownMenuItem(
-                          child: FlatButton.icon(
-                              color: Colors.black,
-                              icon: Icon(
-                                Icons.delete,
-                                color: Colors.white,
-                              ),
-                              label: Text(
-                                "add",
-                                style: TextStyle(
-                                    fontFamily: 'Raleway', color: Colors.white),
-                              ),
-                              onPressed: () {
-                                addParticipents();
-                              }),
-                          value: 2,
-                        ),
-                        DropdownMenuItem(
-                            child: FlatButton.icon(
-                                color: Colors.black,
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                                label: Text(
-                                  "delete me",
-                                  style: TextStyle(
-                                      fontFamily: 'Raleway',
-                                      color: Colors.white),
-                                ),
-                                onPressed: () {
-                                  delete();
-                                }),
-                            value: 3),
-                      ],
-                      onChanged: (value) {
-                        setState(() {});
-                      }),
-                ]),
+                leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.pop(context, false),
+                ),
+                actions: <Widget>[]),
+            drawerDragStartBehavior: DragStartBehavior.down,
+            drawerScrimColor: Colors.blueGrey[200],
+            endDrawer: leftMenu(),
             body: Column(children: <Widget>[
-              Text("thers is no recipes in this group - lets add some recipe.")
+              box,
+              Text(
+                "thers is no recipes in this group - lets add some recipes...",
+                style: TextStyle(
+                    fontFamily: 'Raleway',
+                    fontSize: 30,
+                    color: Colors.blueGrey[800]),
+                textAlign: TextAlign.center,
+              )
             ]));
       }
 
@@ -132,70 +88,15 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
             ),
             backgroundColor: Colors.blueGrey[700],
             elevation: 0.0,
-            actions: <Widget>[
-              DropdownButton(
-                  value: _value,
-                  items: [
-                    DropdownMenuItem(
-                      child: Text('setting:'),
-                      value: 4,
-                    ),
-                    DropdownMenuItem(
-                      child: FlatButton.icon(
-                          color: Colors.black,
-                          icon: Icon(
-                            Icons.people,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            "people ",
-                            style: TextStyle(
-                                fontFamily: 'Raleway', color: Colors.white),
-                          ),
-                          onPressed: () {
-                            showParticipents();
-                          }),
-                      value: 1,
-                    ),
-                    DropdownMenuItem(
-                      child: FlatButton.icon(
-                          color: Colors.black,
-                          icon: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            "add",
-                            style: TextStyle(
-                                fontFamily: 'Raleway', color: Colors.white),
-                          ),
-                          onPressed: () {
-                            addParticipents();
-                          }),
-                      value: 2,
-                    ),
-                    DropdownMenuItem(
-                        child: FlatButton.icon(
-                            color: Colors.black,
-                            icon: Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                            ),
-                            label: Text(
-                              "delete me",
-                              style: TextStyle(
-                                  fontFamily: 'Raleway', color: Colors.white),
-                            ),
-                            onPressed: () {
-                              delete();
-                            }),
-                        value: 3),
-                  ],
-                  onChanged: (value) {
-                    setState(() {});
-                  }),
-            ],
+            actions: <Widget>[],
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context, false),
+            ),
           ),
+          drawerDragStartBehavior: DragStartBehavior.down,
+          drawerScrimColor: Colors.blueGrey[200],
+          endDrawer: leftMenu(),
           body: Column(children: <Widget>[
             Expanded(
               child: ListView.builder(
@@ -231,6 +132,124 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
             )
           ]));
     }
+  }
+
+  Widget deleteButtom() {
+    return ButtonTheme(
+      minWidth: 200.0,
+      height: 50.0,
+      child: FlatButton.icon(
+          color: Colors.blueGrey[300],
+          icon: Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+          label: Text(
+            "delete me",
+            style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+          ),
+          onPressed: () {
+            delete();
+          }),
+    );
+  }
+
+  Widget people() {
+    return ButtonTheme(
+      minWidth: 200.0,
+      height: 50.0,
+      child: FlatButton.icon(
+          color: Colors.blueGrey[300],
+          icon: Icon(
+            Icons.people,
+            color: Colors.white,
+          ),
+          label: Text(
+            "people ",
+            style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+          ),
+          onPressed: () {
+            showParticipents();
+          }),
+    );
+  }
+
+  Widget add() {
+    return ButtonTheme(
+      minWidth: 200.0,
+      height: 50.0,
+      child: FlatButton.icon(
+          color: Colors.blueGrey[300],
+          icon: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+          label: Text(
+            "add",
+            style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+          ),
+          onPressed: () {
+            addParticipents();
+          }),
+    );
+  }
+
+  Widget editNameWidget() {
+    return ButtonTheme(
+      minWidth: 200.0,
+      height: 50.0,
+      child: FlatButton.icon(
+          color: Colors.blueGrey[300],
+          icon: Icon(
+            Icons.text_fields,
+            color: Colors.white,
+          ),
+          label: Text(
+            "edit name",
+            style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+          ),
+          onPressed: () {
+            editName();
+          }),
+    );
+  }
+
+  Widget leftMenu() {
+    return Container(
+      color: appBarBackgroundColor,
+      width: MediaQuery.of(context).size.width * 0.5,
+      child: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            profileDetails(),
+            Column(children: [
+              box,
+              deleteButtom(),
+              boxSize,
+              people(),
+              boxSize,
+              add(),
+              boxSize,
+              editNameWidget()
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget boxSize = SizedBox(
+    height: 8.0,
+  );
+  Widget profileDetails() {
+    return UserAccountsDrawerHeader(
+        decoration: BoxDecoration(
+          color: appBarBackgroundColor,
+        ),
+        arrowColor: appBarBackgroundColor,
+        accountName: Text(widget.groupName,
+            style: TextStyle(fontSize: 15, fontFamily: 'frik')));
   }
 
   Future<void> makeList() async {
@@ -388,6 +407,26 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
         .then((value) => cameBack(value));
   }
 
+  Future<void> editName() async {
+    //print(notes);
+    showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                decoration: new BoxDecoration(
+                  color: Colors.blueGrey[50],
+                  borderRadius: new BorderRadius.only(
+                    topLeft: const Radius.circular(25.0),
+                    topRight: const Radius.circular(25.0),
+                  ),
+                ),
+                child: ChangeNameGroup(
+                    widget.userId, widget.groupId, widget.groupName)))
+        .then((value) => updateName(value));
+  }
+
   Future<void> delete() async {
     // print("delete");
     DocumentSnapshot snap2 = await Firestore.instance
@@ -403,6 +442,10 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
         .collection('Group')
         .document(widget.groupId)
         .updateData({'users': usersList});
+    if (usersList.length == 0) {
+      //print("empty group");
+      db.collection('Group').document(widget.groupId).delete();
+    }
     QuerySnapshot snap3 = await Firestore.instance
         .collection('users')
         .document(widget.myUid)
@@ -424,12 +467,45 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
         MaterialPageRoute(builder: (context) => HomeLogIn(widget.myUid)));
   }
 
+  Future<void> updateName(var value) async {
+    if (value != null) {
+      if (value != widget.groupName) {
+        final db = Firestore.instance;
+        setState(() {
+          widget.groupName = value;
+        });
+        db
+            .collection('Group')
+            .document(widget.groupId)
+            .updateData({'groupName': widget.groupName});
+
+        for (int i = 0; i < widget.userId.length; i++) {
+          QuerySnapshot a = await Firestore.instance
+              .collection('users')
+              .document(widget.userId[i])
+              .collection('groups')
+              .getDocuments();
+          a.documents.forEach((element) {
+            if (element.data['groupId'] == widget.groupId) {
+              db
+                  .collection('users')
+                  .document(widget.userId[i])
+                  .collection('groups')
+                  .document(element.documentID)
+                  .updateData({'groupName': widget.groupName});
+            }
+          });
+        }
+      }
+    }
+  }
+
   Future<void> cameBack(var value) async {
-    print("value");
+    //print("value");
     //  print(value);
 
     var a = value.toString();
-    print(a);
+    //print(a);
     if (value["a"] != null) {
       if (widget.userId.toString() != value["a"].toString()) {
         setState(() {

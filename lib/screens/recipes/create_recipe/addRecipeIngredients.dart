@@ -1,14 +1,23 @@
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:recipes_app/models/ingresients.dart';
-import 'package:recipes_app/screens/recipes/create_recipe/addRecipeLevels.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:recipes_app/models/ingredient.dart';
+import 'package:recipes_app/screens/recipes/create_recipe/addRecipeStages.dart';
 
 import '../../../config.dart';
 
 class AddRecipeIngredients extends StatefulWidget {
+  String username;
+  String uid;
   String name;
   String description;
   String imagePath;
-  AddRecipeIngredients(String _name, String _description, String _imagePath) {
+  AddRecipeIngredients(String _username, String _uid, String _name,
+      String _description, String _imagePath) {
+    username = _username;
+    uid = _uid;
     name = _name;
     description = _description;
     imagePath = _imagePath;
@@ -19,6 +28,7 @@ class AddRecipeIngredients extends StatefulWidget {
 
 class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
   List<IngredientsModel> ingredients = [];
+  String error = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +42,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
       Container(
           child: Column(
         children: [
+          Text(error),
           ingredients.length <= 0
               ? Text(
                   'There is no ingredients\nin this recipe yet',
@@ -41,76 +52,116 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
                       fontSize: 15,
                       fontWeight: FontWeight.bold),
                 )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  addAutomaticKeepAlives: true,
-                  itemCount: ingredients.length,
-                  itemBuilder: (_, i) => Column(children: [
-                        Row(
-                          children: <Widget>[
+              : Container(
+                  height: min(40 * ingredients.length.toDouble(), 300),
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      // physics: NeverScrollableScrollPhysics(),
+                      // addAutomaticKeepAlives: true,
+                      itemCount: ingredients.length,
+                      itemBuilder: (_, i) => Column(children: [
+                            row(i),
                             SizedBox(
-                              width: 20,
-                            ),
-                            ingredientIndex(i),
-                            Expanded(
-                                child: SizedBox(
-                                    height: 37.0,
-                                    child: TextFormField(
-                                      decoration: InputDecoration(
-                                        hintText: 'Ingredient',
-                                      ),
-                                      validator: (val) => val.length < 2
-                                          ? 'Enter a description eith 2 letter at least'
-                                          : null,
-                                      onChanged: (val) {
-                                        setState(
-                                            () => ingredients[i].name = val);
-                                      },
-                                    ))),
-                            Expanded(
-                                child: SizedBox(
-                                    height: 37.0,
-                                    child: TextFormField(
-                                      decoration: InputDecoration(
-                                        hintText: 'amount',
-                                      ),
-                                      validator: (val) => val.length < 6
-                                          ? 'Enter a description eith 6 letter at least'
-                                          : null,
-                                      onChanged: (val) {
-                                        setState(() => ingredients[i].count =
-                                            int.parse(val));
-                                      },
-                                    ))),
-                            Expanded(
-                                child: SizedBox(
-                                    height: 37.0,
-                                    child: TextFormField(
-                                      decoration: InputDecoration(
-                                        hintText: 'unit',
-                                      ),
-                                      validator: (val) => val.length < 6
-                                          ? 'Enter a description eith 6 letter at least'
-                                          : null,
-                                      onChanged: (val) {
-                                        setState(
-                                            () => ingredients[i].unit = val);
-                                      },
-                                    ))),
-                            deleteButton(i)
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        )
-                      ])),
-          box,
-          box,
+                              height: 10,
+                            )
+                          ])),
+                ),
+
+          // box,
+          // box,
           addButton(),
-          nextLevelButton()
+          SizedBox(
+            height: (min(40 * ingredients.length.toDouble(), 350) ==
+                    40 * ingredients.length.toDouble())
+                ? 300 - 40 * ingredients.length.toDouble()
+                : 5,
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: 20,
+              ),
+              previousLevelButton(),
+              SizedBox(
+                width: 10,
+              ),
+              LinearPercentIndicator(
+                width: 250,
+                animation: true,
+                lineHeight: 18.0,
+                animationDuration: 500,
+                percent: 0.25,
+                center: Text(
+                  "25%",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: Colors.grey[600],
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              nextLevelButton()
+            ],
+          )
         ],
       ))
     ]));
+  }
+
+  Widget row(int i) {
+    return Row(
+      children: <Widget>[
+        SizedBox(
+          width: 20,
+        ),
+        ingredientIndex(i),
+        Expanded(
+            child: SizedBox(
+                height: 37.0,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Ingredient',
+                  ),
+                  validator: (val) => val.length < 2
+                      ? 'Enter a description eith 2 letter at least'
+                      : null,
+                  onChanged: (val) {
+                    setState(() => ingredients[i].name = val);
+                  },
+                ))),
+        Expanded(
+            child: SizedBox(
+                height: 37.0,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'amount',
+                  ),
+                  validator: (val) => val.length < 6
+                      ? 'Enter a description eith 6 letter at least'
+                      : null,
+                  onChanged: (val) {
+                    setState(() => ingredients[i].count = int.parse(val));
+                  },
+                ))),
+        Expanded(
+            child: SizedBox(
+                height: 37.0,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'unit',
+                  ),
+                  validator: (val) => val.length < 6
+                      ? 'Enter a description eith 6 letter at least'
+                      : null,
+                  onChanged: (val) {
+                    setState(() => ingredients[i].unit = val);
+                  },
+                ))),
+        deleteButton(i)
+      ],
+    );
   }
 
   void onDelteIng(int i) {
@@ -169,14 +220,26 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
     return FloatingActionButton(
       heroTag: null,
       backgroundColor:
-          this.ingredients.length != 0 ? Colors.green : Colors.greenAccent,
+          this.ingredients.length != 0 ? Colors.green : Colors.grey,
       onPressed: () {
-        if (this.ingredients.length != 0) {
+        List<IngredientsModel> notEmptyIngredients = [];
+        for (IngredientsModel ingredient in this.ingredients) {
+          if (ingredient.count != 0) {
+            notEmptyIngredients.add(ingredient);
+          }
+        }
+        if (notEmptyIngredients.length != 0) {
           Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (context) => AddRecipeLevels(widget.name,
-                      widget.description, widget.imagePath, ingredients)));
+              PageRouteBuilder(
+                  transitionDuration: Duration(seconds: 0),
+                  pageBuilder: (context, animation1, animation2) =>
+                      AddRecipeStages(widget.username, widget.uid, widget.name,
+                          widget.description, widget.imagePath, ingredients)));
+        } else {
+          setState(() {
+            error = "add ingredients to your recipe";
+          });
         }
       },
       tooltip: 'next',

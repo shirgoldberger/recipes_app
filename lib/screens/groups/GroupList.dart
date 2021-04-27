@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'groupRecipeList.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
+import 'package:recipes_app/config.dart';
 
 class GroupList extends StatefulWidget {
   GroupList(String _uid) {
@@ -26,7 +27,7 @@ class _GroupListState extends State<GroupList> {
         .getDocuments();
     snap.documents.forEach((element) async {
       setState(() {
-        print(element.data);
+        // print(element.data);
         widget.groupId.add(element.data['groupId']);
         widget.groupName.add(element.data['groupName']);
       });
@@ -47,34 +48,50 @@ class _GroupListState extends State<GroupList> {
       //print(widget.groupName);
       // return Text("A");
       return Scaffold(
-          backgroundColor: Colors.teal[50],
+          backgroundColor: backgroundColor,
           appBar: AppBar(
             title: Text(
               'your recipe groups',
               style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
             ),
-            backgroundColor: Colors.teal[900],
+            backgroundColor: appBarBackgroundColor,
             elevation: 0.0,
             actions: <Widget>[],
           ),
           body: Column(children: <Widget>[
             Expanded(
-                child: ListView.builder(
-                    itemCount: widget.groupId.length,
-                    itemBuilder: (context, index) {
-                      return ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => GroupRecipeList(
-                                        widget.groupId[index],
-                                        widget.groupName[index],
-                                        widget.uid)));
-                          },
-                          child: Text(widget.groupName[index]));
-                    }))
+                child: Padding(
+              padding: EdgeInsets.all(8),
+              child: ListView.builder(
+                  itemCount: widget.groupId.length,
+                  itemBuilder: (context, index) {
+                    return group_title(index);
+                  }),
+            ))
           ]));
     }
+  }
+
+  Widget group_title(int index) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18.0),
+            side: BorderSide(color: Colors.white)),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => GroupRecipeList(widget.groupId[index],
+                      widget.groupName[index], widget.uid)));
+        },
+        padding: EdgeInsets.all(20.0),
+        color: Colors.blueGrey[300],
+        textColor: Colors.white,
+        child: Text(widget.groupName[index],
+            style: TextStyle(fontSize: 25, fontFamily: 'frik')),
+      ),
+    );
   }
 }

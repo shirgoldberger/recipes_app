@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../config.dart';
+
 class AddParticipent extends StatefulWidget {
   AddParticipent(List _userId, String groupId, String _groupName) {
     this.userId = _userId.toList();
@@ -47,18 +49,18 @@ class _AddParticipentState extends State<AddParticipent> {
             SizedBox(
               height: 10.0,
             ),
-            TextFormField(
-              decoration: InputDecoration(
-                hintText: widget.groupName,
-              ),
-              validator: (val) => val.isEmpty ? widget.groupName : null,
-              onChanged: (val) {
-                setState(() {
-                  widget.groupName = val;
-                  widget.done = true;
-                });
-              },
-            ),
+            // TextFormField(
+            //   decoration: InputDecoration(
+            //     hintText: widget.groupName,
+            //   ),
+            //   validator: (val) => val.isEmpty ? widget.groupName : null,
+            //   onChanged: (val) {
+            //     setState(() {
+            //       widget.groupName = val;
+            //       widget.done = true;
+            //     });
+            //   },
+            // ),
             TextFormField(
               decoration: InputDecoration(
                 hintText: 'add new mamber Email',
@@ -78,7 +80,7 @@ class _AddParticipentState extends State<AddParticipent> {
             MaterialButton(
                 minWidth: 200.0,
                 height: 35,
-                color: Color(0xFF801E48),
+                color: appBarBackgroundColor,
                 child: new Text('add user and save',
                     style: new TextStyle(fontSize: 16.0, color: Colors.white)),
                 onPressed: () {
@@ -90,29 +92,29 @@ class _AddParticipentState extends State<AddParticipent> {
 
   Future<void> saveUser(String email) async {
     final db = Firestore.instance;
-    if (widget.done) {
-      db
-          .collection('Group')
-          .document(widget.groupId)
-          .updateData({'groupName': widget.groupName});
-      for (int i = 0; i < widget.userId.length; i++) {
-        QuerySnapshot a = await Firestore.instance
-            .collection('users')
-            .document(widget.userId[i])
-            .collection('groups')
-            .getDocuments();
-        a.documents.forEach((element) {
-          if (element.data['groupId'] == widget.groupId) {
-            db
-                .collection('users')
-                .document(widget.userId[i])
-                .collection('groups')
-                .document(element.documentID)
-                .updateData({'groupName': widget.groupName});
-          }
-        });
-      }
-    }
+    // if (widget.done) {
+    //   // db
+    //   //     .collection('Group')
+    //   //     .document(widget.groupId)
+    //   //     .updateData({'groupName': widget.groupName});
+    //   for (int i = 0; i < widget.userId.length; i++) {
+    //     QuerySnapshot a = await Firestore.instance
+    //         .collection('users')
+    //         .document(widget.userId[i])
+    //         .collection('groups')
+    //         .getDocuments();
+    //     a.documents.forEach((element) {
+    //       if (element.data['groupId'] == widget.groupId) {
+    //         db
+    //             .collection('users')
+    //             .document(widget.userId[i])
+    //             .collection('groups')
+    //             .document(element.documentID)
+    //             .updateData({'groupName': widget.groupName});
+    //       }
+    //     });
+    //   }
+    // }
     String mailCheck;
 
     QuerySnapshot snap =

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:recipes_app/models/ingresients.dart';
+import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stages.dart';
 import 'watchMyRecipe.dart';
@@ -47,9 +47,11 @@ class _WatchRecipeState extends State<WatchRecipe> {
   void getuser() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final FirebaseUser user = await auth.currentUser();
-    setState(() {
-      widget.uid = user.uid;
-    });
+    if (user != null) {
+      setState(() {
+        widget.uid = user.uid;
+      });
+    }
   }
 
   @override

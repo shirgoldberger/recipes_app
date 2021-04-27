@@ -1,9 +1,12 @@
+import 'dart:collection';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/screens/recipeHeadLineSearch.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../searchAlgorithm.dart';
@@ -11,11 +14,21 @@ import 'recipes/watch_recipes/watchRecipe.dart';
 
 class SearchPage extends StatefulWidget {
   bool home;
-  List<Recipe> publisRecipe = [];
-  bool doneLoadPublishRecipe = true;
+  // List<Recipe> publisRecipe = [];
+  // bool doneLoadPublishRecipe = true;
+  int doneLoadCounter = 0;
   bool doneGetUser = false;
   String uid;
   bool getUser = false;
+  List listusers = [];
+  List<Pair> list = [];
+  List<Pair> listTags = [];
+  List<Recipe> recipes = [];
+  Map<String, int> amountLikesOfRecipe = {};
+  Map<String, int> amountGroupsOfRecipe = {};
+  Map<String, int> amountUsersOfRecipe = {};
+  List<Pair> popular = [];
+
   @override
   _SearchPage createState() => _SearchPage();
 }
@@ -23,6 +36,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPage extends State<SearchPage> {
   void initState() {
     super.initState();
+    print("init state");
     getuser();
 
     changeState();
@@ -31,29 +45,28 @@ class _SearchPage extends State<SearchPage> {
   void getuser() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     await auth.currentUser().then((value) {
-      Algoritem a = new Algoritem(widget.uid);
-      a.allRecipe().whenComplete(() {
+      if (value != null) {
         setState(() {
-          widget.publisRecipe.addAll(a.recipes);
+          widget.uid = value.uid;
+          widget.getUser = true;
+          print("user");
+          changeState();
         });
-        if (value != null) {
-          setState(() {
-            widget.uid = value.uid;
-            widget.getUser = true;
-          });
-        }
-      });
+      } else {
+        getPopularRecipes();
+        setState(() {
+          widget.doneLoadCounter = 2;
+        });
+      }
     });
   }
 
   void changeState() {
-    widget.publisRecipe = [];
-    // widget.doneLoadPublishRecipe = false;
-    if (!widget.doneLoadPublishRecipe) {
-      setState(() {
-        widget.doneLoadPublishRecipe = true;
-      });
-      // loadPublishRecipe();
+    if (widget.getUser) {
+      print("change stata");
+      myFriends(widget.uid);
+      tagsRecipe(widget.uid);
+      getPopularRecipes();
     }
   }
 
@@ -79,7 +92,7 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.doneLoadPublishRecipe) {
+    if (widget.doneLoadCounter != 3) {
       return Loading();
     } else {
       return MaterialApp(
@@ -99,15 +112,16 @@ class _SearchPage extends State<SearchPage> {
                 Container(
                   height: 500,
                   child: GridView.count(
-                    crossAxisCount: 3,
-                    children:
-                        List.generate(widget.publisRecipe.length, (index) {
+                    crossAxisCount: 2,
+                    children: List.generate(widget.recipes.length, (index) {
                       return Container(
                           height: 500,
                           width: 500,
                           child: Card(
                             shape:
                                 RoundedRectangleBorder(side: BorderSide.none),
+                            // child: RecipeHeadLineSearch(
+                            //     widget.recipes[index], true),
                             child: _buildOneItem(index),
                           ));
                     }),
@@ -118,11 +132,11 @@ class _SearchPage extends State<SearchPage> {
   }
 
   Widget _buildOneItem(int index) {
-    if (widget.publisRecipe.length <= index) {
+    if (widget.recipes.length <= index) {
       return Container();
     }
     return FutureBuilder(
-        future: _getImage(context, widget.publisRecipe[index].imagePath),
+        future: _getImage(context, widget.recipes[index].imagePath),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done)
             return ElevatedButton(
@@ -137,7 +151,7 @@ class _SearchPage extends State<SearchPage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            WatchRecipe(widget.publisRecipe[index], true)));
+                            WatchRecipe(widget.recipes[index], true)));
               },
             );
 
@@ -149,27 +163,63 @@ class _SearchPage extends State<SearchPage> {
         });
   }
 
-  Future<void> loadPublishRecipe() async {
-    String uid;
-    String recipeId;
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    widget.publisRecipe = [];
-    if (snap.documents.length == 0) {
-      setState(() {
-        widget.doneLoadPublishRecipe = true;
-      });
-    }
+//algo funcs
+  Future<void> myFriends(String uid) async {
     int i = 0;
+    // print(uid);
+    List<Pair> friendsRecipe = [];
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('groups')
+        .getDocuments();
     snap.documents.forEach((element) async {
-      uid = element.data['userID'] ?? '';
-      recipeId = element.data['recipeId'] ?? '';
+      String groupId = element.data['groupId'];
+      DocumentSnapshot snapGroup =
+          await Firestore.instance.collection('Group').document(groupId).get();
+      List users = snapGroup.data['users'];
+      widget.listusers.addAll(users);
+      i++;
+
+      if (i == snap.documents.length) {
+        for (int i = 0; i < widget.listusers.length; i++) {
+          QuerySnapshot snap3 = await Firestore.instance
+              .collection('users')
+              .document(widget.listusers[i])
+              .collection('saved recipe')
+              .getDocuments();
+          snap3.documents.forEach((element) async {
+            String uid2 = element.data['userID'];
+            String recipeId2 = element.data['recipeID'];
+            //     print("add to list");
+            widget.list.add(Pair(uid2, recipeId2));
+          });
+        }
+
+        convertToRecipe(widget.list);
+      }
+    });
+  }
+
+  Future<void> convertToRecipe(List<Pair> pair) async {
+    //  print("convert");
+    //print(pair);
+    for (int i = 0; i < pair.length; i++) {
+      String uid = pair[i].user;
+      String recipeId = pair[i].recipe;
+      // print("aaaaaaaa    " + uid);
+      //  print("aaaaaaaa    " + recipeId);
       DocumentSnapshot doc = await Firestore.instance
           .collection('users')
           .document(uid)
           .collection('recipes')
           .document(recipeId)
           .get();
+      if (doc == null) {
+        //  print("null");
+        //  print(doc.documentID);
+        //  print(uid);
+      }
       String n = doc.data['name'] ?? '';
       String de = doc.data['description'] ?? '';
       String level = doc.data['level'] ?? 0;
@@ -178,9 +228,9 @@ class _SearchPage extends State<SearchPage> {
       String writer = doc.data['writer'] ?? '';
       String writerUid = doc.data['writerUid'] ?? '';
       String id = doc.data['recipeID'] ?? '';
-      String imagePath = doc.data['imagePath'] ?? '';
       //
       String publish = doc.data['publishID'] ?? '';
+      String path = doc.data['imagePath'] ?? '';
       int levlelInt = int.parse(level);
       //tags
       var tags = doc.data['tags'];
@@ -209,58 +259,141 @@ class _SearchPage extends State<SearchPage> {
         }
       }
       Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
-          true, id, publish, imagePath);
-      // r.setId(id);
-      // print(publish + "publish");
-      //r.publishThisRecipe(publish);
-      widget.publisRecipe.add(r);
-      // print(r.publish);
-      i++;
-      print("i -     " + i.toString());
-      print(snap.documents.length);
-      // print(snap.documents.length);
-      if ((i) == snap.documents.length) {
-        setState(() {
-          widget.doneLoadPublishRecipe = true;
-        });
-      }
+          true, id, publish, path);
+      widget.recipes.add(r);
+      // print("Add");
+      // print(recipesFromFriends);
+    }
+    print("done");
+    setState(() {
+      widget.doneLoadCounter++;
+      // print("true");
+      print(widget.recipes);
+
+      // widget.doneLoadPublishRecipe = true;
     });
+    // return recipesFromFriends;
   }
 
-  // Future<void> loadPublishRecipe() async {
-  //   String uid;
-  //   String recipeId;
-  //   QuerySnapshot snap =
-  //       await Firestore.instance.collection('publish recipe').getDocuments();
-  //   widget.publisRecipe = [];
-  //   if (snap.documents.length == 0) {
-  //     setState(() {
-  //       widget.doneLoadPublishRecipe = true;
-  //     });
-  //   }
-  //   int i = 0;
-  //   snap.documents.forEach((element) async {
-  //     // get user id and recipe id
-  //     uid = element.data['userID'] ?? '';
-  //     recipeId = element.data['recipeId'] ?? '';
-  //     // get the cpecific recipe document
-  //     DocumentSnapshot doc = await Firestore.instance
-  //         .collection('users')
-  //         .document(uid)
-  //         .collection('recipes')
-  //         .document(recipeId)
-  //         .get();
-  //     String imagePath = doc.data['imagePath'] ?? '';
-  //     Recipe r = Recipe.forSearchRecipe(uid, imagePath);
-  //     widget.publisRecipe.add(r);
-  //     i++;
-  //     if ((i) == snap.documents.length) {
-  //       setState(() {
-  //         widget.doneLoadPublishRecipe = true;
-  //       });
-  //     }
-  //   });
-  // }
+  Future<void> tagsRecipe(String uid) async {
+    //  print("tag");
+    DocumentSnapshot snap =
+        await Firestore.instance.collection("users").document(uid).get();
+    Map<dynamic, dynamic> tagsCount = snap.data['tags'];
+    final sorted = SplayTreeMap.from(
+        tagsCount, (key1, key2) => tagsCount[key1].compareTo(tagsCount[key2]));
+    //print(sorted);
+    // print(sorted.lastKey());
+    String maxValue = sorted.lastKey();
+    // print(maxValue);
+    DocumentSnapshot snap3 = await Firestore.instance
+        .collection('tags')
+        .document('xt0XXXOLgprfkO3QiANs')
+        .get();
+    List publishTecipe = snap3.data[maxValue];
+    // print(publishTecipe);
+    for (int i = 0; i < publishTecipe.length; i++) {
+      DocumentSnapshot snap4 = await Firestore.instance
+          .collection('publish recipe')
+          .document(publishTecipe[i])
+          .get();
+      String uid2 = snap4.data['userID'];
+      String recipeId2 = snap4.data['recipeId'];
+      //   print("add");
+      widget.listTags.add(Pair(uid2, recipeId2));
+    }
+    //print(listTags);
+    //here its donneeeeee~~
+    for (int i = 0; i < widget.listTags.length; i++) {
+      //  print(i);
+      //  print(widget.listTags[i].recipe);
+      //  print(widget.listTags[i].user);
+    }
+    convertToRecipe(widget.listTags);
+  }
+
+//popular
+
+  Future<void> getPopularRecipes() async {
+    print("popular " + "1");
+    await getUserAmount();
+    print("popular " + "2");
+    await getGroupsAmount();
+    print("popular " + "3");
+    await getLikesAmount();
+    print("popular " + "4");
+    await getUserAndRecipe(widget.amountLikesOfRecipe);
+    print("popular " + "5");
+    await getUserAndRecipe(widget.amountGroupsOfRecipe);
+    print("popular " + "6");
+    await getUserAndRecipe(widget.amountUsersOfRecipe);
+    print("popular " + "7");
+    await convertToRecipe(widget.popular);
+  }
+
+  getUserAndRecipe(Map<String, int> map) async {
+    for (int i = 0; i < map.length; i++) {
+      var recipe = await Firestore.instance
+          .collection('publish recipe')
+          .document(map.keys.elementAt(i))
+          .get();
+      String recipeId = recipe.data['recipeId'];
+      String userId = recipe.data['userID'];
+      setState(() {
+        widget.popular.add(Pair(userId, recipeId));
+      });
+    }
+  }
+
+  getUserAmount() async {
+    QuerySnapshot snap =
+        await Firestore.instance.collection('publish recipe').getDocuments();
+    snap.documents.forEach((element) {
+      String recipeId = element.documentID.toString();
+      List users = element.data['saveUser'] ?? [];
+      int amount = users.length;
+      widget.amountUsersOfRecipe[recipeId] = amount;
+    });
+    widget.amountUsersOfRecipe = SplayTreeMap.from(
+        widget.amountUsersOfRecipe,
+        (key1, key2) => widget.amountUsersOfRecipe[key1]
+            .compareTo(widget.amountUsersOfRecipe[key2]));
+    //print("listttt user: " +  widget.amountUsersOfRecipe.toString());
+  }
+
+  getGroupsAmount() async {
+    QuerySnapshot snap =
+        await Firestore.instance.collection('publish recipe').getDocuments();
+    snap.documents.forEach((element) {
+      String recipeId = element.documentID.toString();
+      List groups = element.data['saveInGroup'] ?? [];
+      int amount = groups.length;
+      widget.amountGroupsOfRecipe[recipeId] = amount;
+      //print("listttt group: " +  widget.amountGroupsOfRecipe.toString());
+    });
+    widget.amountGroupsOfRecipe = SplayTreeMap.from(
+        widget.amountGroupsOfRecipe,
+        (key1, key2) => widget.amountGroupsOfRecipe[key1]
+            .compareTo(widget.amountGroupsOfRecipe[key2]));
+    //print("listttt group: " +  widget.amountGroupsOfRecipe.toString());
+  }
+
+  getLikesAmount() async {
+    QuerySnapshot snap =
+        await Firestore.instance.collection('publish recipe').getDocuments();
+    // get amount of likes of all the publish recipes
+    snap.documents.forEach((element) {
+      String recipeId = element.documentID.toString();
+      List likes = element.data['likes'] ?? [];
+      int amount = likes.length;
+      widget.amountLikesOfRecipe[recipeId] = amount;
+    });
+    widget.amountLikesOfRecipe = SplayTreeMap.from(
+        widget.amountLikesOfRecipe,
+        (key1, key2) => widget.amountLikesOfRecipe[key1]
+            .compareTo(widget.amountLikesOfRecipe[key2]));
+    // print("listttt likes: " +  widget.amountLikesOfRecipe.toString());
+  }
 }
 
 class SearchInput extends StatelessWidget {
@@ -294,4 +427,10 @@ class SearchInput extends StatelessWidget {
       ),
     );
   }
+  // class Pair<T1, T2> {
+//   final String user;
+//   final String recipe;
+
+//   Pair(this.user, this.recipe);
+// }
 }

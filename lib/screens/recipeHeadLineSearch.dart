@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'watch_recipes/watchRecipe.dart';
+import 'package:recipes_app/screens/recipes/watch_recipes/watchRecipe.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 
-class RecipeHeadLine extends StatefulWidget {
+class RecipeHeadLineSearch extends StatefulWidget {
   Recipe recipe;
   Color circleColor;
   String level;
   bool home;
-  Color colorName = Colors.blue;
+  Color colorName = Colors.blueGrey[700];
   String image = "";
-  RecipeHeadLine(Recipe r, bool home) {
+  RecipeHeadLineSearch(Recipe r, bool home) {
     this.recipe = r;
     this.home = home;
     image = r.imagePath;
@@ -35,20 +35,15 @@ class RecipeHeadLine extends StatefulWidget {
     }
   }
   @override
-  _RecipeHeadLineState createState() => _RecipeHeadLineState();
+  _RecipeHeadLineSearchState createState() => _RecipeHeadLineSearchState();
 }
 
-class _RecipeHeadLineState extends State<RecipeHeadLine> {
-  @override
-  void didUpdateWidget(RecipeHeadLine oldWidget) {
-    super.didUpdateWidget(oldWidget);
-  }
-
+class _RecipeHeadLineSearchState extends State<RecipeHeadLineSearch> {
   @override
   Widget build(BuildContext context) {
     _getImage(context, widget.image);
     return Padding(
-      padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
+      padding: EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 5),
       child: InkWell(
         customBorder: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -62,17 +57,25 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
                   builder: (context) =>
                       WatchRecipe(widget.recipe, widget.home)));
         },
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Row(
+            Column(
               children: <Widget>[
                 // image
-                CircleAvatar(
-                  backgroundImage: (widget.image == "")
-                      ? ExactAssetImage(noImagePath)
-                      : NetworkImage(widget.image),
-                  radius: 35.0,
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0),
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0),
+                  ),
+                  child: Image(
+                    height: 135,
+                    image: (widget.image == "")
+                        ? ExactAssetImage(noImagePath)
+                        : NetworkImage(widget.image),
+                  ),
                 ),
                 SizedBox(width: 10.0),
                 Column(
@@ -80,22 +83,13 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
                   children: <Widget>[
                     // name
                     recipeName(),
-                    SizedBox(height: 5.0),
+                    //SizedBox(height: 5.0),
                     Container(
-                      // description
-                      child: recipeDescription(),
-                    ),
+                        // description
+
+                        ),
                   ],
                 ),
-              ],
-            ),
-            Column(
-              children: <Widget>[
-                // writer
-                recipeWriter(),
-                SizedBox(height: 5.0),
-                // level
-                recipeLevel()
               ],
             ),
           ],
@@ -121,43 +115,19 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
 
   Widget recipeName() {
     return Text(
-      widget.recipe.name == "" ? "This recipe has no name" : widget.recipe.name,
+      widget.recipe.name + " / " + widget.recipe.writer,
       style: TextStyle(
         color: widget.colorName,
-        fontSize: 15.0,
+        fontSize: 16.0,
         fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Widget recipeDescription() {
-    return Text(
-      widget.recipe.description == ""
-          ? "This recipe has no description"
-          : widget.recipe.description,
-      style: TextStyle(
-        color: Colors.blueGrey,
-        fontSize: 15.0,
-        fontWeight: FontWeight.w600,
-      ),
-      overflow: TextOverflow.ellipsis,
-    );
-  }
-
-  Widget recipeWriter() {
-    return Text(
-      widget.recipe.writer,
-      style: TextStyle(
-        color: Colors.grey,
-        fontSize: 10.0,
-        fontWeight: FontWeight.bold,
+        fontFamily: 'Raleway',
       ),
     );
   }
 
   Widget recipeLevel() {
     return Container(
-      width: 80.0,
+      width: 60.0,
       height: 20.0,
       decoration: BoxDecoration(
         color: widget.circleColor,
