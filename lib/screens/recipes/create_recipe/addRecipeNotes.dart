@@ -1,11 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/ingredient.dart';
-import 'package:recipes_app/models/stages.dart';
+import 'package:recipes_app/models/stage.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/finishCreateRecipe.dart';
 import '../../../config.dart';
 
+// ignore: must_be_immutable
 class AddRecipeNotes extends StatefulWidget {
   String username;
   String uid;
@@ -45,7 +48,6 @@ class AddRecipeNotes extends StatefulWidget {
 
 class _AddRecipeNotesState extends State<AddRecipeNotes> {
   List<String> notes = [];
-  ScrollController _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,51 +55,51 @@ class _AddRecipeNotesState extends State<AddRecipeNotes> {
       box, box,
       title(), box, box,
       //notes
-      Container(
-          height: 200,
-          child: ListView(children: [
-            notes.length <= 0
-                ? Text(
-                    'There is no notes in this recipe yet',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                  )
-                : ListView.builder(
-                    shrinkWrap: true,
-                    addAutomaticKeepAlives: true,
-                    itemCount: notes.length,
-                    itemBuilder: (_, i) => Row(children: <Widget>[
-                          SizedBox(
-                            width: 20,
-                          ),
-                          noteIndex(i),
-                          Expanded(
-                              child: SizedBox(
-                                  height: 37.0,
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      hintText: 'add note...',
-                                    ),
-                                    validator: (val) => val.length < 2
-                                        ? 'Enter a description eith 2 letter at least'
-                                        : null,
-                                    onChanged: (val) {
-                                      setState(() => notes[i] = val);
-                                    },
-                                  ))),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          deleteButton(i)
-                        ]))
-          ])),
+      notes.length <= 0
+          ? Text(
+              'There is no notes in this recipe yet',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+            )
+          : Container(
+              height: min(50 * notes.length.toDouble(), 300),
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  addAutomaticKeepAlives: true,
+                  itemCount: notes.length,
+                  itemBuilder: (_, i) => Row(children: <Widget>[
+                        SizedBox(
+                          width: 20,
+                        ),
+                        noteIndex(i),
+                        Expanded(
+                            child: SizedBox(
+                                height: 37.0,
+                                child: TextFormField(
+                                  decoration: InputDecoration(
+                                    hintText: 'add note...',
+                                  ),
+                                  validator: (val) => val.length < 2
+                                      ? 'Enter a description eith 2 letter at least'
+                                      : null,
+                                  onChanged: (val) {
+                                    setState(() => notes[i] = val);
+                                  },
+                                ))),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        deleteButton(i)
+                      ]))),
+
       box,
       addButton(),
       SizedBox(
-        height: 100,
+        height: (min(50 * notes.length.toDouble(), 300) ==
+                50 * notes.length.toDouble())
+            ? 300 - 50 * notes.length.toDouble()
+            : 0,
       ),
       Row(
         children: [

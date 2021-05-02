@@ -7,12 +7,12 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/groups/changeNameGroup.dart';
 import 'package:recipes_app/screens/groups/groupRecipeHeadLine.dart';
 import '../../config.dart';
-import '../../config.dart';
 import 'ParticipentsWatch.dart';
 import 'addParticipent.dart';
 import '../personal_screen/homeLogIn.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
+// ignore: must_be_immutable
 class GroupRecipeList extends StatefulWidget {
   GroupRecipeList(String _groupId, String _groupName, String _myUid) {
     this.groupId = _groupId;
@@ -46,7 +46,6 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
     if (!widget.doneLoad) {
       return Loading();
     } else {
-      int _value = 4;
       print(widget.usersName);
       if (widget.a.length == 0) {
         return Scaffold(
@@ -138,6 +137,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
     return ButtonTheme(
       minWidth: 200.0,
       height: 50.0,
+      // ignore: deprecated_member_use
       child: FlatButton.icon(
           color: Colors.blueGrey[300],
           icon: Icon(
@@ -158,6 +158,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
     return ButtonTheme(
       minWidth: 200.0,
       height: 50.0,
+      // ignore: deprecated_member_use
       child: FlatButton.icon(
           color: Colors.blueGrey[300],
           icon: Icon(
@@ -178,6 +179,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
     return ButtonTheme(
       minWidth: 200.0,
       height: 50.0,
+      // ignore: deprecated_member_use
       child: FlatButton.icon(
           color: Colors.blueGrey[300],
           icon: Icon(
@@ -198,6 +200,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
     return ButtonTheme(
       minWidth: 200.0,
       height: 50.0,
+      // ignore: deprecated_member_use
       child: FlatButton.icon(
           color: Colors.blueGrey[300],
           icon: Icon(
@@ -243,6 +246,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
     height: 8.0,
   );
   Widget profileDetails() {
+    // ignore: missing_required_param
     return UserAccountsDrawerHeader(
         decoration: BoxDecoration(
           color: appBarBackgroundColor,
@@ -501,11 +505,6 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
   }
 
   Future<void> cameBack(var value) async {
-    //print("value");
-    //  print(value);
-
-    var a = value.toString();
-    //print(a);
     if (value["a"] != null) {
       if (widget.userId.toString() != value["a"].toString()) {
         setState(() {

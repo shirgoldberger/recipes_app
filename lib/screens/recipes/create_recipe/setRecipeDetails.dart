@@ -4,6 +4,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/uploadRecipeImage.dart';
 import '../../../config.dart';
 
+// ignore: must_be_immutable
 class SetRecipeDetails extends StatefulWidget {
   String uid;
   String username;

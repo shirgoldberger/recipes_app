@@ -1,50 +1,49 @@
 import 'package:recipes_app/models/ingredient.dart';
 
 class Recipe {
+  String id;
   String writer;
   String writerUid;
   String name;
   String description;
   List<IngredientsModel> ingredients;
-  String id;
-  List<String> myTag;
+  List<String> tags;
   List<String> notes;
+  List<String> likes = [];
   int level;
   int time;
+  String imagePath;
+
   //אם המתכון שמור בתיקית ביוזר או אם המתכון שמור בתיקית המתכונים.
   bool saveInUser;
   String publish = '';
   bool saveRecipe;
-  String imagePath;
-  List<String> likes;
 
   Recipe(
-      String n,
-      String desc,
-      List<String> tags,
-      int level,
-      List<String> notes,
-      String writer,
-      String writerUid,
-      int time,
-      bool save,
-      String id,
-      String publish,
-      String path) {
-    this.name = n;
-    this.description = desc;
-    this.myTag = tags;
-    this.level = level;
-    this.notes = notes;
-    this.writer = writer;
-    this.writerUid = writerUid;
-    this.time = time;
-    this.saveInUser = save;
-    this.id = id;
-    this.publish = publish;
-    this.imagePath = path;
-    this.likes = new List();
-    //this.ingredients = ing;
+      String _name,
+      String _description,
+      List<String> _tags,
+      int _level,
+      List<String> _notes,
+      String _writer,
+      String _writerUid,
+      int _time,
+      bool _save,
+      String _id,
+      String _publish,
+      String _imagePath) {
+    this.name = _name;
+    this.description = _description;
+    this.tags = _tags;
+    this.level = _level;
+    this.notes = _notes;
+    this.writer = _writer;
+    this.writerUid = _writerUid;
+    this.time = _time;
+    this.saveInUser = _save;
+    this.id = _id;
+    this.publish = _publish;
+    this.imagePath = _imagePath;
   }
 
   Recipe.forSearchRecipe(String _id, String _path) {
@@ -69,7 +68,7 @@ class Recipe {
         'writerUid': writerUid,
         'publishID': publish,
         'recipeID': id,
-        'tags': (myTag.map((e) => e).toList()),
+        'tags': (tags.map((e) => e).toList()),
         'notes': (notes.map((e) => e).toList()),
         'imagePath': imagePath,
         'likes': (likes.map((e) => e).toList())

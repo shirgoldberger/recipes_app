@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/setRecipeDetails.dart';
 import '../../../config.dart';
 
+// ignore: must_be_immutable
 class MainCreateRecipe extends StatefulWidget {
   String username;
   String uid;
@@ -43,6 +44,7 @@ class _MainCreateRecipeState extends State<MainCreateRecipe> {
       decoration: BoxDecoration(
           color: Colors.blueGrey[400],
           borderRadius: BorderRadius.circular(10.0)),
+      // ignore: deprecated_member_use
       child: FlatButton(
         onPressed: () => {
           Navigator.push(

@@ -1,8 +1,7 @@
 import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'models/recipe.dart';
+import '../../models/recipe.dart';
 
-// <userId, recipeId>
 class Pair<T1, T2> {
   final String user;
   final String recipe;
@@ -21,15 +20,6 @@ class Algoritem {
   String uid;
   Algoritem(String _uid) {
     uid = _uid;
-  }
-
-  Stream<void> allRecipe() async* {
-    if (uid != null) {
-      await myFriends(uid);
-    }
-    await getPopularRecipes();
-
-    // return recipes;
   }
 
   Stream<void> getPopularRecipes() async* {
@@ -107,7 +97,6 @@ class Algoritem {
   Future<void> myFriends(String uid) async {
     int i = 0;
     print(uid);
-    List<Pair> friendsRecipe = [];
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(uid)

@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/models/stages.dart';
-import 'warchRecipeBody.dart';
-import '../editRecipe.dart';
+import 'package:recipes_app/models/stage.dart';
+import 'watchRecipeBody.dart';
+import '../edit_recipe/editRecipe.dart';
 import '../../personal_screen/homeLogIn.dart';
 import '../../groups/publishGroup2.dart';
 
+// ignore: must_be_immutable
 class WatchMyRecipe extends StatefulWidget {
   // true if the user like this recipe
   bool isLikeRecipe = false;
@@ -64,7 +65,7 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
               deleteIcon()
             ]),
         body: WatchRecipeBody(widget.currentRecipe, widget.ingredients,
-            widget.stages, widget.levelColor, widget.levelString));
+            widget.stages, widget.levelColor, widget.levelString, widget.uid));
   }
 
   Future<void> _showPublishPanel() async {
@@ -92,7 +93,6 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
           .collection('publish recipe')
           .document(widget.currentRecipe.publish)
           .get();
-      String recipeID = snap.data['recipeId'];
       List group = snap.data['saveInGroup'] ?? [];
       List users = snap.data['saveUser'] ?? [];
       for (int i = 0; i < group.length; i++) {
@@ -166,6 +166,7 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
   }
 
   Widget publishIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
           Icons.share,
@@ -181,6 +182,7 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
   }
 
   Widget editIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
           Icons.edit,
@@ -200,6 +202,7 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
   }
 
   Widget deleteIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
           Icons.delete,

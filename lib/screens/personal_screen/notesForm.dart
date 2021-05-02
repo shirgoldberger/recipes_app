@@ -1,132 +1,111 @@
 import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/config.dart';
 
+// ignore: must_be_immutable
 class NotesForm extends StatefulWidget {
-  NotesForm(List _notes, String uid, String docId, String currentid) {
-    print("notes from");
-    // getNotes();
+  String uid;
+  List<String> notes = [];
+  String docId;
+  String newNotes;
+  String currentId;
+  bool doneLoad = false;
+
+  NotesForm(List _notes, String _uid, String _docId, String _currentId) {
     if (_notes != null) {
       this.notes = _notes.cast<String>().toList();
     } else {
       this.notes = [];
     }
-    this.uid = uid;
-    this.docId = docId;
-    this.currentid = currentid;
+    this.uid = _uid;
+    this.docId = _docId;
+    this.currentId = _currentId;
   }
-  List<String> notes = [];
-  String uid;
-  String docId;
-  String newNotes;
-  String currentid;
-  bool doneLoad = false;
+
   @override
   _NotesFormState createState() => _NotesFormState();
-
-  Future<void> getNotes() async {
-    final db = Firestore.instance;
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(uid)
-        .collection('saved recipe')
-        .getDocuments();
-    snap.documents.forEach((element) async {
-      String recipeIdfromSnap = element.data['recipeID'];
-      if (recipeIdfromSnap == currentid) {
-        List notes = element.data['notes'];
-        notes = notes;
-      }
-    });
-    doneLoad = true;
-  }
 }
 
 class _NotesFormState extends State<NotesForm> {
   @override
   Widget build(BuildContext context) {
-    //if (widget.doneLoad) {
     return Container(
       child: Form(
           child: Column(children: <Widget>[
         TextFormField(
           decoration: InputDecoration(
-            labelText: 'add new note:',
+            labelText: 'Add new note:',
             hintStyle: TextStyle(
-              fontFamily: 'Raleway',
+              fontFamily: ralewayFont,
               fontSize: 18,
             ),
           ),
           onChanged: (val) {
             setState(() {
               widget.newNotes = val;
-              //  print(widget.newNotes);
             });
           },
         ),
-        FlatButton.icon(
-            color: Colors.blueGrey[400],
-            disabledColor: Colors.blueGrey[400],
-            icon: Icon(Icons.update),
-            label: Text(
-              'save',
-              style: TextStyle(
-                fontFamily: 'Raleway',
-                fontSize: 18,
-              ),
-              textAlign: TextAlign.left,
-            ),
-            onPressed: () {
-              final db = Firestore.instance;
-
-              setState(() {
-                widget.notes.toList();
-                if (widget.newNotes != null) {
-                  widget.notes.add(widget.newNotes);
-                }
-                widget.newNotes = '';
-              });
-              print(widget.notes);
-              db
-                  .collection('users')
-                  .document(widget.uid)
-                  .collection('saved recipe')
-                  .document(widget.docId)
-                  .updateData({'notes': widget.notes});
-              Navigator.pop(context);
-            }),
-        Text(
-          'your notes on this recipe:',
-          style: TextStyle(fontFamily: 'Raleway', fontSize: 25),
-          textAlign: TextAlign.left,
-        ),
-        for (int i = 0; i < widget.notes.length; i++)
-          Text(
-            (i + 1).toString() + "). " + widget.notes[i],
-            style: TextStyle(
-              fontFamily: 'Raleway',
-              fontSize: 18,
-            ),
-            textAlign: TextAlign.left,
-          ),
+        // ignore: deprecated_member_use
+        saveIcon(),
+        title(),
+        for (int i = 0; i < widget.notes.length; i++) noteText(i),
       ])),
     );
+  }
 
-    // Future<void> getNotes() async {
-    //   final db = Firestore.instance;
-    //   QuerySnapshot snap = await Firestore.instance
-    //       .collection('users')
-    //       .document(widget.uid)
-    //       .collection('saved recipe')
-    //       .getDocuments();
-    //   snap.documents.forEach((element) async {
-    //     String recipeIdfromSnap = element.data['recipeID'];
-    //     if (recipeIdfromSnap == widget.currentid) {
-    //       List notes = element.data['notes'];
-    //       widget.notes = notes;
-    //     }
-    //   });
-    // }
+  void saveIconPressed() {
+    final db = Firestore.instance;
+    setState(() {
+      widget.notes.toList();
+      if (widget.newNotes != null) {
+        widget.notes.add(widget.newNotes);
+      }
+      widget.newNotes = '';
+    });
+    db
+        .collection(usersCollectionName)
+        .document(widget.uid)
+        .collection('saved recipe')
+        .document(widget.docId)
+        .updateData({'notes': widget.notes});
+    Navigator.pop(context);
+  }
+
+  Widget saveIcon() {
+    // ignore: deprecated_member_use
+    return FlatButton.icon(
+        color: Colors.blueGrey[400],
+        disabledColor: Colors.blueGrey[400],
+        icon: Icon(Icons.update),
+        label: Text(
+          'save',
+          style: TextStyle(
+            fontFamily: ralewayFont,
+            fontSize: 18,
+          ),
+          textAlign: TextAlign.left,
+        ),
+        onPressed: saveIconPressed);
+  }
+
+  Widget title() {
+    return Text(
+      'your notes on this recipe:',
+      style: TextStyle(fontFamily: ralewayFont, fontSize: 25),
+      textAlign: TextAlign.left,
+    );
+  }
+
+  Widget noteText(int i) {
+    return Text(
+      (i + 1).toString() + "). " + widget.notes[i],
+      style: TextStyle(
+        fontFamily: ralewayFont,
+        fontSize: 18,
+      ),
+      textAlign: TextAlign.left,
+    );
   }
 }

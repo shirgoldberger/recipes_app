@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'sigh_in.dart';
+import 'sighIn.dart';
 import 'register.dart';
 
 class Authentication extends StatefulWidget {

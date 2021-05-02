@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/models/stages.dart';
+import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/screens/personal_screen/homeLogIn.dart';
-import 'warchRecipeBody.dart';
+import 'package:recipes_app/screens/recipes/watch_recipes/watchRecipeBody.dart';
 
 //הסבר כללי לגבי העמוד הזה-
 // העמוד מקבל מתכון ומציג אותו למשתמש כאשר הוא מחולק ל 3 מצבים:
@@ -169,7 +169,7 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
               //     onPressed: () {}),
             ]),
         body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
-            widget.levelColor, widget.levelString));
+            widget.levelColor, widget.levelString, widget.uid));
   }
 
   Future<void> makeList() async {
@@ -205,8 +205,8 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
         snap2.documents.forEach((element1) {
           // print(element1.data.toString());
           setState(() {
-            widget.stages
-                .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
+            widget.stages.add(Stages.antheeConstractor(
+                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
           });
         });
       } else {
@@ -231,8 +231,8 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
         snap2.documents.forEach((element1) {
           //print(element1.data.toString());
           setState(() {
-            widget.stages
-                .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
+            widget.stages.add(Stages.antheeConstractor(
+                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
           });
         });
       }

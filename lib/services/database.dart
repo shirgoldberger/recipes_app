@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/screens/recipes/ingredients.dart';
 
 class DataBaseService {
   String uid;
@@ -16,7 +15,7 @@ class DataBaseService {
   }
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  //collection redernce
+  // collection redernce
   final CollectionReference userCollection =
       Firestore.instance.collection('users');
 
@@ -35,8 +34,8 @@ class DataBaseService {
   Future<String> getCurrentUID() async {
     return (await _firebaseAuth.currentUser()).uid;
   }
-  //user data from snapshot
 
+  // user data from snapshot
   UserData _userDataFromSnapshot(DocumentSnapshot snapshot) {
     return UserData(
         uid: uid,
@@ -48,17 +47,17 @@ class DataBaseService {
         imagePath: snapshot.data['imagePath']);
   }
 
-  //get user doc stream
+  // get user doc stream
   Stream<UserData> get userData {
     return userCollection.document(uid).snapshots().map(_userDataFromSnapshot);
   }
 
-  //get recipe list
+  // get recipe list
   Stream<List<Recipe>> get recipe {
     return recipeCollection.snapshots().map(_recipeListFromSnapshot);
   }
 
-  //get recipe list
+  // get recipe list
   List<Recipe> _recipeListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc) {
       var id = doc.documentID;
@@ -72,7 +71,7 @@ class DataBaseService {
       String publish = doc.data['publishID'] ?? '';
       String path = doc.data['imagePath'] ?? '';
       int levlelInt = int.parse(level);
-      //tags
+      // tags
       var tags = doc.data['tags'];
       String tagString = tags.toString();
       List<String> l = [];
@@ -85,7 +84,7 @@ class DataBaseService {
           }
         }
       }
-      //notes
+      // notes
       var note = doc.data['tags'];
       String noteString = note.toString();
       List<String> nList = [];
@@ -98,7 +97,7 @@ class DataBaseService {
           }
         }
       }
-
+      // create recipe
       Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
           true, id, publish, path);
       r.setId(id);

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/config.dart';
 
+// ignore: must_be_immutable
 class NewGroup extends StatefulWidget {
   NewGroup(String _uid) {
     this.uid = _uid;
@@ -33,6 +34,7 @@ class _NewGroupState extends State<NewGroup> {
               backgroundColor: appBarBackgroundColor,
               elevation: 0.0,
               actions: <Widget>[
+                // ignore: deprecated_member_use
                 FlatButton.icon(
                     icon: Icon(
                       Icons.save,
@@ -40,7 +42,7 @@ class _NewGroupState extends State<NewGroup> {
                     ),
                     label: Text('SAVE', style: TextStyle(color: Colors.white)),
                     onPressed: () {
-                      SaveGroup();
+                      saveGroup();
                       Navigator.pop(context);
                     }),
               ]),
@@ -162,7 +164,7 @@ class _NewGroupState extends State<NewGroup> {
     );
   }
 
-  Future<void> SaveGroup() async {
+  Future<void> saveGroup() async {
     // print(usersID);
     usersID.add(widget.uid);
     final db = Firestore.instance;
@@ -171,7 +173,7 @@ class _NewGroupState extends State<NewGroup> {
         .add({'groupName': groupName, 'users': usersID});
     String id = currentRecipe.documentID.toString();
     for (int i = 0; i < usersID.length; i++) {
-      var currentRecipe = await db
+      await db
           .collection('users')
           .document(usersID[i])
           .collection('groups')

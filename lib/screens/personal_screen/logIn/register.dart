@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
-
 import '../../../config.dart';
 
 class Register extends StatefulWidget {
@@ -21,18 +20,22 @@ class _RegisterState extends State<Register> {
   String password = '';
   String name = '';
 
+  // error text
   String error = '';
 
   void pressedRegister() async {
-    // if passwors and email are null its enter to into the if statement
+    // if password and email are null its enter into the if statement
     if (_formKey.currentState.validate()) {
       setState(() {
         loading = true;
       });
-      dynamic result = await _auth.registerWithEnailAndPass(email, password);
+      // create new user
+      dynamic result =
+          await _auth.registerWithEmailAndPass(email, password, name);
+      // check errors:
       if (result == errorInvalidEmail) {
         setState(() {
-          error = 'please supply a valid email';
+          error = 'Please supply a valid email';
           loading = false;
         });
       } else if (result == errorEmailAlreadyInUse) {
@@ -40,9 +43,15 @@ class _RegisterState extends State<Register> {
           error = 'There is a registered user with this email address';
           loading = false;
         });
+      } else if (result == errorNetworkRequestFaild) {
+        setState(() {
+          error =
+              'Network connection failed. Please check your internet connection and try again';
+          loading = false;
+        });
       } else if (result == null) {
         setState(() {
-          error = 'Please supply a valid email';
+          error = 'Something happend. Please try again';
           loading = false;
         });
       }
@@ -55,14 +64,7 @@ class _RegisterState extends State<Register> {
         ? Loading()
         : Scaffold(
             backgroundColor: backgroundColor,
-            appBar: AppBar(
-              title: Text(
-                appName,
-                style: TextStyle(fontFamily: 'LogoFont'),
-              ),
-              backgroundColor: appBarBackgroundColor,
-              elevation: 0.0,
-            ),
+            appBar: appBar(),
             body: Container(
                 padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
                 child: Form(
@@ -79,10 +81,7 @@ class _RegisterState extends State<Register> {
                       passwordField(),
                       box,
                       registerButton(),
-                      Text(
-                        error,
-                        style: TextStyle(color: Colors.red, fontSize: 14.0),
-                      ),
+                      errorText(),
                       box,
                       alreadyAcoountButton()
                     ],
@@ -92,11 +91,22 @@ class _RegisterState extends State<Register> {
           );
   }
 
+  Widget appBar() {
+    return AppBar(
+      title: Text(
+        appName,
+        style: TextStyle(fontFamily: 'LogoFont'),
+      ),
+      backgroundColor: appBarBackgroundColor,
+      elevation: 0.0,
+    );
+  }
+
   Widget title() {
     return Text(
       'Enter details about yourself:',
-      style: TextStyle(
-          fontFamily: 'Raleway', fontSize: 20, color: Colors.blueGrey[800]),
+      style:
+          TextStyle(fontFamily: ralewayFont, fontSize: 20, color: titleColor),
       textAlign: TextAlign.center,
     );
   }
@@ -106,9 +116,9 @@ class _RegisterState extends State<Register> {
       decoration: InputDecoration(
         hintText: 'Email',
         enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blueGrey, width: 2.0)),
+            borderSide: BorderSide(color: borderColor, width: 2.0)),
         focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blueGrey, width: 2.0)),
+            borderSide: BorderSide(color: borderColor, width: 2.0)),
       ),
       validator: (val) => val.isEmpty ? 'Enter an email' : null,
       onChanged: (val) {
@@ -122,11 +132,11 @@ class _RegisterState extends State<Register> {
       decoration: InputDecoration(
         hintText: 'Name',
         enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blueGrey, width: 2.0)),
+            borderSide: BorderSide(color: borderColor, width: 2.0)),
         focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blueGrey, width: 2.0)),
+            borderSide: BorderSide(color: borderColor, width: 2.0)),
       ),
-      validator: (val) => val.isEmpty ? 'Enter name' : null,
+      validator: (val) => val.isEmpty ? 'Enter a name' : null,
       onChanged: (val) {
         setState(() => name = val);
       },
@@ -138,13 +148,13 @@ class _RegisterState extends State<Register> {
       decoration: InputDecoration(
         hintText: 'Password',
         enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blueGrey, width: 2.0)),
+            borderSide: BorderSide(color: borderColor, width: 2.0)),
         focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blueGrey, width: 2.0)),
+            borderSide: BorderSide(color: borderColor, width: 2.0)),
       ),
       obscureText: true,
       validator: (val) =>
-          val.length < 6 ? 'Enter a password 6+ chars long' : null,
+          val.length < 6 ? 'Enter a password with 6+ characters' : null,
       onChanged: (val) {
         setState(() => password = val);
       },
@@ -152,10 +162,11 @@ class _RegisterState extends State<Register> {
   }
 
   Widget registerButton() {
+    // ignore: deprecated_member_use
     return RaisedButton(
-      color: Colors.blueGrey[500],
+      color: mainButtonColor,
       child: Text(
-        'register',
+        'Register',
         style: TextStyle(color: Colors.white),
       ),
       onPressed: pressedRegister,
@@ -163,6 +174,7 @@ class _RegisterState extends State<Register> {
   }
 
   Widget alreadyAcoountButton() {
+    // ignore: deprecated_member_use
     return OutlineButton(
       borderSide: BorderSide.none,
       onPressed: () {
@@ -173,6 +185,13 @@ class _RegisterState extends State<Register> {
         style: TextStyle(fontSize: 15),
         textAlign: TextAlign.center,
       ),
+    );
+  }
+
+  Widget errorText() {
+    return Text(
+      error,
+      style: TextStyle(color: errorColor, fontSize: 14.0),
     );
   }
 }

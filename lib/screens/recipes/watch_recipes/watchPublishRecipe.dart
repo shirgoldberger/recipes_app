@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/models/stages.dart';
+import 'package:recipes_app/models/stage.dart';
+import 'package:recipes_app/screens/recipes/watch_recipes/watchRecipeBody.dart';
+import 'package:recipes_app/shared_screen/loading.dart';
 import '../../groups/saveGroup.dart';
-import 'warchRecipeBody.dart';
 import '../../personal_screen/likesList.dart';
 
 class WatchPublishRecipe extends StatefulWidget {
@@ -21,6 +22,7 @@ class WatchPublishRecipe extends StatefulWidget {
   List<IngredientsModel> ingredients = [];
   List<Stages> stages = [];
   Color levelColor;
+  bool done = false;
   String levelString;
   // username and id that like current recipe
   Map<String, String> usersLikes = {};
@@ -46,6 +48,7 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
   void initState() {
     super.initState();
     getuser();
+    makeList();
     if (widget.uid != null) {
       initLikeIcon();
     }
@@ -63,6 +66,9 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.done) {
+      return Loading();
+    }
     return Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
@@ -74,14 +80,14 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
             backgroundColor: appBarBackgroundColor,
             actions: <Widget>[
               // like icon
-              likeIcon(),
+              //likeIcon(),
               // show likes button
-              showLikesIcon(),
+              // showLikesIcon(),
               // save icon
               saveIcon(),
             ]),
         body: WatchRecipeBody(widget.currentRecipe, widget.ingredients,
-            widget.stages, widget.levelColor, widget.levelString));
+            widget.stages, widget.levelColor, widget.levelString, widget.uid));
   }
 
   initLikeIcon() async {
@@ -260,6 +266,7 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
   }
 
   Widget likeIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
           widget.isLikeRecipe ? Icons.thumb_up : Icons.thumb_up_outlined,
@@ -291,6 +298,7 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
   }
 
   Widget saveIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
           widget.isSaveRecipe ? Icons.favorite : Icons.favorite_border,
@@ -313,5 +321,76 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
                 'you can not save this recipe - please first register or sign in to this app, do this in the personal page');
           }
         });
+  }
+
+  Future<void> makeList() async {
+    if (!widget.done) {
+      if (widget.currentRecipe.saveInUser) {
+        //final user = Provider.of<User>(context);
+        String uid = widget.currentRecipe.writerUid;
+        // print('save in user');
+        //print(uid);
+        //print(widget.current.id.toString());
+        QuerySnapshot snap = await Firestore.instance
+            .collection('users')
+            .document(uid)
+            .collection('recipes')
+            .document(widget.currentRecipe.id.toString())
+            .collection('ingredients')
+            .getDocuments();
+        snap.documents.forEach((element) {
+          setState(() {
+            widget.ingredients.add(IngredientsModel.antherConstactor(
+                element.data['name'] ?? '',
+                element.data['count'] ?? 0,
+                element.data['unit'] ?? ''));
+          });
+        });
+        QuerySnapshot snap2 = await Firestore.instance
+            .collection('users')
+            .document(uid)
+            .collection('recipes')
+            .document(widget.currentRecipe.id.toString())
+            .collection('stages')
+            .getDocuments();
+        snap2.documents.forEach((element1) {
+          // print(element1.data.toString());
+          setState(() {
+            widget.stages.add(Stages.antheeConstractor(
+                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
+          });
+        });
+      } else {
+        QuerySnapshot snap = await Firestore.instance
+            .collection('recipes')
+            .document(widget.currentRecipe.id)
+            .collection('ingredients')
+            .getDocuments();
+        snap.documents.forEach((element) {
+          setState(() {
+            widget.ingredients.add(IngredientsModel.antherConstactor(
+                element.data['name'] ?? '',
+                element.data['count'] ?? 0,
+                element.data['unit'] ?? ''));
+          });
+        });
+        QuerySnapshot snap2 = await Firestore.instance
+            .collection('recipes')
+            .document(widget.currentRecipe.id)
+            .collection('stages')
+            .getDocuments();
+        snap2.documents.forEach((element1) {
+          //print(element1.data.toString());
+          setState(() {
+            widget.stages.add(Stages.antheeConstractor(
+                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
+          });
+        });
+      }
+
+      setState(() {
+        widget.done = true;
+      });
+    }
   }
 }

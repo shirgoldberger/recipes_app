@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/models/stages.dart';
+import 'package:recipes_app/models/stage.dart';
 import 'watchMyRecipe.dart';
 import 'watchPublishRecipe.dart';
 import 'watchSaveRecipe.dart';
@@ -14,6 +14,7 @@ import 'package:recipes_app/shared_screen/loading.dart';
 // מצב ראשןן - במקרה ואנחנו צופים במתכון שאנחנו כתבנו - ניתן לערוך את המתכון, למחוק אותו ולפרסם אותו.
 //  לכן אפשר רק למחוק אותו, נמחק רק אצלי, או להוסיף עליו הערות אישיות שלי. (עשינו לו save )  מצב שני - אנחנו צופים במתכון ששמרנו אותו
 // מצב שלישי - צפיה במתכון מתוך העמוד הכללי - ניתן רק לשמור מתכון.
+// ignore: must_be_immutable
 class WatchRecipe extends StatefulWidget {
   WatchRecipe(Recipe r, bool home) {
     this.current = r;
@@ -121,8 +122,8 @@ class _WatchRecipeState extends State<WatchRecipe> {
             .getDocuments();
         snap2.documents.forEach((element1) {
           setState(() {
-            widget.stages
-                .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
+            widget.stages.add(Stages.antheeConstractor(
+                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
           });
         });
       } else {
@@ -146,8 +147,8 @@ class _WatchRecipeState extends State<WatchRecipe> {
             .getDocuments();
         snap2.documents.forEach((element1) {
           setState(() {
-            widget.stages
-                .add(Stages.antheeConstractor(element1.data['stage'] ?? ''));
+            widget.stages.add(Stages.antheeConstractor(
+                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
           });
         });
       }

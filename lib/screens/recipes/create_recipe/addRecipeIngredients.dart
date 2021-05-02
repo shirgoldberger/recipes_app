@@ -1,13 +1,12 @@
 import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/addRecipeStages.dart';
-
 import '../../../config.dart';
 
+// ignore: must_be_immutable
 class AddRecipeIngredients extends StatefulWidget {
   String username;
   String uid;
@@ -29,79 +28,37 @@ class AddRecipeIngredients extends StatefulWidget {
 class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
   List<IngredientsModel> ingredients = [];
   String error = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: ListView(children: [
-      box,
-      box,
+      heightBox(40),
       title(),
-      box,
-      box,
-      // ingredients list: its a row with 3 element : ingredient, count, unit.
+      heightBox(40),
       Container(
           child: Column(
         children: [
-          Text(error),
+          Text(error,
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
           ingredients.length <= 0
-              ? Text(
-                  'There is no ingredients\nin this recipe yet',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold),
-                )
-              : Container(
-                  height: min(40 * ingredients.length.toDouble(), 300),
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      // physics: NeverScrollableScrollPhysics(),
-                      // addAutomaticKeepAlives: true,
-                      itemCount: ingredients.length,
-                      itemBuilder: (_, i) => Column(children: [
-                            row(i),
-                            SizedBox(
-                              height: 10,
-                            )
-                          ])),
-                ),
-
-          // box,
-          // box,
+              ? noIngredientsText()
+              : ingredientsContainer(),
+          box,
           addButton(),
           SizedBox(
-            height: (min(40 * ingredients.length.toDouble(), 350) ==
-                    40 * ingredients.length.toDouble())
-                ? 300 - 40 * ingredients.length.toDouble()
-                : 5,
+            height: (min(50 * ingredients.length.toDouble(), 300) ==
+                    50 * ingredients.length.toDouble())
+                ? 300 - 50 * ingredients.length.toDouble()
+                : 0,
           ),
           Row(
             children: [
-              SizedBox(
-                width: 20,
-              ),
+              widthBox(20),
               previousLevelButton(),
-              SizedBox(
-                width: 10,
-              ),
-              LinearPercentIndicator(
-                width: 250,
-                animation: true,
-                lineHeight: 18.0,
-                animationDuration: 500,
-                percent: 0.25,
-                center: Text(
-                  "25%",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-                linearStrokeCap: LinearStrokeCap.roundAll,
-                progressColor: Colors.grey[600],
-              ),
-              SizedBox(
-                width: 10,
-              ),
+              widthBox(10),
+              progressBar(),
+              widthBox(10),
               nextLevelButton()
             ],
           )
@@ -110,63 +67,117 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
     ]));
   }
 
-  Widget row(int i) {
+  Widget noIngredientsText() {
+    return Text(
+      'There is no ingredients in this recipe yet',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+          color: errorColor, fontSize: 15, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget ingredientsContainer() {
+    return Container(
+      height: min(50 * ingredients.length.toDouble(), 300),
+      child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: ingredients.length,
+          itemBuilder: (_, i) => Column(children: [
+                ingredientRow(i),
+              ])),
+    );
+  }
+
+  Widget ingredientRow(int i) {
     return Row(
       children: <Widget>[
-        SizedBox(
-          width: 20,
-        ),
+        widthBox(20),
         ingredientIndex(i),
-        Expanded(
-            child: SizedBox(
-                height: 37.0,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'Ingredient',
-                  ),
-                  validator: (val) => val.length < 2
-                      ? 'Enter a description eith 2 letter at least'
-                      : null,
-                  onChanged: (val) {
-                    setState(() => ingredients[i].name = val);
-                  },
-                ))),
-        Expanded(
-            child: SizedBox(
-                height: 37.0,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'amount',
-                  ),
-                  validator: (val) => val.length < 6
-                      ? 'Enter a description eith 6 letter at least'
-                      : null,
-                  onChanged: (val) {
-                    setState(() => ingredients[i].count = int.parse(val));
-                  },
-                ))),
-        Expanded(
-            child: SizedBox(
-                height: 37.0,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'unit',
-                  ),
-                  validator: (val) => val.length < 6
-                      ? 'Enter a description eith 6 letter at least'
-                      : null,
-                  onChanged: (val) {
-                    setState(() => ingredients[i].unit = val);
-                  },
-                ))),
+        Expanded(child: SizedBox(height: 37.0, child: ingredientName(i))),
+        Expanded(child: SizedBox(height: 37.0, child: ingredientAmount(i))),
+        Expanded(child: SizedBox(height: 37.0, child: ingredientUnit(i))),
         deleteButton(i)
       ],
+    );
+  }
+
+  Widget ingredientName(int i) {
+    return TextFormField(
+      decoration: InputDecoration(
+        hintText: 'Name',
+      ),
+      validator: (val) =>
+          val.length < 2 ? 'Enter a description with 2 letter at least' : null,
+      onChanged: (val) {
+        setState(() => ingredients[i].name = val);
+      },
+    );
+  }
+
+  Widget ingredientAmount(int i) {
+    return TextFormField(
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        hintText: 'Amount',
+      ),
+      validator: (val) =>
+          val.length < 6 ? 'Enter a description eith 6 letter at least' : null,
+      onChanged: (val) {
+        setState(() => ingredients[i].count = int.parse(val));
+      },
+    );
+  }
+
+  Widget ingredientUnit(int i) {
+    List unitList = [
+      "Unit",
+      "Milligram",
+      "Gram",
+      "Kilogram",
+      "Milliliter",
+      "Liter",
+      "Cup"
+    ];
+
+    return DropdownButton(
+      dropdownColor: Colors.grey,
+      icon: Icon(Icons.arrow_drop_down),
+      iconSize: 36,
+      isExpanded: true,
+      onChanged: (newValue) {
+        setState(() {
+          ingredients[i].unit = newValue;
+        });
+      },
+      items: unitList.map((valueItem) {
+        return DropdownMenuItem(
+          value: valueItem,
+          child: Text(valueItem),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget progressBar() {
+    return LinearPercentIndicator(
+      width: 250,
+      animation: true,
+      lineHeight: 18.0,
+      animationDuration: 500,
+      percent: 0.25,
+      center: Text(
+        "25%",
+        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+      linearStrokeCap: LinearStrokeCap.roundAll,
+      progressColor: Colors.grey[600],
     );
   }
 
   void onDelteIng(int i) {
     setState(() {
       ingredients.removeAt(i);
+      error = "";
     });
   }
 
@@ -181,7 +192,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
       onPressed: addIng,
       elevation: 2.0,
       heroTag: null,
-      backgroundColor: Colors.black,
+      backgroundColor: mainButtonColor,
       child: Icon(
         Icons.add,
         color: Colors.white,
@@ -206,7 +217,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
   Widget title() {
     return Text('Add Ingredients to your recipe',
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 20, fontFamily: 'Raleway'));
+        style: TextStyle(fontSize: 20, fontFamily: ralewayFont));
   }
 
   Widget ingredientIndex(int i) {
@@ -224,7 +235,9 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
       onPressed: () {
         List<IngredientsModel> notEmptyIngredients = [];
         for (IngredientsModel ingredient in this.ingredients) {
-          if (ingredient.count != 0) {
+          if (ingredient.count != 0 ||
+              ingredient.name == "" ||
+              ingredient.unit == "") {
             notEmptyIngredients.add(ingredient);
           }
         }
@@ -238,7 +251,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
                           widget.description, widget.imagePath, ingredients)));
         } else {
           setState(() {
-            error = "add ingredients to your recipe";
+            error = "Add some ingredients to your recipe";
           });
         }
       },

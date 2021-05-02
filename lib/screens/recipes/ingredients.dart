@@ -3,6 +3,7 @@ import 'package:recipes_app/models/ingredient.dart';
 
 typedef OnDelete();
 
+// ignore: must_be_immutable
 class Ingredients extends StatefulWidget {
   IngredientsModel ing;
   final state = _IngredientsState();

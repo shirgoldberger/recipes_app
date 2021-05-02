@@ -4,6 +4,7 @@ import 'groupRecipeList.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import 'package:recipes_app/config.dart';
 
+// ignore: must_be_immutable
 class GroupList extends StatefulWidget {
   GroupList(String _uid) {
     this.uid = _uid;
@@ -65,16 +66,17 @@ class _GroupListState extends State<GroupList> {
               child: ListView.builder(
                   itemCount: widget.groupId.length,
                   itemBuilder: (context, index) {
-                    return group_title(index);
+                    return groupTitle(index);
                   }),
             ))
           ]));
     }
   }
 
-  Widget group_title(int index) {
+  Widget groupTitle(int index) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
+      // ignore: deprecated_member_use
       child: RaisedButton(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18.0),

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/personal_screen/logIn/register.dart';
 import 'package:recipes_app/screens/recipes/recipesFolder.dart';
 import 'package:recipes_app/services/database.dart';
 import '../main.dart';
 
+// ignore: must_be_immutable
 class RecipesBookPage extends StatelessWidget {
   static String tag = 'book-page';
   static const TextStyle optionStyle = TextStyle(
       fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueGrey);
-  Widget box = SizedBox(
-    height: 20.0,
-  );
   String user;
   RecipesBookPage(String _user) {
     user = _user;
@@ -22,28 +21,14 @@ class RecipesBookPage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (user == "") {
       return Scaffold(
-          backgroundColor: Colors.blueGrey[50],
-          appBar: AppBar(
-            title: Text(
-              'Cook Book',
-              style: TextStyle(fontFamily: 'LogoFont'),
-            ),
-            backgroundColor: Colors.blueGrey[700],
-            elevation: 0.0,
-            actions: <Widget>[],
-          ),
+          backgroundColor: backgroundColor,
+          appBar: appBar(),
           body: Column(
             children: [
               box,
-              Text(
-                'Hello!\n If you want to create recipes book, you need to log in or sign up first.',
-                style: TextStyle(
-                    fontFamily: 'Raleway',
-                    fontSize: 20,
-                    color: Colors.blueGrey[800]),
-                textAlign: TextAlign.center,
-              ),
+              title(),
               box,
+              // ignore: deprecated_member_use
               FlatButton.icon(
                 minWidth: 110,
                 color: Colors.blueGrey[400],
@@ -55,6 +40,7 @@ class RecipesBookPage extends StatelessWidget {
                 },
               ),
               box,
+              // ignore: deprecated_member_use
               FlatButton.icon(
                 minWidth: 110,
                 color: Colors.blueGrey[400],
@@ -69,6 +55,7 @@ class RecipesBookPage extends StatelessWidget {
             ],
           ));
     } else {
+      // ignore: missing_required_param
       return StreamProvider<List<Recipe>>.value(
           value: DataBaseService(user).recipe,
           child: Scaffold(
@@ -86,5 +73,25 @@ class RecipesBookPage extends StatelessWidget {
               ),
               body: RecipeFolder(false)));
     }
+  }
+
+  Widget appBar() {
+    return AppBar(
+      title: Text(
+        'Cook Book',
+        style: TextStyle(fontFamily: logoFont),
+      ),
+      backgroundColor: appBarBackgroundColor,
+      elevation: 0.0,
+    );
+  }
+
+  Widget title() {
+    return Text(
+      'Hello!\n If you want to create recipes book, you need to log in or sign up first.',
+      style:
+          TextStyle(fontFamily: ralewayFont, fontSize: 20, color: titleColor),
+      textAlign: TextAlign.center,
+    );
   }
 }

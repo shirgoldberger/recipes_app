@@ -7,7 +7,7 @@ import 'package:recipes_app/models/user.dart';
 class HomeWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
+    // ignore: missing_required_param
     return StreamProvider<User>.value(
       value: AuthService().user,
       child: MaterialApp(

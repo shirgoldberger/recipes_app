@@ -1,12 +1,13 @@
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recipes_app/models/ingredient.dart';
-import 'package:recipes_app/models/stages.dart';
-
+import 'package:recipes_app/models/stage.dart';
 import '../../../config.dart';
 import 'addRecipeLevel.dart';
 
+// ignore: must_be_immutable
 class AddRecipeTags extends StatefulWidget {
   String username;
   String uid;
@@ -39,30 +40,6 @@ class _AddRecipeTagsState extends State<AddRecipeTags> {
   String tagChoose;
   int count = 0;
   List<String> tags = [];
-  List tagList = [
-    'choose recipe tag',
-    'fish',
-    'meat',
-    'dairy',
-    'desert',
-    'for children',
-    'other',
-    'vegetarian',
-    'Gluten free',
-    'without sugar',
-    'vegan',
-    'Without milk',
-    'No eggs',
-    'kosher',
-    'baking',
-    'cakes and cookies',
-    'Food toppings',
-    'Salads',
-    'Soups',
-    'Pasta',
-    'No carbs',
-    'Spreads',
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,59 +50,60 @@ class _AddRecipeTagsState extends State<AddRecipeTags> {
       box,
       box,
       // tags
-      Container(
-          child: Column(children: [
-        tags.length <= 0
-            ? Text(
-                'There is no tags in this recipe yet',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold),
-              )
-            : ListView.builder(
-                shrinkWrap: true,
-                addAutomaticKeepAlives: true,
-                itemCount: tags.length,
-                itemBuilder: (_, i) => Row(children: <Widget>[
-                      SizedBox(
-                        width: 40,
-                      ),
-                      Expanded(
-                          child: SizedBox(
-                        height: 37.0,
-                        child: DropdownButton(
-                          hint: Text("choose this recipe tag"),
-                          dropdownColor: Colors.grey,
-                          icon: Icon(Icons.arrow_drop_down),
-                          iconSize: 36,
-                          isExpanded: true,
-                          value: tags[i],
-                          onChanged: (newValue) {
-                            setState(() {
-                              tags[i] = newValue;
-                            });
-                          },
-                          items: tagList.map((valueItem) {
-                            return DropdownMenuItem(
-                              value: valueItem,
-                              child: Text(valueItem),
-                            );
-                          }).toList(),
+      tags.length <= 0
+          ? Text(
+              'There is no tags in this recipe yet',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+            )
+          : Container(
+              height: min(50 * tags.length.toDouble(), 300),
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  addAutomaticKeepAlives: true,
+                  itemCount: tags.length,
+                  itemBuilder: (_, i) => Row(children: <Widget>[
+                        SizedBox(
+                          width: 40,
                         ),
-                      )),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      deleteButton(i)
-                    ])),
-      ])),
-      box,
+                        Expanded(
+                            child: SizedBox(
+                          height: 37.0,
+                          child: DropdownButton(
+                            hint: Text("choose this recipe tag"),
+                            dropdownColor: Colors.grey,
+                            icon: Icon(Icons.arrow_drop_down),
+                            iconSize: 36,
+                            isExpanded: true,
+                            value: tags[i],
+                            onChanged: (newValue) {
+                              setState(() {
+                                tags[i] = newValue;
+                              });
+                            },
+                            items: tagList.map((valueItem) {
+                              return DropdownMenuItem(
+                                value: valueItem,
+                                child: Text(valueItem),
+                              );
+                            }).toList(),
+                          ),
+                        )),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        deleteButton(i)
+                      ])),
+            ),
+
       box,
       addButton(),
       SizedBox(
-        height: 250,
+        height: (min(50 * tags.length.toDouble(), 300) ==
+                50 * tags.length.toDouble())
+            ? 300 - 50 * tags.length.toDouble()
+            : 0,
       ),
       Row(
         children: [

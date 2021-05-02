@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:recipes_app/screens/book_page.dart';
+import 'package:recipes_app/screens/bookPage.dart';
 import 'package:recipes_app/screens/home.dart';
 import 'package:recipes_app/screens/personal_screen/logIn/logInWrapper.dart';
-import 'package:recipes_app/screens/search_page.dart';
+import 'package:recipes_app/screens/search_screen/search_page.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'models/user.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +36,7 @@ class MyStatefulWidget extends StatefulWidget {
 /// This is the private State class that goes with MyStatefulWidget.
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 2;
-  List<Widget> pageList = List<Widget>();
+  List<Widget> pageList = [];
 
   @override
   void initState() {
@@ -137,6 +137,7 @@ class Search extends StatelessWidget {
 class Book extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // ignore: missing_required_param
     return StreamProvider<User>.value(
       value: AuthService().user,
       child: MaterialApp(

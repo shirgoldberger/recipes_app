@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recipes_app/models/ingredient.dart';
-import 'package:recipes_app/models/stages.dart';
-
+import 'package:recipes_app/models/stage.dart';
 import '../../../config.dart';
 import 'addRecipeNotes.dart';
 
+// ignore: must_be_immutable
 class AddRecipeLevel extends StatefulWidget {
   String username;
   String uid;
@@ -77,43 +77,52 @@ class _AddRecipeLevelState extends State<AddRecipeLevel> {
           SizedBox(height: 37.0, child: timeTitle()),
           Row(children: <Widget>[
             Expanded(
-              child: FlatButton.icon(
-                  icon: Icon(Icons.watch_later, color: timeInit1),
-                  label: Text(''),
-                  onPressed: () {
-                    setState(() {
-                      time = 1;
-                      timeInit1 = Colors.green[400];
-                      timeInit2 = Colors.black;
-                      timeInit3 = Colors.black;
-                    });
-                  }),
+              // ignore: deprecated_member_use
+              child: Column(children: [
+                IconButton(
+                    icon: Icon(Icons.watch_later, color: timeInit1),
+                    onPressed: () {
+                      setState(() {
+                        time = 1;
+                        timeInit1 = Colors.green[400];
+                        timeInit2 = Colors.black;
+                        timeInit3 = Colors.black;
+                      });
+                    }),
+                Text('Until half-hour')
+              ]),
             ),
             Expanded(
-              child: FlatButton.icon(
-                  icon: Icon(Icons.watch_later, color: timeInit2),
-                  label: Text(''),
-                  onPressed: () {
-                    setState(() {
-                      time = 2;
-                      timeInit1 = Colors.black;
-                      timeInit2 = Colors.yellow[400];
-                      timeInit3 = Colors.black;
-                    });
-                  }),
+              // ignore: deprecated_member_use
+              child: Column(children: [
+                IconButton(
+                    icon: Icon(Icons.watch_later, color: timeInit2),
+                    onPressed: () {
+                      setState(() {
+                        time = 2;
+                        timeInit1 = Colors.black;
+                        timeInit2 = Colors.yellow[400];
+                        timeInit3 = Colors.black;
+                      });
+                    }),
+                Text('Until hour')
+              ]),
             ),
             Expanded(
-              child: FlatButton.icon(
-                  icon: Icon(Icons.watch_later, color: timeInit3),
-                  label: Text(''),
-                  onPressed: () {
-                    setState(() {
-                      time = 3;
-                      timeInit1 = Colors.black;
-                      timeInit2 = Colors.black;
-                      timeInit3 = Colors.pink[400];
-                    });
-                  }),
+              // ignore: deprecated_member_use
+              child: Column(children: [
+                IconButton(
+                    icon: Icon(Icons.watch_later, color: timeInit3),
+                    onPressed: () {
+                      setState(() {
+                        time = 3;
+                        timeInit1 = Colors.black;
+                        timeInit2 = Colors.black;
+                        timeInit3 = Colors.pink[400];
+                      });
+                    }),
+                Text('Over an hour')
+              ]),
             ),
           ]),
           SizedBox(
@@ -166,6 +175,7 @@ class _AddRecipeLevelState extends State<AddRecipeLevel> {
   }
 
   Widget easyLevel() {
+    // ignore: deprecated_member_use
     return RaisedButton(
         color: easyColor,
         child: Text(
@@ -183,6 +193,7 @@ class _AddRecipeLevelState extends State<AddRecipeLevel> {
   }
 
   Widget mediumLevel() {
+    // ignore: deprecated_member_use
     return RaisedButton(
         color: midColor,
         child: Text(
@@ -200,6 +211,7 @@ class _AddRecipeLevelState extends State<AddRecipeLevel> {
   }
 
   Widget hardLevel() {
+    // ignore: deprecated_member_use
     return RaisedButton(
         color: hardColor,
         child: Text(

@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/models/stages.dart';
-import 'package:recipes_app/screens/groups/saveGroup.dart';
-import 'warchRecipeBody.dart';
+import 'package:recipes_app/models/stage.dart';
+import 'watchRecipeBody.dart';
 import '../../personal_screen/likesList.dart';
 import '../../personal_screen/notesForm.dart';
 
+// ignore: must_be_immutable
 class WatchSaveRecipe extends StatefulWidget {
   // true if the user like this recipe
   bool isLikeRecipe = false;
@@ -77,7 +77,7 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
               addNoteIcon(),
             ]),
         body: WatchRecipeBody(widget.currentRecipe, widget.ingredients,
-            widget.stages, widget.levelColor, widget.levelString));
+            widget.stages, widget.levelColor, widget.levelString, widget.uid));
   }
 
   void initLikeIcon() async {
@@ -118,26 +118,25 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
             child: LikesList(widget.currentRecipe)));
   }
 
-  Future<void> _showSavedGroupPanel() async {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (context) => Container(
-            height: MediaQuery.of(context).size.height * 0.75,
-            decoration: new BoxDecoration(
-              color: Colors.blueGrey[50],
-              borderRadius: new BorderRadius.only(
-                topLeft: const Radius.circular(25.0),
-                topRight: const Radius.circular(25.0),
-              ),
-            ),
-            child: SaveGroup(
-                widget.uid, widget.currentRecipe.id, widget.currentRecipe)));
-  }
+  // Future<void> _showSavedGroupPanel() async {
+  //   showModalBottomSheet(
+  //       context: context,
+  //       isScrollControlled: true,
+  //       backgroundColor: Colors.transparent,
+  //       builder: (context) => Container(
+  //           height: MediaQuery.of(context).size.height * 0.75,
+  //           decoration: new BoxDecoration(
+  //             color: Colors.blueGrey[50],
+  //             borderRadius: new BorderRadius.only(
+  //               topLeft: const Radius.circular(25.0),
+  //               topRight: const Radius.circular(25.0),
+  //             ),
+  //           ),
+  //           child: SaveGroup(
+  //               widget.uid, widget.currentRecipe.id, widget.currentRecipe)));
+  // }
 
   Future<void> _showNotesPanel(String id) async {
-    final db = Firestore.instance;
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(id)
@@ -289,6 +288,7 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
 
   _showAlertDialog() {
     // set up the buttons
+    // ignore: deprecated_member_use
     Widget cancelButton = FlatButton(
       child: Text("OK"),
       onPressed: () {
@@ -316,6 +316,7 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
   }
 
   Widget likeIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
           widget.isLikeRecipe ? Icons.thumb_up : Icons.thumb_up_outlined,
@@ -350,6 +351,7 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
   }
 
   Widget deleteFromSaveIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
           Icons.delete,
@@ -365,6 +367,7 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
   }
 
   Widget addNoteIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
           Icons.note_add,

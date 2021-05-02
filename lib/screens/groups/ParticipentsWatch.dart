@@ -1,8 +1,7 @@
 import 'dart:ui';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class ParticipentsWatch extends StatefulWidget {
   ParticipentsWatch(List _users) {
     this.user = _users;

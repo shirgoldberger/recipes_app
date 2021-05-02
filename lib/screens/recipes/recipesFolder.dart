@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/screens/recipes/RecipeList.dart';
+import 'package:recipes_app/screens/recipes/recipeList.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
-import 'RecipeList.dart';
+import 'recipeList.dart';
 
 class RecipeFolder extends StatefulWidget {
   RecipeFolder(bool home) {
@@ -25,6 +25,11 @@ class RecipeFolder extends StatefulWidget {
 }
 
 class _RecipeFolderDynamicState extends State<RecipeFolder> {
+  @override
+  void didUpdateWidget(RecipeFolder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -138,11 +143,11 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
       Map<String, List> mapCat = {};
       if (recipeList != null) {
         for (int i = 0; i < recipeList.length; i++) {
-          if (recipeList[i].myTag.length == 0) {
+          if (recipeList[i].tags.length == 0) {
             other.add(recipeList[i]);
           }
-          for (int j = 0; j < recipeList[i].myTag.length; j++) {
-            switch (recipeList[i].myTag[j]) {
+          for (int j = 0; j < recipeList[i].tags.length; j++) {
+            switch (recipeList[i].tags[j]) {
               case "fish":
                 fish.add(recipeList[i]);
                 mapCat['fish'] = fish;

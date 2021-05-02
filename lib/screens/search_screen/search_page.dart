@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/screens/recipeHeadLineSearch.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
-import '../searchAlgorithm.dart';
-import 'recipes/watch_recipes/watchRecipe.dart';
+import 'searchAlgorithm.dart';
+import '../recipes/watch_recipes/watchRecipe.dart';
 
+// ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
   bool home;
   // List<Recipe> publisRecipe = [];
@@ -92,6 +92,7 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("count: " + widget.doneLoadCounter.toString());
     if (widget.doneLoadCounter != 3) {
       return Loading();
     } else {
@@ -137,6 +138,7 @@ class _SearchPage extends State<SearchPage> {
     }
     return FutureBuilder(
         future: _getImage(context, widget.recipes[index].imagePath),
+        // ignore: missing_return
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done)
             return ElevatedButton(
@@ -166,8 +168,6 @@ class _SearchPage extends State<SearchPage> {
 //algo funcs
   Future<void> myFriends(String uid) async {
     int i = 0;
-    // print(uid);
-    List<Pair> friendsRecipe = [];
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(uid)

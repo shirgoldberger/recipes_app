@@ -4,6 +4,7 @@ import 'package:recipes_app/models/recipe.dart';
 import 'watch_recipes/watchRecipe.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 
+// ignore: must_be_immutable
 class RecipeHeadLine extends StatefulWidget {
   Recipe recipe;
   Color circleColor;
@@ -15,7 +16,7 @@ class RecipeHeadLine extends StatefulWidget {
     this.recipe = r;
     this.home = home;
     image = r.imagePath;
-    switch (r.time) {
+    switch (r.level) {
       case 1:
         circleColor = Colors.green[400];
         level = 'easy';
@@ -29,7 +30,7 @@ class RecipeHeadLine extends StatefulWidget {
         level = 'hard';
         break;
       case 0:
-        circleColor = Colors.grey[400];
+        circleColor = Colors.green[400];
         level = 'easy';
         break;
     }
@@ -54,7 +55,7 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
           borderRadius: BorderRadius.circular(20),
         ),
         borderRadius: BorderRadius.circular(5),
-        highlightColor: Colors.blueGrey,
+        highlightColor: Colors.blueGrey[100],
         onTap: () {
           Navigator.push(
               context,
@@ -83,7 +84,7 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
                     SizedBox(height: 5.0),
                     Container(
                       // description
-                      child: recipeDescription(),
+                      child: recipeWriter(),
                     ),
                   ],
                 ),
@@ -92,7 +93,7 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
             Column(
               children: <Widget>[
                 // writer
-                recipeWriter(),
+
                 SizedBox(height: 5.0),
                 // level
                 recipeLevel()

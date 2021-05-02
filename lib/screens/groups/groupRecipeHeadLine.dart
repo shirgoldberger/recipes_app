@@ -3,6 +3,7 @@ import 'package:recipes_app/models/recipe.dart';
 import '../recipes/watch_recipes/watchRecipeGroup.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 
+// ignore: must_be_immutable
 class GroupRecipeHeadLine extends StatelessWidget {
   Recipe recipe;
   Color circleColor;
@@ -75,6 +76,7 @@ class GroupRecipeHeadLine extends StatelessWidget {
                 CircleAvatar(
                   child: FutureBuilder(
                       future: _getImage(context, image),
+                      // ignore: missing_return
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done)
                           return Container(

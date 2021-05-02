@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //inputData();
+    // ignore: missing_required_param
     return StreamProvider<List<Recipe>>.value(
         value: DataBaseAllRecipes().allRecipe,
         child: Scaffold(

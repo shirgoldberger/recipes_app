@@ -66,7 +66,7 @@ class DataBaseAllRecipes {
     return r;
   }
 
-  Future<List<Recipe>> getPublicTrcipe() async {
+  Future<List<Recipe>> getPublishRecipe() async {
     List<Recipe> publicRecipeList = [];
     String uid;
     String recipeId;

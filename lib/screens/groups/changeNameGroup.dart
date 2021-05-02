@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import '../../config.dart';
 
+// ignore: must_be_immutable
 class ChangeNameGroup extends StatefulWidget {
   ChangeNameGroup(List _userId, String groupId, String _groupName) {
     this.userId = _userId.toList();
@@ -101,7 +101,6 @@ class _ChangeNameGroupState extends State<ChangeNameGroup> {
         }
       }
       Navigator.pop(context, widget.groupName);
-      String mailCheck;
     }
   }
 }

@@ -1,74 +1,39 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:recipes_app/screens/personal_screen/Setting_form.dart';
-import '../../main.dart';
+import 'settingForm.dart';
 import '../groups/GroupList.dart';
-import 'logIn/logInWrapper.dart';
 import '../groups/newGroup.dart';
-import '../recipes/plusRecipe.dart';
-import 'package:recipes_app/services/auth.dart';
-import 'package:recipes_app/services/fireStorageService.dart';
+import '../../services/auth.dart';
+import '../../services/fireStorageService.dart';
 import '../../config.dart';
-import '../book_page.dart';
 import '../recipes/create_recipe/mainCreateRecipe.dart';
 
+// ignore: must_be_immutable
 class HomeLogIn extends StatefulWidget {
-  HomeLogIn(String _user) {
-    this.uid = _user;
-  }
   String uid;
+  HomeLogIn(String _uid) {
+    this.uid = _uid;
+  }
   @override
   _HomeLogInState createState() => _HomeLogInState();
 }
 
 class _HomeLogInState extends State<HomeLogIn> {
-  final db = Firestore.instance;
   final AuthService _auth = AuthService();
 
   String name = "";
   String mail = "";
   String imagePath = "";
-  NetworkImage m;
-  List<String> groupName;
-  List<String> groupId;
+  NetworkImage image;
 
   @override
   void initState() {
     super.initState();
-    getData();
+    getUserData();
   }
 
-  void _getImage(BuildContext context, String image) async {
-    if (image == "") {
-      setState(() {
-        imagePath = "";
-      });
-      return null;
-    }
-    image = "uploads/" + image;
-    String downloadUrl =
-        await FireStorageService.loadFromStorage(context, image);
-    setState(() {
-      imagePath = downloadUrl.toString();
-      m = NetworkImage(imagePath);
-    });
-  }
-
-  Future<void> getGroups() async {
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(widget.uid)
-        .collection('groups')
-        .getDocuments();
-    snap.documents.forEach((element) async {
-      groupId.add(element.data['groupId']);
-      groupName.add(element.data['groupName']);
-    });
-  }
-
-  void getData() async {
+  void getUserData() async {
     DocumentSnapshot a =
         await Firestore.instance.collection('users').document(widget.uid).get();
     setState(() {
@@ -78,56 +43,46 @@ class _HomeLogInState extends State<HomeLogIn> {
     });
   }
 
+  void getProfileImage(BuildContext context) async {
+    if (image != null || imagePath == "") {
+      return;
+    }
+    String downloadUrl = await FireStorageService.loadFromStorage(
+        context, "uploads/" + imagePath);
+    setState(() {
+      imagePath = downloadUrl.toString();
+      image = NetworkImage(imagePath);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // _getImage(context, imagePath);
+    getProfileImage(context);
     return Scaffold(
         backgroundColor: backgroundColor,
         appBar: appBar(),
-        drawerDragStartBehavior: DragStartBehavior.down,
-        drawerScrimColor: Colors.blueGrey[200],
         drawer: leftMenu(),
+        drawerEdgeDragWidth: 30.0,
         body: Container(
             padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
             child: ListView(children: <Widget>[
               box,
-              Text(
-                // add the name of the user
-                "Hello " + name + "!",
-                style: TextStyle(
-                    fontFamily: 'Raleway',
-                    fontSize: 20,
-                    color: Colors.blueGrey[800]),
-                textAlign: TextAlign.center,
-              ),
+              title(),
               box,
               Row(children: [
                 newGroupButton(),
-                SizedBox(
-                  width: 70,
-                ),
+                widthBox(70),
                 watchGroupButton(),
               ]),
             ])),
         floatingActionButton: addNewRecipe());
   }
 
-  void _showSettingPannel() {
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        builder: (context) {
-          return Container(
-            child: SettingForm(widget.uid),
-          );
-        });
-  }
-
   Widget appBar() {
     return AppBar(
       title: Text(
         appName,
-        style: TextStyle(fontFamily: 'LogoFont'),
+        style: TextStyle(fontFamily: logoFont),
       ),
       backgroundColor: appBarBackgroundColor,
     );
@@ -150,9 +105,16 @@ class _HomeLogInState extends State<HomeLogIn> {
   }
 
   Widget profilePicture() {
-    return CircleAvatar(
-      backgroundImage: imagePath == "" ? ExactAssetImage(noImagePath) : m,
-    );
+    // there is no image yet
+    if (imagePath == "") {
+      return CircleAvatar(
+          backgroundColor: backgroundColor,
+          radius: 40,
+          backgroundImage: ExactAssetImage(noImagePath));
+    } else {
+      return CircleAvatar(
+          backgroundColor: backgroundColor, radius: 40, backgroundImage: image);
+    }
   }
 
   Widget profileDetails() {
@@ -168,25 +130,29 @@ class _HomeLogInState extends State<HomeLogIn> {
   }
 
   Widget settingsIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
-      minWidth: 300,
-      icon: Icon(
-        Icons.settings,
-        color: Colors.black,
-      ),
-      label: Text(
-        'Setting',
-        style: TextStyle(color: Colors.black),
-      ),
-      onPressed: () => _showSettingPannel(),
-    );
+        minWidth: 300,
+        icon: Icon(
+          Icons.settings,
+        ),
+        label: Text(
+          'Setting',
+        ),
+        onPressed: () async {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SettingForm(widget.uid, image)));
+        });
   }
 
   Widget logOutIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
       minWidth: 300,
-      icon: Icon(Icons.person, color: Colors.black),
-      label: Text('Log Out', style: TextStyle(color: Colors.black)),
+      icon: Icon(Icons.person),
+      label: Text('Log Out'),
       onPressed: () async {
         await _auth.signOut();
         Phoenix.rebirth(context);
@@ -194,9 +160,19 @@ class _HomeLogInState extends State<HomeLogIn> {
     );
   }
 
+  Widget title() {
+    return Text(
+      // add the name of the user
+      "Hello " + name + "!",
+      style:
+          TextStyle(fontFamily: ralewayFont, fontSize: 20, color: titleColor),
+      textAlign: TextAlign.center,
+    );
+  }
+
   Widget addNewRecipe() {
     return FloatingActionButton(
-      backgroundColor: Colors.black,
+      backgroundColor: mainButtonColor,
       onPressed: () {
         Navigator.push(
             context,
@@ -208,40 +184,21 @@ class _HomeLogInState extends State<HomeLogIn> {
     );
   }
 
-  Widget recipesBookIcon() {
-    return FlatButton.icon(
-        color: Colors.blueGrey[400],
-        icon: Icon(
-          Icons.book,
-          color: Colors.white,
-        ),
-        label: Text(
-          'Recipes Book',
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => RecipesBookPage(widget.uid)));
-        });
-  }
-
   Widget newGroupButton() {
     return Container(
       width: 120,
       height: 100,
       decoration: BoxDecoration(
-          // color: Colors.blueGrey[200],
           image: DecorationImage(
-              image: ExactAssetImage('lib/images/create_group.png'),
-              fit: BoxFit.fill),
+              image: ExactAssetImage(createGroupPath), fit: BoxFit.fill),
           borderRadius: BorderRadius.all(Radius.circular(15.0))),
-      child: FlatButton(
+      // ignore: deprecated_member_use
+      child: TextButton(
         onPressed: () async {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => NewGroup(widget.uid)));
         },
+        child: null,
       ),
     );
   }
@@ -254,11 +211,13 @@ class _HomeLogInState extends State<HomeLogIn> {
           image: DecorationImage(
               image: ExactAssetImage(yourGroupsPath), fit: BoxFit.fill),
           borderRadius: BorderRadius.all(Radius.circular(15.0))),
-      child: FlatButton(
+      // ignore: deprecated_member_use
+      child: TextButton(
         onPressed: () async {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => GroupList(widget.uid)));
         },
+        child: null,
       ),
     );
   }

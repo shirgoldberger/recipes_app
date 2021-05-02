@@ -4,6 +4,7 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/recipes/watch_recipes/watchRecipe.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 
+// ignore: must_be_immutable
 class RecipeHeadLineSearch extends StatefulWidget {
   Recipe recipe;
   Color circleColor;

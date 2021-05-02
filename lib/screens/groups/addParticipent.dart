@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import '../../config.dart';
 
+// ignore: must_be_immutable
 class AddParticipent extends StatefulWidget {
   AddParticipent(List _userId, String groupId, String _groupName) {
     this.userId = _userId.toList();
@@ -130,11 +130,11 @@ class _AddParticipentState extends State<AddParticipent> {
 
           usersID.add(element.documentID);
 
-          var currentRecipe = await db
+          await db
               .collection('Group')
               .document(widget.groupId)
               .updateData({'users': usersID});
-          var currentRecipe2 = await db
+          await db
               .collection('users')
               .document(element.documentID)
               .collection('groups')

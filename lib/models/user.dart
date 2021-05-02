@@ -11,7 +11,7 @@ class UserData {
   final String phone;
   final int age;
   final String email;
-  List<String> likes = new List<String>();
+  List<String> likes = [];
   String imagePath = "";
   UserData(
       {this.uid,

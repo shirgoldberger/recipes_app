@@ -5,6 +5,7 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
+// ignore: must_be_immutable
 class PublishGroup2 extends StatefulWidget {
   PublishGroup2(String _uid, String _recipeId, Recipe _recipe) {
     this.uid = _uid;
@@ -128,6 +129,7 @@ class _PublishGroup2State extends State<PublishGroup2> {
                 topRight: Radius.circular(30.0),
                 bottomLeft: Radius.circular(30.0),
                 bottomRight: Radius.circular(30.0)),
+            // ignore: deprecated_member_use
             child: FlatButton.icon(
                 color: widget.colorPublish,
                 icon: Icon(widget.iconPublish, color: Colors.white),
@@ -163,6 +165,7 @@ class _PublishGroup2State extends State<PublishGroup2> {
                           topRight: Radius.circular(30.0),
                           bottomLeft: Radius.circular(30.0),
                           bottomRight: Radius.circular(30.0)),
+                      // ignore: deprecated_member_use
                       child: FlatButton.icon(
                         color: widget.map.values.elementAt(index)
                             ? Colors.grey[300]
@@ -211,7 +214,7 @@ class _PublishGroup2State extends State<PublishGroup2> {
 
   void publishInGroup(int index) async {
     final db = Firestore.instance;
-    var currentRecipe = await db
+    await db
         .collection('Group')
         .document(widget.groupId[index])
         .collection('recipes')

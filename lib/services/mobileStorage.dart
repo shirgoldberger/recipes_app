@@ -2,6 +2,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class FireStorageService extends ChangeNotifier {
+  // ignore: unused_element
   FireStorageService._();
   FireStorageService();
 

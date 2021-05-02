@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/services/database.dart';
 import 'package:provider/provider.dart';
-import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../config.dart';
-import '../personal_screen/uploadImage.dart';
+import 'uploadImage.dart';
 
+// ignore: must_be_immutable
 class SettingForm extends StatefulWidget {
-  String imagePath = "";
   String uid;
-  SettingForm(String _uid) {
+  String imagePath;
+  NetworkImage m;
+  SettingForm(String _uid, NetworkImage _m) {
     uid = _uid;
+    m = _m;
   }
   @override
   _SettingFormState createState() => _SettingFormState();
@@ -29,27 +31,14 @@ class _SettingFormState extends State<SettingForm> {
   @override
   void initState() {
     super.initState();
-    getUser();
-  }
-
-  Widget box = SizedBox(
-    height: 20.0,
-  );
-
-  getUser() async {
-    var currentUser =
-        await Firestore.instance.collection('users').document(widget.uid).get();
-    setState(() {
-      widget.imagePath = currentUser.data['imagePath'];
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
-    _getImage(context, widget.imagePath);
     return StreamBuilder<UserData>(
         stream: DataBaseService(user.uid).userData,
+        // ignore: missing_return
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             UserData userData = snapshot.data;
@@ -62,8 +51,7 @@ class _SettingFormState extends State<SettingForm> {
                     padding:
                         EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0),
                     children: <Widget>[
-                      box,
-                      Row(children: [title(), box, imageBox()]),
+                      Row(children: [title(), widthBox(20), imageBox()]),
                       firstNameField(userData.firstName),
                       box,
                       lastNameField(userData.lastName),
@@ -100,15 +88,15 @@ class _SettingFormState extends State<SettingForm> {
     }
     // get all user's recipes
     var recipes = await Firestore.instance
-        .collection('users')
+        .collection(usersCollectionName)
         .document(ud.uid)
         .collection('recipes')
         .getDocuments();
     // change the writer name in all the recipes
     recipes.documents.forEach((element) async {
       var recipeId = element.documentID.toString();
-      var recipe = await Firestore.instance
-          .collection('users')
+      await Firestore.instance
+          .collection(usersCollectionName)
           .document(ud.uid)
           .collection('recipes')
           .document(recipeId)
@@ -116,55 +104,15 @@ class _SettingFormState extends State<SettingForm> {
     });
   }
 
-  Future<Widget> _getImage(BuildContext context, String image) async {
-    // there is no image
-    if (image == "") {
-      return null;
-    }
-    image = "uploads/" + image;
-    Image m;
-    // get the image from firebase
-    await FireStorageService.loadFromStorage(context, image)
-        .then((downloadUrl) {
-      m = Image.network(
-        downloadUrl.toString(),
-        fit: BoxFit.scaleDown,
-      );
-    });
-    return m;
-  }
-
   Widget imageBox() {
-    // there is no image yet
-    if (widget.imagePath == "") {
-      return FlatButton(
-        child: Image.asset(
-          noImagePath,
-          width: 80,
-          height: 80,
-        ),
-        onPressed: uploadImagePressed,
-      );
-    } else {
-      // load the image from firebase
-      return Container(
-          height: 100,
-          child: Container(
-            child: FutureBuilder(
-                future: _getImage(context, widget.imagePath),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done)
-                    return Container(
-                      child: snapshot.data,
-                    );
-                  if (snapshot.connectionState == ConnectionState.waiting)
-                    return Container(
-                        height: MediaQuery.of(context).size.height / 10,
-                        width: MediaQuery.of(context).size.width / 10,
-                        child: CircularProgressIndicator());
-                }),
-          ));
-    }
+    return TextButton(
+      child: CircleAvatar(
+          backgroundColor: backgroundColor,
+          radius: 40,
+          backgroundImage:
+              (widget.m == null) ? ExactAssetImage(noImagePath) : widget.m),
+      onPressed: uploadImagePressed,
+    );
   }
 
   void uploadImagePressed() {
@@ -175,6 +123,7 @@ class _SettingFormState extends State<SettingForm> {
         .then((value) => {
               setState(() {
                 widget.imagePath = value.toString();
+                widget.m = NetworkImage(widget.imagePath);
               })
             });
   }
@@ -182,8 +131,8 @@ class _SettingFormState extends State<SettingForm> {
   Widget title() {
     return Text(
       'Update your details',
-      style: TextStyle(
-          fontFamily: 'Raleway', fontSize: 20, color: Colors.blueGrey[800]),
+      style:
+          TextStyle(fontFamily: ralewayFont, fontSize: 20, color: titleColor),
       textAlign: TextAlign.center,
     );
   }
@@ -209,7 +158,7 @@ class _SettingFormState extends State<SettingForm> {
   Widget emailField(String email) {
     return TextFormField(
       initialValue: email,
-      decoration: InputDecoration(labelText: 'email'),
+      decoration: InputDecoration(labelText: 'Email'),
       validator: (val) => val.isEmpty ? 'Please enter an email' : null,
       onChanged: (val) => setState(() => _currentEmail = val),
     );
@@ -218,8 +167,8 @@ class _SettingFormState extends State<SettingForm> {
   Widget ageField(int age) {
     return TextFormField(
       initialValue: age.toString(),
-      decoration: InputDecoration(labelText: 'your age'),
-      validator: (val) => val.isEmpty ? 'Please enter a age' : null,
+      decoration: InputDecoration(labelText: 'Age'),
+      validator: (val) => val.isEmpty ? 'Please enter an age' : null,
       onChanged: (val) => setState(() => _currentAge = int.parse(val)),
     );
   }
@@ -228,14 +177,14 @@ class _SettingFormState extends State<SettingForm> {
     return TextFormField(
       initialValue: phone,
       decoration: InputDecoration(labelText: 'Phone'),
-      validator: (val) => val.isEmpty ? 'Please enter a phone' : null,
       onChanged: (val) => setState(() => _currentPhone = val),
     );
   }
 
   Widget updateButton(UserData userData) {
+    // ignore: deprecated_member_use
     return RaisedButton(
-        color: Colors.blueGrey[500],
+        color: mainButtonColor,
         child: Text(
           'Update',
           style: TextStyle(color: Colors.white),
@@ -262,11 +211,10 @@ class _SettingFormState extends State<SettingForm> {
     return AppBar(
       title: Text(
         'Cook Book',
-        style: TextStyle(fontFamily: 'LogoFont'),
+        style: TextStyle(fontFamily: logoFont),
       ),
-      backgroundColor: Colors.blueGrey[700],
+      backgroundColor: appBarBackgroundColor,
       elevation: 0.0,
-      actions: <Widget>[],
     );
   }
 }

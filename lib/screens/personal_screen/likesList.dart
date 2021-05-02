@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
+import '../../config.dart';
 
+// ignore: must_be_immutable
 class LikesList extends StatefulWidget {
   Map<String, String> usersLikes = {};
   bool doneLoadLikeList = false;
@@ -17,7 +19,7 @@ class LikesList extends StatefulWidget {
 class _LikesListState extends State<LikesList> {
   @override
   Widget build(BuildContext context) {
-    _getLikesList();
+    getLikesList();
     if (!widget.doneLoadLikeList) {
       return Loading();
     } else {
@@ -35,15 +37,16 @@ class _LikesListState extends State<LikesList> {
     }
   }
 
-  Future<void> _getLikesList() async {
+  Future<void> getLikesList() async {
     List likes;
     final db = Firestore.instance;
-    var publishRecipes = await db.collection('publish recipe').getDocuments();
+    var publishRecipes =
+        await db.collection(publishCollectionName).getDocuments();
     publishRecipes.documents.forEach((element) async {
       // the current recipe
       if (element.data['recipeId'] == widget.currentRecipe.id) {
         var recipe = await db
-            .collection('publish recipe')
+            .collection(publishCollectionName)
             .document(element.documentID.toString())
             .get();
         // take likes
@@ -51,7 +54,7 @@ class _LikesListState extends State<LikesList> {
         // take all usernames
         for (String userId in likes) {
           DocumentSnapshot currentUser = await Firestore.instance
-              .collection("users")
+              .collection(usersCollectionName)
               .document(userId)
               .get();
           setState(() {

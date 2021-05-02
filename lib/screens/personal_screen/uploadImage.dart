@@ -2,23 +2,9 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import '../../config.dart';
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Firebase Storage Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: UploadingImageToFirebaseStorage(),
-    );
-  }
-}
 
 class UploadingImageToFirebaseStorage extends StatefulWidget {
   @override
@@ -128,6 +114,7 @@ class _UploadingImageToFirebaseStorageState
             decoration: BoxDecoration(
                 color: _imageFile != null ? Colors.blueGrey : Colors.grey,
                 borderRadius: BorderRadius.circular(10.0)),
+            // ignore: deprecated_member_use
             child: FlatButton(
               onPressed: _imageFile != null
                   ? () => uploadImageToFirebase(context)
@@ -159,6 +146,7 @@ class _UploadingImageToFirebaseStorageState
                     ? Colors.blueGrey[200]
                     : Colors.blueGrey[400],
                 borderRadius: BorderRadius.circular(10.0)),
+            // ignore: deprecated_member_use
             child: FlatButton(
               onPressed: () => {Navigator.pop(context, "")},
               child: Text(
@@ -175,6 +163,7 @@ class _UploadingImageToFirebaseStorageState
   }
 
   Widget galleryButton() {
+    // ignore: deprecated_member_use
     return FlatButton(
       height: 10,
       child: Image.asset(
@@ -186,6 +175,7 @@ class _UploadingImageToFirebaseStorageState
   }
 
   Widget cameraButton() {
+    // ignore: deprecated_member_use
     return FlatButton(
       height: 10,
       child: Image.asset(
@@ -201,7 +191,7 @@ class _UploadingImageToFirebaseStorageState
       'Choose how you want to upload image:',
       textAlign: TextAlign.center,
       style:
-          TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'Raleway'),
+          TextStyle(color: Colors.black, fontSize: 18, fontFamily: ralewayFont),
     );
   }
 
@@ -210,7 +200,7 @@ class _UploadingImageToFirebaseStorageState
       "Uploading Your Image",
       textAlign: TextAlign.center,
       style:
-          TextStyle(color: Colors.black, fontSize: 28, fontFamily: 'Raleway'),
+          TextStyle(color: Colors.black, fontSize: 28, fontFamily: ralewayFont),
     );
   }
 }

@@ -1,12 +1,13 @@
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recipes_app/models/ingredient.dart';
-import 'package:recipes_app/models/stages.dart';
-
+import 'package:recipes_app/models/stage.dart';
 import '../../../config.dart';
 import 'addRecipeTags.dart';
 
+// ignore: must_be_immutable
 class AddRecipeStages extends StatefulWidget {
   String username;
   String uid;
@@ -34,6 +35,7 @@ class AddRecipeStages extends StatefulWidget {
 
 class _AddRecipeStagesState extends State<AddRecipeStages> {
   List<Stages> stages = [];
+  String error = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,48 +49,51 @@ class _AddRecipeStagesState extends State<AddRecipeStages> {
           // stages
           Container(
               child: Column(children: [
+            Text(error),
             stages.length <= 0
                 ? Text(
-                    'There is no stages\nin this recipe yet',
+                    'There is no stages in this recipe yet',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.red,
                         fontSize: 15,
                         fontWeight: FontWeight.bold),
                   )
-                : ListView.builder(
-                    shrinkWrap: true,
-                    addAutomaticKeepAlives: true,
-                    itemCount: stages.length,
-                    itemBuilder: (_, i) => Row(children: <Widget>[
-                          SizedBox(
-                            width: 20,
-                          ),
-                          stageIndex(i),
-                          Expanded(
-                              child: SizedBox(
-                                  height: 37.0,
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      hintText: 'write stage...',
-                                    ),
-                                    validator: (val) => val.length < 2
-                                        ? 'Enter a description eith 2 letter at least'
-                                        : null,
-                                    onChanged: (val) {
-                                      setState(() => stages[i].s = val);
-                                    },
-                                  ))),
-                          deleteButton(i),
-                          SizedBox(
-                            height: 10,
-                          )
-                        ])),
-            box,
+                : Container(
+                    height: min(50 * stages.length.toDouble(), 300),
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        addAutomaticKeepAlives: true,
+                        itemCount: stages.length,
+                        itemBuilder: (_, i) => Row(children: <Widget>[
+                              SizedBox(
+                                width: 20,
+                              ),
+                              stageIndex(i),
+                              Expanded(
+                                  child: SizedBox(
+                                      height: 37.0,
+                                      child: TextFormField(
+                                        decoration: InputDecoration(
+                                          hintText: 'write stage...',
+                                        ),
+                                        validator: (val) => val.length < 2
+                                            ? 'Enter a description eith 2 letter at least'
+                                            : null,
+                                        onChanged: (val) {
+                                          setState(() => stages[i].s = val);
+                                        },
+                                      ))),
+                              deleteButton(i),
+                            ])),
+                  ),
             box,
             addButton(),
             SizedBox(
-              height: 250,
+              height: (min(50 * stages.length.toDouble(), 300) ==
+                      50 * stages.length.toDouble())
+                  ? 300 - 50 * stages.length.toDouble()
+                  : 0,
             ),
             Row(
               children: [

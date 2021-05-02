@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/models/stages.dart';
+import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/models/user.dart';
-
 import '../../../config.dart';
 
+// ignore: must_be_immutable
 class FinishCreateRecipe extends StatefulWidget {
   String username;
   String uid;
@@ -83,6 +83,7 @@ class _FinishCreateRecipeState extends State<FinishCreateRecipe> {
   }
 
   Widget yesButton() {
+    // ignore: deprecated_member_use
     return RaisedButton(
         child: Text(
           'Yes',
@@ -98,6 +99,7 @@ class _FinishCreateRecipeState extends State<FinishCreateRecipe> {
   }
 
   Widget noButton() {
+    // ignore: deprecated_member_use
     return RaisedButton(
         child: Text(
           'No',
@@ -141,7 +143,7 @@ class _FinishCreateRecipeState extends State<FinishCreateRecipe> {
 
     String id = currentRecipe.documentID.toString();
     recipe.setId(id);
-    var fixID = await db
+    await db
         .collection('users')
         .document(user.uid)
         .collection('recipes')

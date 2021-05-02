@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -7,6 +6,7 @@ import 'package:recipes_app/screens/recipes/create_recipe/addRecipeIngredients.d
 import 'package:recipes_app/services/fireStorageService.dart';
 import '../../../config.dart';
 
+// ignore: must_be_immutable
 class UploadRecipeImage extends StatefulWidget {
   String username;
   String uid;
@@ -107,11 +107,15 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
       return ListView(children: [
         box,
         box,
-        title(),
+        box,
+        box,
+        // ignore: deprecated_member_use
         FlatButton(
+          color: backgroundColor,
           height: 10,
           child: CircleAvatar(
-              radius: 100,
+              backgroundColor: backgroundColor,
+              radius: 150,
               foregroundColor: Colors.black,
               child: Image.asset(uploadImagePath)),
           onPressed: uploadImagePressed,
@@ -139,7 +143,8 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
                       backgroundImage: snapshot.data,
                       radius: 150,
                     );
-                  if (snapshot.connectionState == ConnectionState.waiting)
+                  // if (snapshot.connectionState == ConnectionState.waiting)
+                  else
                     return Container(
                         height: MediaQuery.of(context).size.height / 10,
                         width: MediaQuery.of(context).size.width / 10,

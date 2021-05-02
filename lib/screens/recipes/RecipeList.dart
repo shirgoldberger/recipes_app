@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/screens/recipes/filter.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
+
+import '../../config.dart';
 
 class RecipeList extends StatefulWidget {
   RecipeList(Map<String, List> map, String head, bool home) {
@@ -13,9 +16,19 @@ class RecipeList extends StatefulWidget {
   }
   bool home;
   List<Recipe> list = [];
+  List<Recipe> listForWatch = [];
   String head;
   Map<String, List> map = {};
   List<String> myTags = [];
+  String easyButtom = 'easy';
+  Color easyButtomColor = Colors.green[100];
+  String midButtom = 'medium';
+  Color midButtomColor = Colors.yellow[100];
+  String hardButtom = 'hard';
+  Color hardButtomColor = Colors.blue[100];
+  List<int> levelList = [];
+
+  //Color noteEasyButtomColor = Colors.red[400];
   @override
   _RecipeListState createState() => _RecipeListState();
 }
@@ -47,6 +60,12 @@ class _RecipeListState extends State<RecipeList> {
     'Spreads',
   ];
   @override
+  void initState() {
+    print("1111111111111111111111");
+    super.initState();
+    init();
+  }
+
   Widget build(BuildContext context) {
     Widget tags(int index) {
       return Card(
@@ -75,60 +94,88 @@ class _RecipeListState extends State<RecipeList> {
 
     String selectedSubject;
 
-    setState(() {
-      widget.list = (widget.map[widget.head]);
-      tagList.remove(widget.head);
-      if (!widget.myTags.contains(widget.head)) {
-        widget.myTags.add(widget.head);
-      }
-    });
     return Scaffold(
-        backgroundColor: Colors.blueGrey[50],
+        backgroundColor: backgroundColor,
         appBar: AppBar(
           title: Text(
             widget.head + " recipes:",
             style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
           ),
-          backgroundColor: Colors.blueGrey[700],
+          backgroundColor: appBarBackgroundColor,
           elevation: 0.0,
-          actions: <Widget>[],
+          actions: <Widget>[
+            filtterIcon(),
+          ],
         ),
         body: Column(children: <Widget>[
-          DropdownButton<String>(
-            value: selectedSubject,
-            onChanged: (value) {
-              setState(() {
-                tagList.remove(value);
-                widget.myTags.add(value);
-                addtag(value);
-              });
-            },
-            items: tagList.map<DropdownMenuItem<String>>((value) {
-              return DropdownMenuItem(value: value, child: Text(value));
-            }).toList(),
-          ),
-          Flexible(
-            //flex: (widget.myTags.length % 3) * 10,
-            child: GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 3,
-                childAspectRatio: (30 / 10),
-                children: List.generate(widget.myTags.length, (index) {
-                  return Flexible(child: tags(index));
-                })),
-          ),
+          //פילטר
+          // Center(
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       new Padding(padding: EdgeInsets.only(left: 15.0)),
+          //       easyButton(),
+          //       new Padding(padding: EdgeInsets.only(left: 15.0)),
+          //       midButton(),
+          //       new Padding(padding: EdgeInsets.only(left: 15.0)),
+          //       hardButton(),
+          //       new Padding(padding: EdgeInsets.only(left: 15.0)),
+          //     ],
+          //   ),
+          // ),
+          new Padding(padding: EdgeInsets.only(top: 15.0)),
+          new Center(
+              child: new Container(
+                  width: 400,
+                  decoration: new BoxDecoration(
+                    color: Colors.blueGrey[100],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      DropdownButton<String>(
+                        dropdownColor: appBarBackgroundColor,
+                        value: selectedSubject,
+                        onChanged: (value) {
+                          setState(() {
+                            tagList.remove(value);
+                            widget.myTags.add(value);
+                            addtag(value);
+                          });
+                        },
+                        items: tagList.map<DropdownMenuItem<String>>((value) {
+                          return DropdownMenuItem(
+                              value: value, child: Text(value));
+                        }).toList(),
+                      ),
+                      //Flexible(
+                      //flex: (widget.myTags.length % 3) * 10,
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.13,
+                        child: GridView.count(
+                            shrinkWrap: true,
+                            crossAxisCount: 3,
+                            childAspectRatio: (30 / 10),
+                            children:
+                                List.generate(widget.myTags.length, (index) {
+                              return Flexible(child: tags(index));
+                            })),
+                      ),
+                    ],
+                  ))),
           // SizedBox(
           //   height: 10,
           // ),
-          // Container(
-          //   height: MediaQuery.of(context).size.height *
-          //       (1 - (widget.myTags.length * 0.1)),
+          Text(
+            "num of results: " + widget.listForWatch.length.toString(),
+            style: TextStyle(
+                fontFamily: 'Raleway', color: Colors.black, fontSize: 15),
+          ),
           Flexible(
-            // flex: 100 - ((widget.myTags.length % 3) * 10),
             child: ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
-              itemCount: widget.list.length,
+              itemCount: widget.listForWatch.length,
               itemBuilder: (context, index) {
                 // print('recipeList');
                 // print(widget.list[index]);
@@ -136,7 +183,7 @@ class _RecipeListState extends State<RecipeList> {
                     padding: EdgeInsets.all(5),
                     child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Colors.blueGrey[50],
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(10.0),
                               topRight: Radius.circular(10.0),
@@ -150,12 +197,99 @@ class _RecipeListState extends State<RecipeList> {
                                 bottomLeft: Radius.circular(30.0),
                                 bottomRight: Radius.circular(30.0)),
                             child: RecipeHeadLine(
-                                widget.list[index], widget.home))));
+                                widget.listForWatch[index], widget.home))));
               },
             ),
           )
         ]));
   }
+
+  // Widget easyButton() {
+  //   return FlatButton.icon(
+  //       color: widget.easyButtomColor,
+  //       icon: Icon(
+  //         Icons.label,
+  //         color: Colors.black,
+  //       ),
+  //       label: Text(
+  //         widget.easyButtom,
+  //         style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
+  //       ),
+  //       onPressed: () {
+  //         if (widget.easyButtom == 'easy') {
+  //           setState(() {
+  //             widget.levelList.add(1);
+  //             widget.easyButtom = '-easy';
+  //             widget.easyButtomColor = Colors.green[400];
+  //           });
+  //           pushEasy();
+  //         } else {
+  //           setState(() {
+  //             widget.levelList.remove(1);
+  //             widget.easyButtom = 'easy';
+  //             widget.easyButtomColor = Colors.green[100];
+  //           });
+  //           unPushEasy();
+  //         }
+  //       });
+  // }
+
+  // Widget midButton() {
+  //   return FlatButton.icon(
+  //       color: widget.midButtomColor,
+  //       icon: Icon(Icons.label, color: Colors.black),
+  //       label: Text(
+  //         widget.midButtom,
+  //         style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
+  //       ),
+  //       onPressed: () {
+  //         if (widget.midButtom == 'medium') {
+  //           setState(() {
+  //             widget.levelList.add(2);
+  //             widget.midButtom = '-medium';
+  //             widget.midButtomColor = Colors.yellow[400];
+  //           });
+  //           pushEasy();
+  //         } else {
+  //           setState(() {
+  //             widget.levelList.remove(2);
+  //             widget.midButtom = 'medium';
+  //             widget.midButtomColor = Colors.yellow[100];
+  //           });
+  //           unPushEasy();
+  //         }
+  //       });
+  // }
+
+  // Widget hardButton() {
+  //   return FlatButton.icon(
+  //       color: widget.hardButtomColor,
+  //       icon: Icon(
+  //         Icons.label,
+  //         color: Colors.black,
+  //       ),
+  //       label: Text(
+  //         widget.hardButtom,
+  //         style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
+  //       ),
+  //       onPressed: () {
+  //         if (widget.hardButtom == 'hard') {
+  //           setState(() {
+  //             widget.levelList.add(3);
+  //             widget.hardButtom = '-hard';
+  //             widget.hardButtomColor = Colors.blue[400];
+  //           });
+  //           pushEasy();
+  //         } else {
+  //           setState(() {
+  //             widget.levelList.remove(3);
+  //             widget.hardButtom = 'hard';
+  //             widget.hardButtomColor = Colors.blue[100];
+  //           });
+  //           unPushEasy();
+  //         }
+  //       });
+  // }
 
   void addtag(String value) {
     List valueList = widget.map[value];
@@ -163,7 +297,11 @@ class _RecipeListState extends State<RecipeList> {
       for (int i = 0; i < valueList.length; i++) {
         Recipe recipe = valueList[i];
         if (!widget.list.contains(recipe)) {
-          widget.list.add(recipe);
+          setState(() {
+            widget.list.add(recipe);
+            widget.listForWatch.add(recipe);
+          });
+          //  widget.list.add(recipe);
         }
       }
     }
@@ -184,17 +322,106 @@ class _RecipeListState extends State<RecipeList> {
     for (int i = 0; i < valueList.length; i++) {
       bool findTag = false;
       Recipe recipe = valueList[i];
-      for (int j = 0; j < recipe.myTag.length; j++) {
-        print(recipe.myTag);
-        print(widget.myTags);
-        if (widget.myTags.contains(recipe.myTag[j])) {
-          print("fibd");
+      for (int j = 0; j < recipe.tags.length; j++) {
+        //  print(recipe.myTag);
+        // print(widget.myTags);
+        if (widget.myTags.contains(recipe.tags[j])) {
+          //  print("fibd");
           findTag = true;
         }
       }
       if (!findTag) {
-        widget.list.remove(recipe);
+        setState(() {
+          widget.list.remove(recipe);
+          widget.listForWatch.remove(recipe);
+        });
       }
     }
+  }
+
+  // void pushEasy() {
+  //   print("push easy");
+  //   print(widget.list);
+  //   print(widget.listForWatch);
+  //   setState(() {
+  //     widget.listForWatch.clear();
+  //   });
+  //   print(widget.list);
+  //   print(widget.listForWatch);
+  //   for (int i = 0; i < widget.list.length; i++) {
+  //     print(widget.list[i].level);
+  //     if (widget.levelList.contains(widget.list[i].level)) {
+  //       setState(() {
+  //         widget.listForWatch.add(widget.list[i]);
+  //       });
+  //     }
+  //   }
+  // }
+
+  // void unPushEasy() {
+  //   if (widget.levelList.isEmpty) {
+  //     setState(() {
+  //       widget.listForWatch.clear();
+  //       widget.listForWatch.addAll(widget.list);
+  //     });
+  //   } else {
+  //     pushEasy();
+  //   }
+  // }
+
+  void init() {
+    for (int i = 0; i < widget.map[widget.head].length; i++) {
+      setState(() {
+        widget.list.add(widget.map[widget.head][i]);
+        widget.listForWatch.add(widget.map[widget.head][i]);
+      });
+    }
+    setState(() {
+      tagList.remove(widget.head);
+      if (!widget.myTags.contains(widget.head)) {
+        widget.myTags.add(widget.head);
+      }
+    });
+  }
+
+  Widget filtterIcon() {
+    return FlatButton.icon(
+        icon: Icon(
+          Icons.filter_alt_sharp,
+          color: Colors.white,
+        ),
+        label: Text(
+          'filter',
+          style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+        ),
+        onPressed: () {
+          _showfilter();
+        });
+  }
+
+  Future<void> _showfilter() async {
+    showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => Container(
+                height: MediaQuery.of(context).size.height * 0.5,
+                decoration: new BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: new BorderRadius.only(
+                    topLeft: const Radius.circular(25.0),
+                    topRight: const Radius.circular(25.0),
+                  ),
+                ),
+                child:
+                    Filter(widget.list, widget.listForWatch, widget.levelList)))
+        .then((value) => cameBack(value));
+  }
+
+  cameBack(value) {
+    setState(() {
+      widget.listForWatch = value['a'];
+      widget.levelList = value['b'];
+    });
   }
 }
