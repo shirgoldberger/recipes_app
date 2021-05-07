@@ -9,7 +9,7 @@ class Pair<T1, T2> {
   Pair(this.user, this.recipe);
 }
 
-class Algoritem {
+class Algorithm {
   List listusers = [];
   List<Pair> list = [];
   List<Recipe> recipes = [];
@@ -18,7 +18,7 @@ class Algoritem {
   Map<String, int> amountUsersOfRecipe = {};
   List popular = [];
   String uid;
-  Algoritem(String _uid) {
+  Algorithm(String _uid) {
     uid = _uid;
   }
 
@@ -94,35 +94,22 @@ class Algoritem {
     print("listttt likes: " + amountLikesOfRecipe.toString());
   }
 
-  Future<void> myFriends(String uid) async {
+  Future myFriends(String uid) async {
     int i = 0;
-    print(uid);
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(uid)
         .collection('groups')
         .getDocuments();
     snap.documents.forEach((element) async {
-      // print(element.data['groupId']);
-      // i++;
-      //  print("element");
-      // print(i);
       String groupId = element.data['groupId'];
       DocumentSnapshot snapGroup =
           await Firestore.instance.collection('Group').document(groupId).get();
       List users = snapGroup.data['users'];
       listusers.addAll(users);
       i++;
-
-      //  print(snap.documents.length);
-
       if (i == snap.documents.length) {
-        //  print("if");
-        //  print(listusers);
-
         for (int i = 0; i < listusers.length; i++) {
-          //  print(groupId);
-          //  print(users[i]);
           QuerySnapshot snap3 = await Firestore.instance
               .collection('users')
               .document(listusers[i])
@@ -131,18 +118,16 @@ class Algoritem {
           snap3.documents.forEach((element) async {
             String uid2 = element.data['userID'];
             String recipeId2 = element.data['recipeID'];
-            // print("add");
+            //     print("add to list");
             list.add(Pair(uid2, recipeId2));
           });
         }
-        // print("for");
-        print(list);
-        convertToRecipe(list);
+        return list;
       }
     });
-    //return friendsRecipe;
-    //  print("friends recipe");
-    //   print(friendsRecipe);
+    if (snap.documents.isEmpty) {
+      return null;
+    }
   }
 
   Future<void> convertToRecipe(List<Pair> pair) async {

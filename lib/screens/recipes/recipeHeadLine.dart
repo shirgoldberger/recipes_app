@@ -9,14 +9,21 @@ class RecipeHeadLine extends StatefulWidget {
   Recipe recipe;
   Color circleColor;
   String level;
+  String time;
   bool home;
   Color colorName = Colors.blue;
-  String image = "";
-  RecipeHeadLine(Recipe r, bool home) {
-    this.recipe = r;
+  String imagePath = "";
+  NetworkImage image;
+  RecipeHeadLine(Recipe _recipe, bool home) {
+    this.recipe = _recipe;
     this.home = home;
-    image = r.imagePath;
-    switch (r.level) {
+    imagePath = recipe.imagePath;
+    setLevelColor();
+    setTimeText();
+  }
+
+  setLevelColor() {
+    switch (recipe.level) {
       case 1:
         circleColor = Colors.green[400];
         level = 'easy';
@@ -30,11 +37,26 @@ class RecipeHeadLine extends StatefulWidget {
         level = 'hard';
         break;
       case 0:
-        circleColor = Colors.green[400];
+        circleColor = Colors.grey[400];
         level = 'easy';
         break;
     }
   }
+
+  setTimeText() {
+    switch (recipe.time) {
+      case 1:
+        time = 'Until half-hour';
+        break;
+      case 2:
+        time = 'Until hour';
+        break;
+      case 3:
+        time = 'Over an hour';
+        break;
+    }
+  }
+
   @override
   _RecipeHeadLineState createState() => _RecipeHeadLineState();
 }
@@ -47,7 +69,7 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
 
   @override
   Widget build(BuildContext context) {
-    _getImage(context, widget.image);
+    _getImage(context);
     return Padding(
       padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
       child: InkWell(
@@ -70,9 +92,9 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
               children: <Widget>[
                 // image
                 CircleAvatar(
-                  backgroundImage: (widget.image == "")
+                  backgroundImage: (widget.image == null)
                       ? ExactAssetImage(noImagePath)
-                      : NetworkImage(widget.image),
+                      : widget.image,
                   radius: 35.0,
                 ),
                 SizedBox(width: 10.0),
@@ -83,7 +105,6 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
                     recipeName(),
                     SizedBox(height: 5.0),
                     Container(
-                      // description
                       child: recipeWriter(),
                     ),
                   ],
@@ -92,11 +113,11 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
             ),
             Column(
               children: <Widget>[
-                // writer
-
                 SizedBox(height: 5.0),
                 // level
-                recipeLevel()
+                recipeLevel(),
+                heightBox(5),
+                recipeTime()
               ],
             ),
           ],
@@ -105,18 +126,14 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
     );
   }
 
-  void _getImage(BuildContext context, String image) async {
-    if (image == "") {
-      setState(() {
-        widget.image = "";
-      });
-      return null;
+  void _getImage(BuildContext context) async {
+    if (widget.imagePath == "" || widget.image != null) {
+      return;
     }
-    image = "uploads/" + image;
-    String downloadUrl =
-        await FireStorageService.loadFromStorage(context, image);
+    String downloadUrl = await FireStorageService.loadFromStorage(
+        context, "uploads/" + widget.imagePath);
     setState(() {
-      widget.image = downloadUrl;
+      widget.image = NetworkImage(downloadUrl);
     });
   }
 
@@ -172,6 +189,17 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
           fontSize: 12.0,
           fontWeight: FontWeight.bold,
         ),
+      ),
+    );
+  }
+
+  Widget recipeTime() {
+    return Text(
+      widget.time,
+      style: TextStyle(
+        color: Colors.grey,
+        fontSize: 10.0,
+        fontWeight: FontWeight.bold,
       ),
     );
   }

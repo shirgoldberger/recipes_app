@@ -18,8 +18,13 @@ class LikesList extends StatefulWidget {
 
 class _LikesListState extends State<LikesList> {
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     getLikesList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     if (!widget.doneLoadLikeList) {
       return Loading();
     } else {
@@ -40,30 +45,20 @@ class _LikesListState extends State<LikesList> {
   Future<void> getLikesList() async {
     List likes;
     final db = Firestore.instance;
-    var publishRecipes =
-        await db.collection(publishCollectionName).getDocuments();
-    publishRecipes.documents.forEach((element) async {
-      // the current recipe
-      if (element.data['recipeId'] == widget.currentRecipe.id) {
-        var recipe = await db
-            .collection(publishCollectionName)
-            .document(element.documentID.toString())
-            .get();
-        // take likes
-        likes = recipe.data['likes'] ?? [];
-        // take all usernames
-        for (String userId in likes) {
-          DocumentSnapshot currentUser = await Firestore.instance
-              .collection(usersCollectionName)
-              .document(userId)
-              .get();
-          setState(() {
-            widget.usersLikes[currentUser.data['Email']] = userId;
-            widget.doneLoadLikeList = true;
-          });
-        }
-      }
-    });
+    var publishRecipe = await db
+        .collection(publishCollectionName)
+        .document(widget.currentRecipe.publish)
+        .get();
+    // take likes
+    likes = publishRecipe.data['likes'] ?? [];
+    // take all usernames
+    for (String userId in likes) {
+      DocumentSnapshot currentUser = await Firestore.instance
+          .collection(usersCollectionName)
+          .document(userId)
+          .get();
+      widget.usersLikes[currentUser.data['Email']] = userId;
+    }
     setState(() {
       widget.doneLoadLikeList = true;
     });

@@ -296,44 +296,49 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
         );
       }
 
-      return ListView(shrinkWrap: true, primary: false, children: <Widget>[
-        // FlatButton.icon(
-        //   color: Colors.blueGrey[400],
-        //   icon: Icon(
-        //     Icons.refresh,
-        //     color: Colors.white,
-        //   ),
-        //   label: Text(
-        //     'Refresh',
-        //     style: TextStyle(color: Colors.white),
-        //   ),
-        //   onPressed: () => {changeState()},
-        // ),
-        // Folder(recipeList),
-        //fish
-        SizedBox(
-          height: 10.0,
-        ),
-        RefreshIndicator(
-          color: Colors.blue,
-          onRefresh: refresh,
-          child: Container(
-            height: 500,
-            child: GridView.count(
-              crossAxisCount: 3,
-              children: List.generate(mapCat.length, (index) {
-                return Container(
-                    height: 500,
-                    width: 500,
-                    child: Card(
-                        shape: RoundedRectangleBorder(side: BorderSide.none),
-                        child: categoryButtom(mapCat.keys.elementAt(index),
-                            mapCat.values.elementAt(index))));
-              }),
+      if (mapCat.length == 0) {
+        return Column(
+          children: [
+            Text(
+              "you dont have any recipe :(",
+              style: TextStyle(
+                  fontFamily: 'Raleway', color: Colors.black, fontSize: 30),
             ),
+            TextButton(
+                child: Text(
+                  'Refresh',
+                  style: TextStyle(
+                      fontFamily: 'Raleway', color: Colors.blue, fontSize: 25),
+                ),
+                onPressed: refresh)
+          ],
+        );
+      } else {
+        return ListView(shrinkWrap: true, primary: false, children: <Widget>[
+          SizedBox(
+            height: 10.0,
           ),
-        )
-      ]);
+          RefreshIndicator(
+            color: Colors.blue,
+            onRefresh: refresh,
+            child: Container(
+              height: 500,
+              child: GridView.count(
+                crossAxisCount: 3,
+                children: List.generate(mapCat.length, (index) {
+                  return Container(
+                      height: 500,
+                      width: 500,
+                      child: Card(
+                          shape: RoundedRectangleBorder(side: BorderSide.none),
+                          child: categoryButtom(mapCat.keys.elementAt(index),
+                              mapCat.values.elementAt(index))));
+                }),
+              ),
+            ),
+          )
+        ]);
+      }
     }
   }
 
@@ -411,7 +416,17 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
       // r.setId(id);
       // print(publish + "publish");
       //r.publishThisRecipe(publish);
-      widget.publisRecipe.add(r);
+      bool check = false;
+      for (int i = 0; i < widget.publisRecipe.length; i++) {
+        if (widget.publisRecipe[i].id == r.id) {
+          check = true;
+        }
+      }
+      if (!check) {
+        widget.publisRecipe.add(r);
+      }
+      //wi
+
       // print(r.publish);
       i++;
       // print("i -     " + i.toString());
@@ -560,8 +575,17 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
       }
       // r.setId(id);
       // print(publish + "publish");
-      //r.publishThisRecipe(publish);
-      widget.savedRecipe.add(r);
+      //r.publishThisRecipe(publish
+      bool check = false;
+      for (int i = 0; i < widget.savedRecipe.length; i++) {
+        if (widget.savedRecipe[i].id == r.id) {
+          check = true;
+        }
+      }
+      if (!check) {
+        widget.savedRecipe.add(r);
+      }
+      //widget.savedRecipe.add(r);
       //  print("plus ");
       // print(r.publish);
       i++;

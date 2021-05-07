@@ -110,7 +110,8 @@ class _WatchRecipeState extends State<WatchRecipe> {
             widget.ing.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
                 element.data['count'] ?? 0,
-                element.data['unit'] ?? ''));
+                element.data['unit'] ?? '',
+                element.data['index'] ?? 0));
           });
         });
         QuerySnapshot snap2 = await Firestore.instance
@@ -137,7 +138,8 @@ class _WatchRecipeState extends State<WatchRecipe> {
             widget.ing.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
                 element.data['count'] ?? 0,
-                element.data['unit'] ?? ''));
+                element.data['unit'] ?? '',
+                element.data['index'] ?? 0));
           });
         });
         QuerySnapshot snap2 = await Firestore.instance

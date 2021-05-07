@@ -1,137 +1,100 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/config.dart';
+import 'package:recipes_app/services/groupFromDB.dart';
+import 'package:recipes_app/services/userFromDB.dart';
 
 // ignore: must_be_immutable
 class NewGroup extends StatefulWidget {
+  String uid;
+  String error2;
+
   NewGroup(String _uid) {
     this.uid = _uid;
   }
-  String uid;
   @override
   _NewGroupState createState() => _NewGroupState();
 }
 
 class _NewGroupState extends State<NewGroup> {
   List<String> usersID = [];
-  List<String> userEmail = [];
+  List<String> userFullNames = [];
   String groupName = "";
   String error = '';
   bool findUser = false;
   String emailTocheck;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    initializeGroup();
+    super.initState();
+  }
+
+  void initializeGroup() async {
+    usersID.add(widget.uid);
+    String firstName = await UserFromDB.getUserFirstName(widget.uid);
+    String lastName = await UserFromDB.getUserLastName(widget.uid);
+    String fullName = firstName + " " + lastName;
+    userFullNames.add(fullName);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
+        key: _formKey,
         height: 100,
         child: Scaffold(
           backgroundColor: backgroundColor,
-          appBar: AppBar(
-              title: Text(
-                'New group',
-                style: TextStyle(fontFamily: 'LogoFont'),
-              ),
-              backgroundColor: appBarBackgroundColor,
-              elevation: 0.0,
-              actions: <Widget>[
-                // ignore: deprecated_member_use
-                FlatButton.icon(
-                    icon: Icon(
-                      Icons.save,
-                      color: Colors.white,
-                    ),
-                    label: Text('SAVE', style: TextStyle(color: Colors.white)),
-                    onPressed: () {
-                      saveGroup();
-                      Navigator.pop(context);
-                    }),
-              ]),
+          appBar: appBar(),
           body: Container(
               padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
               child: Column(children: <Widget>[
                 Flexible(
                     child: ListView(children: [
-                  Text(
-                    'Hey let\'s create a new group!',
-                    style: TextStyle(
-                        fontFamily: 'Raleway',
-                        fontSize: 25,
-                        color: Colors.blueGrey[800]),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 30.0,
-                  ),
+                  title(),
+                  heightBox(30),
                   groupNameField(),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Text(
-                    'Adding participants:',
-                    style: TextStyle(
-                        fontFamily: 'Raleway',
-                        fontSize: 20,
-                        color: Colors.blueGrey[800]),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
+                  heightBox(20),
+                  heightBox(20),
+                  addMembersText(),
+                  heightBox(20),
                   groupEmailField(),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Text(
-                    error,
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  RawMaterialButton(
-                    onPressed: () => saveUser(emailTocheck),
-                    elevation: 0.9,
-                    fillColor: Colors.blueGrey[300],
-                    child: Icon(
-                      Icons.person_add_alt_1,
-                      size: 30.0,
-                    ),
-                    padding: EdgeInsets.all(5.0),
-                    shape: CircleBorder(),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  // Text(
-                  //   'Participants:',
-                  //   style: TextStyle(
-                  //       fontFamily: 'Raleway',
-                  //       fontSize: 20,
-                  //       color: Colors.blueGrey[800]),
-                  //   textAlign: TextAlign.center,
-                  // ),
+                  heightBox(20),
+                  errorText(),
+                  addMemberButton(),
+                  heightBox(20),
                   new Padding(padding: EdgeInsets.only(top: 10.0)),
                   Column(children: <Widget>[
-                    ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: userEmail.length,
-                        itemBuilder: (context, index) {
-                          return Text(
-                            (index + 1).toString() +
-                                "." +
-                                "  " +
-                                userEmail[index],
-                            textAlign: TextAlign.left,
-                            style: new TextStyle(
-                                fontSize: 20, color: Colors.blueGrey[800]),
-                          );
-                        }),
+                    membersList(),
                     new Padding(padding: EdgeInsets.only(top: 20.0)),
                   ]),
                 ])),
               ])),
-          //   resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomInset: false,
         ));
+  }
+
+  Widget appBar() {
+    return AppBar(
+        title: Text(
+          'New group',
+          style: TextStyle(fontFamily: logoFont),
+        ),
+        backgroundColor: appBarBackgroundColor,
+        actions: <Widget>[
+          // ignore: deprecated_member_use
+          saveGroupWidgwt()
+        ]);
+  }
+
+  Widget title() {
+    return Text(
+      'Hey let\'s create a new group!',
+      style: TextStyle(
+          fontFamily: 'Raleway', fontSize: 25, color: Colors.blueGrey[800]),
+      textAlign: TextAlign.center,
+    );
   }
 
   Widget groupNameField() {
@@ -139,10 +102,16 @@ class _NewGroupState extends State<NewGroup> {
       cursorWidth: 10,
       decoration: InputDecoration(
         suffixIcon: Icon(Icons.edit),
-        icon: Icon(Icons.closed_caption),
+        icon: Icon(Icons.dns),
         hintText: 'Group Name',
       ),
-      validator: (val) => val.isEmpty ? 'Enter a name of your group' : null,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Please enter recipe name';
+        }
+
+        return null;
+      },
       onChanged: (val) {
         setState(() => groupName = val);
       },
@@ -164,60 +133,106 @@ class _NewGroupState extends State<NewGroup> {
     );
   }
 
-  Future<void> saveGroup() async {
-    // print(usersID);
-    usersID.add(widget.uid);
-    final db = Firestore.instance;
-    var currentRecipe = await db
-        .collection('Group')
-        .add({'groupName': groupName, 'users': usersID});
-    String id = currentRecipe.documentID.toString();
-    for (int i = 0; i < usersID.length; i++) {
-      await db
-          .collection('users')
-          .document(usersID[i])
-          .collection('groups')
-          .add({'groupName': groupName, 'groupId': id});
+  Widget errorText() {
+    return Text(
+      error,
+      style: TextStyle(color: errorColor),
+    );
+  }
+
+  Widget addMemberButton() {
+    return RawMaterialButton(
+      onPressed: () => saveUser(emailTocheck),
+      elevation: 0.9,
+      fillColor: Colors.blueGrey[300],
+      child: Icon(
+        Icons.person_add_alt_1,
+        size: 30.0,
+      ),
+      padding: EdgeInsets.all(5.0),
+      shape: CircleBorder(),
+    );
+  }
+
+  Widget membersList() {
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: userFullNames.length,
+        itemBuilder: (context, index) {
+          return Text(
+            (index + 1).toString() + "." + "  " + userFullNames[index],
+            textAlign: TextAlign.left,
+            style: new TextStyle(fontSize: 20, color: Colors.blueGrey[800]),
+          );
+        });
+  }
+
+  Widget addMembersText() {
+    return Text(
+      'Adding participants:',
+      style: TextStyle(fontFamily: 'Raleway', fontSize: 20, color: titleColor),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget saveGroupWidgwt() {
+    if (groupName.length > 20) {
+      setState(() {
+        error = 'Group name is limited to 20 characters';
+      });
+      return FlatButton.icon(
+          icon: Icon(
+            Icons.save,
+            color: Colors.white,
+          ),
+          label: Text('SAVE', style: TextStyle(color: Colors.white)),
+          onPressed: null);
+    } else {
+      return FlatButton.icon(
+          icon: Icon(
+            Icons.save,
+            color: Colors.white,
+          ),
+          label: Text('SAVE', style: TextStyle(color: Colors.white)),
+          onPressed: () {
+            saveGroup();
+            Navigator.pop(context);
+          });
     }
   }
 
-  Future<void> saveUser(String email) async {
-    //print("save user");
-    //print(email);
-    String mailCheck;
-    // print(email);
-    QuerySnapshot snap =
-        await Firestore.instance.collection('users').getDocuments();
-    snap.documents.forEach((element) async {
-      mailCheck = element.data['Email'] ?? '';
-      //print(mailCheck);
-      if (mailCheck == email) {
-        //print("sucsses");
-        findUser = true;
-        //return element.documentID;
-        setState(() {
-          error = '';
-          String firstName = element.data['firstName'] ?? '';
-          String lastName = element.data['lastName'] ?? '';
-          String mailName = firstName + " " + lastName;
+  Future<void> saveGroup() async {
+    await GroupFromDB.createNewGroup(groupName, usersID);
+  }
 
-          if (mailName == ' ') {
-            mailName = 'this user has no name:(';
-          }
-          if (!userEmail.contains(mailName)) {
-            userEmail.add(mailName);
-            usersID.add(element.documentID);
-          } else {
-            error = 'This user is already in this group';
-          }
-        });
-      }
-    });
-    if (!findUser) {
+  Future<void> saveUser(String email) async {
+    String id = await UserFromDB.getUserByEmail(email);
+    if (id == widget.uid) {
+      setState(() {
+        error = 'it\'s your email!';
+      });
+      return;
+    }
+    if (id == null) {
       setState(() {
         error = 'there is no such user, try again';
       });
+      return;
     }
-    findUser = false;
+    String firstName = await UserFromDB.getUserFirstName(id);
+    String lastName = await UserFromDB.getUserLastName(id);
+    String fullName = firstName + " " + lastName;
+    setState(() {
+      error = '';
+      if (fullName == ' ') {
+        fullName = 'this user has no name:(';
+      }
+      if (!usersID.contains(id)) {
+        userFullNames.add(fullName);
+        usersID.add(id);
+      } else {
+        error = 'This user is already in this group';
+      }
+    });
   }
 }

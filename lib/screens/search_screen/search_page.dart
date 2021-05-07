@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/screens/userHeadLine.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import 'searchAlgorithm.dart';
@@ -28,6 +29,8 @@ class SearchPage extends StatefulWidget {
   Map<String, int> amountGroupsOfRecipe = {};
   Map<String, int> amountUsersOfRecipe = {};
   List<Pair> popular = [];
+  List<String> usersId = [];
+  bool searchMode = false;
 
   @override
   _SearchPage createState() => _SearchPage();
@@ -76,7 +79,7 @@ class _SearchPage extends State<SearchPage> {
 
   Future<Widget> _getImage(BuildContext context, String image) async {
     if (image == "") {
-      return Image.asset(noImagePath, fit: BoxFit.fill);
+      return Image.asset(noImagePath, fit: BoxFit.cover);
     }
     image = "uploads/" + image;
     Image m;
@@ -84,7 +87,7 @@ class _SearchPage extends State<SearchPage> {
         .then((downloadUrl) {
       m = Image.network(
         downloadUrl.toString(),
-        fit: BoxFit.fitHeight,
+        fit: BoxFit.cover,
       );
     });
     return m;
@@ -92,7 +95,7 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("count: " + widget.doneLoadCounter.toString());
+    // print("count: " + widget.doneLoadCounter.toString());
     if (widget.doneLoadCounter != 3) {
       return Loading();
     } else {
@@ -108,28 +111,66 @@ class _SearchPage extends State<SearchPage> {
                   child: SingleChildScrollView(
                       child: Container(
                           child: Column(children: <Widget>[
-                SearchInput(),
+                searchWidget(),
                 box,
-                Container(
-                  height: 500,
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    children: List.generate(widget.recipes.length, (index) {
-                      return Container(
-                          height: 500,
-                          width: 500,
-                          child: Card(
-                            shape:
-                                RoundedRectangleBorder(side: BorderSide.none),
-                            // child: RecipeHeadLineSearch(
-                            //     widget.recipes[index], true),
-                            child: _buildOneItem(index),
-                          ));
-                    }),
-                  ),
-                )
+                Center(
+                  child:
+                      (widget.searchMode) ? searchUsersWidget() : recipeGrid(),
+                ),
               ]))))));
     }
+  }
+
+  Widget recipeGrid() {
+    return Container(
+      height: 500,
+      child: GridView.count(
+        crossAxisCount: 2,
+        children: List.generate(widget.recipes.length, (index) {
+          if (!widget.searchMode) {
+            return Container(
+                height: 500,
+                width: 500,
+                child: Card(
+                  shape: RoundedRectangleBorder(side: BorderSide.none),
+                  // child: RecipeHeadLineSearch(
+                  //     widget.recipes[index], true),
+                  child: _buildOneItem(index),
+                ));
+          }
+        }),
+      ),
+    );
+  }
+
+  Widget searchUsersWidget() {
+    return Container(
+        child: ListView.builder(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(top: 1, bottom: 1, left: 5, right: 5),
+            itemCount: widget.usersId.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30.0),
+                            topRight: Radius.circular(30.0),
+                            bottomLeft: Radius.circular(30.0),
+                            bottomRight: Radius.circular(30.0)),
+                      ),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30.0),
+                              topRight: Radius.circular(30.0),
+                              bottomLeft: Radius.circular(30.0),
+                              bottomRight: Radius.circular(30.0)),
+                          child: UserHeadLine(widget.usersId[index]))));
+            }));
+    // child: UserHeadLine(
+    //     widget.listForWatch[index], widget.home))));
   }
 
   Widget _buildOneItem(int index) {
@@ -258,17 +299,28 @@ class _SearchPage extends State<SearchPage> {
           }
         }
       }
+      bool check = false;
       Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
           true, id, publish, path);
-      widget.recipes.add(r);
+      // print(r.id + "9999999999999999999999999999999999");
+      for (int i = 0; i < widget.recipes.length; i++) {
+        if (widget.recipes[i].id == r.id) {
+          check = true;
+        }
+      }
+      if (!check) {
+        // print("aaaa");
+        widget.recipes.add(r);
+      }
+
       // print("Add");
       // print(recipesFromFriends);
     }
-    print("done");
+    // print("done");
     setState(() {
       widget.doneLoadCounter++;
       // print("true");
-      print(widget.recipes);
+      //print(widget.recipes);
 
       // widget.doneLoadPublishRecipe = true;
     });
@@ -394,19 +446,14 @@ class _SearchPage extends State<SearchPage> {
             .compareTo(widget.amountLikesOfRecipe[key2]));
     // print("listttt likes: " +  widget.amountLikesOfRecipe.toString());
   }
-}
 
-class SearchInput extends StatelessWidget {
-  const SearchInput({
-    Key key,
-  }) : super(key: key);
+  List<String> userId = [];
 
-  @override
-  Widget build(BuildContext context) {
+  Widget searchWidget() {
     return Container(
       width: 180,
       height: 30,
-      child: TextField(
+      child: TextFormField(
         decoration: InputDecoration(
           filled: true,
           prefixIcon: Icon(
@@ -424,8 +471,49 @@ class SearchInput extends StatelessWidget {
             borderRadius: BorderRadius.circular(25.7),
           ),
         ),
+        onChanged: (val) {
+          if (val.isEmpty) {
+            setState(() {
+              widget.searchMode = false;
+            });
+          } else {
+            startSearch(val);
+            setState(() {
+              widget.searchMode = true;
+            });
+          }
+        },
       ),
     );
+  }
+
+  Future<void> startSearch(String val) async {
+    setState(() {
+      widget.usersId.clear();
+    });
+    QuerySnapshot snap =
+        await Firestore.instance.collection('users').getDocuments();
+    snap.documents.forEach((element) {
+      String firstName = element.data['firstName'];
+      if (firstName.contains(val)) {
+        if (!widget.usersId.contains(element.documentID)) {
+          setState(() {
+            print(firstName);
+            widget.usersId.add(element.documentID);
+          });
+        }
+      }
+
+      String lastName = element.data['lastName'];
+      if (lastName.contains(val)) {
+        if (!widget.usersId.contains(element.documentID)) {
+          setState(() {
+            print(lastName);
+            widget.usersId.add(element.documentID);
+          });
+        }
+      }
+    });
   }
   // class Pair<T1, T2> {
 //   final String user;

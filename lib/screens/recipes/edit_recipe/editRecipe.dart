@@ -1,624 +1,495 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
-import 'package:recipes_app/models/user.dart';
+import 'package:recipes_app/screens/personal_screen/uploadImage.dart';
+import 'package:recipes_app/screens/recipes/edit_recipe/editRecipeIngredients.dart';
+import 'package:recipes_app/services/fireStorageService.dart';
 import '../../../config.dart';
+import 'editRecipeNotes.dart';
+import 'editRecipeStages.dart';
+import 'editRecipeTags.dart';
 
 // ignore: must_be_immutable
 class EditRecipe extends StatefulWidget {
-  EditRecipe(Recipe r, List<IngredientsModel> ing, List<Stages> stages) {
-    this.current = r;
-    this.ing = ing;
-    this.stages = stages;
-  }
-  List<IngredientsModel> ing = [];
-  List<Stages> stages = [];
-  List<String> notes = [];
+  String uid;
   Recipe current;
-  bool done = false;
-  int count = 0;
-  Color easyColor = Colors.green[200];
-  Color midColor = Colors.red[200];
-  Color hardColor = Colors.blue[200];
-  Color timeInit1 = Colors.black;
-  Color timeInit2 = Colors.black;
-  Color timeInit3 = Colors.black;
-  bool doneEdit = false;
+  List<Stages> stages;
+  List<IngredientsModel> ingredients;
+  NetworkImage recipeImage;
+  String levelString;
+  Color levelColor;
+  String imagePath = "";
+  EditRecipe(
+      String _uid,
+      Recipe _current,
+      List<Stages> _stages,
+      List<IngredientsModel> _ingredients,
+      String _levelString,
+      Color _levelColor) {
+    uid = _uid;
+    current = _current;
+    stages = _stages;
+    current.stages = stages;
+    ingredients = _ingredients;
+    levelString = _levelString;
+    levelColor = _levelColor;
+  }
+
   @override
   _EditRecipeState createState() => _EditRecipeState();
 }
 
 class _EditRecipeState extends State<EditRecipe> {
-  var i;
-
   @override
   void initState() {
     super.initState();
-    setLevelColor();
-    setTimeColor();
+    getUserImage();
+    sortStages();
+  }
+
+  void getImage(BuildContext context) async {
+    if (widget.recipeImage != null || widget.imagePath == "") {
+      return;
+    }
+    String downloadUrl = await FireStorageService.loadFromStorage(
+        context, "uploads/" + widget.imagePath);
+    setState(() {
+      widget.recipeImage = NetworkImage(downloadUrl);
+    });
+  }
+
+  void getUserImage() async {
+    DocumentSnapshot user = await Firestore.instance
+        .collection('users')
+        .document(widget.current.writerUid)
+        .get();
+    setState(() {
+      widget.imagePath = user.data['imagePath'];
+    });
+  }
+
+  void sortStages() {
+    List<Stages> stageCopy = [];
+    stageCopy.addAll(widget.stages);
+    for (int i = 0; i < stageCopy.length; i++) {
+      setState(() {
+        widget.stages[stageCopy[i].i] = stageCopy[i];
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    getImage(context);
     return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: appBar(),
-      body: ListView(children: [
-        box,
-        Center(
-          child: recipeNameField(),
-        ),
-        box,
-        recipeDescriptionField(),
-        box,
-        RawMaterialButton(
-          onPressed: addIng,
-          elevation: 2.0,
-          fillColor: Colors.brown[300],
-          child: Icon(
-            Icons.add,
-            size: 18.0,
+      appBar: AppBar(
+        actions: [saveIcon(), cancelIcon()],
+      ),
+      body: Container(
+          child: ListView(children: [
+        Container(
+            child: new Column(children: [
+          name(),
+          new Padding(padding: EdgeInsets.only(top: 15.0)),
+          if (widget.levelString != '') level(),
+          Divider(
+            height: 40,
+            thickness: 8,
           ),
-          padding: EdgeInsets.all(5.0),
-          shape: CircleBorder(),
-        ),
-        Text(
-          'ingredients for the recipe:',
-          style: new TextStyle(color: Colors.brown, fontSize: 25.0),
-        ),
-        box,
-        Column(
-          children: <Widget>[
-            for (var i = 0; i < widget.ing.length; i++)
-              Row(
-                children: [
-                  Text((i + 1).toString() + "." + " "),
-                  Expanded(
-                      child: SizedBox(
-                          height: 37.0,
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              hintText: widget.ing[i].name,
-                            ),
-                            validator: (val) => val.length < 2
-                                ? 'Enter a description eith 2 letter at least'
-                                : null,
-                            onChanged: (val) {
-                              setState(() => widget.ing[i].name = val);
-                            },
-                          ))),
-                  Text(' '),
-                  Expanded(
-                      child: SizedBox(
-                          height: 37.0,
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              hintText: widget.ing[i].count.toString(),
-                            ),
-                            validator: (val) => val.length < 6
-                                ? 'Enter a description eith 6 letter at least'
-                                : null,
-                            onChanged: (val) {
-                              setState(
-                                  () => widget.ing[i].count = int.parse(val));
-                            },
-                          ))),
-                  Text(' '),
-                  Expanded(
-                      child: SizedBox(
-                          height: 37.0,
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              hintText: widget.ing[i].unit,
-                            ),
-                            validator: (val) => val.length < 6
-                                ? 'Enter a description eith 6 letter at least'
-                                : null,
-                            onChanged: (val) {
-                              setState(() => widget.ing[i].unit = val);
-                            },
-                          ))),
-                  RawMaterialButton(
-                    onPressed: () => onDeletIng(i),
-                    elevation: 0.2,
-                    fillColor: Colors.brown[300],
-                    child: Icon(
-                      Icons.delete,
-                      size: 18.0,
-                    ),
-                    padding: EdgeInsets.all(5.0),
-                    shape: CircleBorder(),
-                  )
-                ],
-              ),
-          ],
-        ),
-        //stages
-        new Padding(padding: EdgeInsets.only(top: 15.0)),
-        new Text(
-          'stages for the recipe:',
-          style: new TextStyle(color: Colors.brown, fontSize: 25.0),
-        ),
-        RawMaterialButton(
-          onPressed: addStages,
-          elevation: 2.0,
-          fillColor: Colors.brown[300],
-          child: Icon(
-            Icons.add,
-            size: 18.0,
+          padding,
+          description(),
+          padding,
+          ingredients(),
+          padding,
+          stages(),
+          padding,
+          notes(),
+          padding,
+          new Text(
+            makeTags(),
+            style: TextStyle(
+                color: Colors.black, fontFamily: 'Raleway', fontSize: 20),
           ),
-          padding: EdgeInsets.all(5.0),
-          shape: CircleBorder(),
-        ),
-        new Padding(padding: EdgeInsets.only(top: 10.0)),
-        Column(
-          children: <Widget>[
-            for (var j = 0; j < widget.stages.length; j++)
-              Row(children: [
-                Text((j + 1).toString() + "." + " "),
-                Expanded(
-                    child: SizedBox(
-                        height: 37.0,
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            hintText: widget.stages[j].s,
-                          ),
-                          validator: (val) => val.length < 2
-                              ? 'Enter a description eith 2 letter at least'
-                              : null,
-                          onChanged: (val) {
-                            setState(() => widget.stages[j].s = val);
-                          },
-                        ))),
-                RawMaterialButton(
-                  onPressed: () => onDeletStages(j),
-                  elevation: 0.2,
-                  fillColor: Colors.brown[300],
-                  child: Icon(
-                    Icons.delete,
-                    size: 18.0,
-                  ),
-                  padding: EdgeInsets.all(5.0),
-                  shape: CircleBorder(),
-                )
-              ])
-          ],
-        ),
-        //tags
-        new Padding(padding: EdgeInsets.only(top: 15.0)),
-        new Text(
-          'tags for the recipe:',
-          style: new TextStyle(color: Colors.brown, fontSize: 25.0),
-        ),
-        RawMaterialButton(
-          onPressed: addTags,
-          elevation: 2.0,
-          fillColor: Colors.brown[300],
-          child: Icon(
-            Icons.add,
-            size: 18.0,
-          ),
-          padding: EdgeInsets.all(5.0),
-          shape: CircleBorder(),
-        ),
-        new Padding(padding: EdgeInsets.only(top: 10.0)),
-        Column(
-          children: <Widget>[
-            for (var t = 0; t < widget.current.tags.length; t++)
-              Row(children: [
-                Text((t + 1).toString() + "." + " "),
-                Expanded(
-                    child: SizedBox(
-                  height: 37.0,
-                  child: DropdownButton(
-                    hint: Text("choose this recipe tag"),
-                    dropdownColor: Colors.brown[300],
-                    icon: Icon(Icons.arrow_drop_down),
-                    iconSize: 36,
-                    isExpanded: true,
-                    value: tagList[convertToIndex(widget.current.tags[t])],
-                    onChanged: (newValue) {
-                      setState(() {
-                        widget.current.tags[t] = newValue;
-                      });
-                    },
-                    items: tagList.map((valueItem) {
-                      return DropdownMenuItem(
-                        value: valueItem,
-                        child: Text(valueItem),
-                      );
-                    }).toList(),
-                  ),
-                )),
-                RawMaterialButton(
-                  onPressed: () => onDeleteTags(t),
-                  elevation: 0.2,
-                  fillColor: Colors.brown[300],
-                  child: Icon(
-                    Icons.delete,
-                    size: 18.0,
-                  ),
-                  padding: EdgeInsets.all(5.0),
-                  shape: CircleBorder(),
-                )
-              ])
-          ],
-        ),
-        SizedBox(height: 37.0, child: Text("push on the + to add tags")),
-        Row(children: <Widget>[
-          Expanded(
-              // ignore: deprecated_member_use
-              child: RaisedButton(
-                  color: widget.easyColor,
-                  child: Text(
-                    'easy',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      widget.current.level = 1;
-                      widget.easyColor = Colors.green[900];
-                      widget.midColor = Colors.red[200];
-                      widget.hardColor = Colors.blue[200];
-                    });
-                  })),
-          Expanded(
-              // ignore: deprecated_member_use
-              child: RaisedButton(
-                  color: widget.midColor,
-                  child: Text(
-                    'medium',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      widget.current.level = 2;
-                      widget.easyColor = Colors.green[200];
-                      widget.midColor = Colors.red[900];
-                      widget.hardColor = Colors.blue[200];
-                    });
-                  })),
-          Expanded(
-              // ignore: deprecated_member_use
-              child: RaisedButton(
-                  color: widget.hardColor,
-                  child: Text(
-                    'hard',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      widget.current.level = 3;
-                      widget.easyColor = Colors.green[200];
-                      widget.midColor = Colors.red[200];
-                      widget.hardColor = Colors.blue[900];
-                    });
-                  }))
-        ]), //time text
-        SizedBox(
-            height: 37.0,
-            child: Text("How long does it take to prepare the recipe?")),
-        //time
-        Row(children: <Widget>[
-          Expanded(
-            // ignore: deprecated_member_use
-            child: FlatButton.icon(
-                icon: Icon(Icons.watch_later, color: widget.timeInit1),
-                label: Text(''),
-                onPressed: () {
-                  setState(() {
-                    widget.current.time = 1;
-                    widget.timeInit1 = Colors.green[400];
-                    widget.timeInit2 = Colors.black;
-                    widget.timeInit3 = Colors.black;
-                  });
-                }),
-          ),
-          Expanded(
-            // ignore: deprecated_member_use
-            child: FlatButton.icon(
-                icon: Icon(Icons.watch_later, color: widget.timeInit2),
-                label: Text(''),
-                onPressed: () {
-                  setState(() {
-                    widget.current.time = 2;
-                    widget.timeInit1 = Colors.black;
-                    widget.timeInit2 = Colors.yellow[400];
-                    widget.timeInit3 = Colors.black;
-                  });
-                }),
-          ),
-          Expanded(
-            // ignore: deprecated_member_use
-            child: FlatButton.icon(
-                icon: Icon(Icons.watch_later, color: widget.timeInit3),
-                label: Text(''),
-                onPressed: () {
-                  setState(() {
-                    widget.current.time = 3;
-                    widget.timeInit1 = Colors.black;
-                    widget.timeInit2 = Colors.black;
-                    widget.timeInit3 = Colors.pink[400];
-                  });
-                }),
-          ),
-        ]),
-        //notes
-        new Padding(padding: EdgeInsets.only(top: 15.0)),
-        new Text(
-          'notes for the recipe:',
-          style: new TextStyle(color: Colors.brown, fontSize: 25.0),
-        ),
-        RawMaterialButton(
-          onPressed: addNotes,
-          elevation: 2.0,
-          fillColor: Colors.brown[300],
-          child: Icon(
-            Icons.add,
-            size: 18.0,
-          ),
-          padding: EdgeInsets.all(5.0),
-          shape: CircleBorder(),
-        ),
-        new Padding(padding: EdgeInsets.only(top: 10.0)),
-        Column(
-          children: <Widget>[
-            for (var j = 0; j < widget.current.notes.length; j++)
-              Row(children: [
-                Text((j + 1).toString() + "." + " "),
-                Expanded(
-                    child: SizedBox(
-                        height: 37.0,
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            hintText: widget.current.notes[j],
-                          ),
-                          validator: (val) => val.length < 2
-                              ? 'Enter a description eith 2 letter at least'
-                              : null,
-                          onChanged: (val) {
-                            setState(() => widget.current.notes[j] = val);
-                          },
-                        ))),
-                RawMaterialButton(
-                  onPressed: () => onDeleteNotes(j),
-                  elevation: 0.2,
-                  fillColor: Colors.brown[300],
-                  child: Icon(
-                    Icons.delete,
-                    size: 18.0,
-                  ),
-                  padding: EdgeInsets.all(5.0),
-                  shape: CircleBorder(),
-                )
-              ])
-          ],
-        ),
-      ]),
+          editTags()
+        ]))
+      ])),
       resizeToAvoidBottomInset: false,
     );
-  }
-
-  Widget recipeNameField() {
-    TextEditingController _controller =
-        new TextEditingController(text: widget.current.name);
-    return TextFormField(
-      controller: _controller,
-      cursorWidth: 10,
-      decoration: InputDecoration(
-        suffixIcon: Icon(Icons.edit),
-        icon: Icon(Icons.dns),
-        border: OutlineInputBorder(),
-        // hintText: 'Recipe Name',
-      ),
-      validator: (val) => val.isEmpty ? 'Enter a name of your recipe' : null,
-      onChanged: (val) {
-        setState(() => widget.current.name = val);
-      },
-    );
-  }
-
-  Widget recipeDescriptionField() {
-    TextEditingController _controller =
-        new TextEditingController(text: widget.current.description);
-    return TextFormField(
-      controller: _controller,
-      decoration: InputDecoration(
-        suffixIcon: Icon(Icons.edit),
-        icon: Icon(Icons.description),
-        hintText: 'Description',
-        border: OutlineInputBorder(),
-      ),
-      validator: (val) =>
-          val.length < 6 ? 'Enter a description with 6 letter at least' : null,
-      onChanged: (val) {
-        setState(() => widget.current.description = val);
-      },
-    );
-  }
-
-  Widget appBar() {
-    return AppBar(
-        backgroundColor: appBarBackgroundColor,
-        elevation: 0.0,
-        title: Text('Edit Recipe', style: TextStyle(fontFamily: 'Raleway')),
-        actions: <Widget>[
-          saveIcon(),
-        ]);
   }
 
   Widget saveIcon() {
     // ignore: deprecated_member_use
     return FlatButton.icon(
-        icon: Icon(Icons.save, color: Colors.white),
-        label: Text('SAVE', style: TextStyle(color: Colors.white)),
-        onPressed: () {
-          editAndSave();
-        });
+        icon: Icon(
+          Icons.save,
+          color: Colors.white,
+        ),
+        label: Text(
+          'SAVE',
+          style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+        ),
+        onPressed: saveThisRecipe);
   }
 
-  void setTimeColor() {
-    switch (widget.current.time) {
-      case 1:
-        widget.timeInit1 = Colors.green[400];
-        break;
-      case 2:
-        widget.timeInit2 = Colors.yellow[400];
-        break;
-      case 3:
-        widget.timeInit3 = Colors.pink[400];
-        break;
-    }
+  Widget cancelIcon() {
+    // ignore: deprecated_member_use
+    return FlatButton.icon(
+        icon: Icon(
+          Icons.cancel,
+          color: Colors.white,
+        ),
+        label: Text(
+          'Cancel',
+          style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+        ),
+        onPressed: () => Navigator.pop(context, null));
   }
 
-  void setLevelColor() {
-    if (widget.current.level == 1) {
-      widget.easyColor = Colors.green[900];
-    }
-    if (widget.current.level == 2) {
-      widget.midColor = Colors.red[900];
-    }
-    if (widget.current.level == 3) {
-      widget.hardColor = Colors.blue[900];
-    }
-  }
-
-  int convertToIndex(String s) {
-    if (s[0] == ' ') {
-      s = s.substring(1);
-    }
-    switch (s) {
-      case "fish":
-        return 0;
-        break;
-      case "meat":
-        return 1;
-        break;
-      case "dairy":
-        return 2;
-        break;
-      case "desert":
-        return 3;
-        break;
-      case "for children":
-        return 4;
-        break;
-      case "other":
-        return 5;
-        break;
-      case "choose recipe tag":
-        return 6;
-        break;
-    }
-    return 1;
-  }
-
-  void addIng() {
-    setState(() {
-      widget.ing.add(IngredientsModel());
-    });
-  }
-
-  void addStages() {
-    setState(() {
-      widget.stages.add(Stages());
-    });
-  }
-
-  void addTags() {
-    setState(() {
-      widget.current.tags.add('choose recipe tag');
-    });
-  }
-
-  void addNotes() {
-    setState(() {
-      widget.current.notes.add('');
-    });
-  }
-
-  void onDeletIng(int i) {
-    setState(() {
-      widget.ing.removeAt(i);
-    });
-  }
-
-  void onDeletStages(int i) {
-    setState(() {
-      widget.stages.removeAt(i);
-    });
-  }
-
-  void onDeleteTags(int i) {
-    setState(() {
-      widget.current.tags.removeAt(i);
-    });
-  }
-
-  void onDeleteNotes(int i) {
-    setState(() {
-      widget.current.notes.removeAt(i);
-    });
-  }
-
-  void editAndSave() async {
+  void saveThisRecipe() async {
     final db = Firestore.instance;
-    final user = Provider.of<User>(context);
-    //delete the last recipe  and then add new one
-
-    db
+    await db
         .collection('users')
-        .document(user.uid)
+        .document(widget.uid)
         .collection('recipes')
         .document(widget.current.id)
-        .delete();
-    var currentRecipe = await db
-        .collection('users')
-        .document(user.uid)
-        .collection('recipes')
-        .add(widget.current.toJson());
+        .updateData(widget.current.toJson());
+    //set the new id to data base
 
-    String id = currentRecipe.documentID.toString();
-    db
-        .collection('users')
-        .document(user.uid)
-        .collection('recipes')
-        .document(id)
-        .updateData({'recipeID': id});
-
-    if (widget.current.publish != '') {
-      //update in the public the new id;
-      db
-          .collection('publish recipe')
-          .document(widget.current.publish)
-          .updateData({'recipeId': currentRecipe.documentID.toString()});
-    }
-    // String id = currentRecipe.documentID.toString();
-    for (int i = 0; i < widget.ing.length; i++) {
+    for (int i = 0; i < widget.ingredients.length; i++) {
       await db
           .collection('users')
-          .document(user.uid)
+          .document(widget.uid)
           .collection('recipes')
-          .document(id)
+          .document(widget.current.id)
           .collection('ingredients')
-          .add(widget.ing[i].toJson());
+          .add(widget.ingredients[i].toJson());
     }
     for (int i = 0; i < widget.stages.length; i++) {
       await db
           .collection('users')
-          .document(user.uid)
+          .document(widget.uid)
           .collection('recipes')
-          .document(id)
+          .document(widget.current.id)
           .collection('stages')
           .add(widget.stages[i].toJson(i));
     }
-    int count = 0;
-    Navigator.of(context).popUntil((_) => count++ >= 3);
-    // Navigator.push(context,
-    //     MaterialPageRoute(builder: (context) => RecipesBookPage(user.uid)));
+    widget.current.ingredients = widget.ingredients;
+    widget.current.stages = widget.stages;
+    Navigator.pop(context, widget.current);
   }
+
+  Widget name() {
+    return Center(
+      child: new TextFormField(
+        initialValue: widget.current.name,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w900,
+            fontStyle: FontStyle.italic,
+            fontFamily: 'Raleway',
+            fontSize: 60),
+        onChanged: (value) => widget.current.name = value,
+      ),
+    );
+  }
+
+  Widget picture() {
+    // there is no image yet
+    if (widget.imagePath == "") {
+      return CircleAvatar(
+          backgroundColor: backgroundColor,
+          radius: 40,
+          backgroundImage: ExactAssetImage(noImagePath),
+          child: FlatButton(onPressed: uploadImagePressed));
+    } else {
+      if (widget.recipeImage != null) {
+        return CircleAvatar(
+            backgroundColor: backgroundColor,
+            radius: 30,
+            backgroundImage: widget.recipeImage,
+            child: FlatButton(onPressed: uploadImagePressed));
+      } else {
+        return Container(
+            height: MediaQuery.of(context).size.height / 10,
+            width: MediaQuery.of(context).size.width / 10,
+            child: CircularProgressIndicator());
+      }
+    }
+  }
+
+  void uploadImagePressed() {
+    Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => UploadingImageToFirebaseStorage()))
+        .then((value) => {
+              setState(() {
+                widget.current.imagePath = value.toString();
+                widget.recipeImage = NetworkImage(widget.current.imagePath);
+              })
+            });
+  }
+
+  Widget description() {
+    return TextFormField(
+      initialValue: widget.current.description,
+      style:
+          TextStyle(color: Colors.black, fontFamily: 'Raleway', fontSize: 20),
+      onChanged: (value) => widget.current.description = value,
+    );
+  }
+
+  Widget level() {
+    // ignore: deprecated_member_use
+    return RaisedButton(
+        color: widget.levelColor,
+        child: Text(
+          widget.levelString,
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: () {});
+  }
+
+  Widget ingredients() {
+    return new Center(
+      child: new Container(
+        width: 450,
+        decoration: new BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            new Padding(padding: EdgeInsets.only(top: 20.0)),
+            new Text(
+              'Ingredients:',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
+                  fontStyle: FontStyle.italic,
+                  fontFamily: 'Raleway',
+                  fontSize: 27),
+            ),
+            new Padding(padding: EdgeInsets.only(top: 10.0)),
+            for (var i = 0; i < widget.ingredients.length; i++)
+              Row(
+                children: [
+                  Text(
+                    widget.ingredients[i].count.toString() +
+                        " " +
+                        widget.ingredients[i].unit.toString() +
+                        " " +
+                        widget.ingredients[i].name.toString(),
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'Raleway',
+                        fontSize: 20),
+                  ),
+                ],
+              ),
+            editIngredients(),
+            new Padding(padding: EdgeInsets.only(top: 20.0)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget editIngredients() {
+    return RawMaterialButton(
+      onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EditRecipeIngredients(widget.uid, widget.ingredients)))
+          .then((value) => {
+                if (value != null)
+                  {
+                    setState(() {
+                      widget.ingredients = value;
+                    })
+                  }
+              }),
+      elevation: 0.2,
+      child: Icon(
+        Icons.add,
+        size: 20,
+      ),
+      padding: EdgeInsets.all(5.0),
+      shape: CircleBorder(),
+    );
+  }
+
+  Widget editStages() {
+    return RawMaterialButton(
+      onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  EditRecipeStages(widget.uid, widget.stages))),
+      elevation: 0.2,
+      child: Icon(
+        Icons.add,
+        size: 20,
+      ),
+      padding: EdgeInsets.all(5.0),
+      shape: CircleBorder(),
+    );
+  }
+
+  Widget editTags() {
+    return RawMaterialButton(
+      onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EditRecipeTags(widget.uid, widget.current.tags)))
+          .then((value) => widget.current.tags = value),
+      elevation: 0.2,
+      child: Icon(
+        Icons.add,
+        size: 20,
+      ),
+      padding: EdgeInsets.all(5.0),
+      shape: CircleBorder(),
+    );
+  }
+
+  Widget editNotes() {
+    return RawMaterialButton(
+      onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  EditRecipeNotes(widget.uid, widget.current.notes))),
+      elevation: 0.2,
+      child: Icon(
+        Icons.add,
+        size: 20,
+      ),
+      padding: EdgeInsets.all(5.0),
+      shape: CircleBorder(),
+    );
+  }
+
+  Widget stages() {
+    return new Center(
+        child: new Container(
+      width: 450,
+      // height: 300,
+      decoration: new BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          new Padding(padding: EdgeInsets.only(top: 20.0)),
+          new Text(
+            'Stages:',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic,
+                fontFamily: 'Raleway',
+                fontSize: 27),
+          ),
+          new Padding(padding: EdgeInsets.only(top: 10.0)),
+          ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
+              itemCount: widget.stages.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    index.toString() + ". " + widget.stages[index].s,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'Raleway',
+                        fontSize: 20),
+                  ),
+                );
+              }),
+          editStages()
+        ],
+      ),
+    ));
+  }
+
+  Widget notes() {
+    return new Center(
+        child: new Container(
+      width: 450,
+      decoration: new BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          new Padding(padding: EdgeInsets.only(top: 20.0)),
+          new Text(
+            'Notes:',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic,
+                fontFamily: 'Raleway',
+                fontSize: 27),
+          ),
+          new Padding(padding: EdgeInsets.only(top: 10.0)),
+          ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
+              itemCount: widget.current.notes.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    index.toString() + ". " + widget.current.notes[index],
+                    style: TextStyle(
+                        color: Colors.black,
+                        // fontWeight: FontWeight.w900,
+                        //fontStyle: FontStyle.italic,
+                        fontFamily: 'Raleway',
+                        fontSize: 20),
+                  ),
+                );
+              }),
+          editNotes()
+        ],
+      ),
+    ));
+  }
+
+  String makeTags() {
+    String tag = '';
+    for (int i = 0; i < widget.current.tags.length; i++) {
+      tag += "#" + widget.current.tags[i] + " ,";
+    }
+    return tag;
+  }
+
+  //   Future<void> _showLikesList() async {
+  //   showModalBottomSheet(
+  //       context: context,
+  //       isScrollControlled: true,
+  //       backgroundColor: Colors.transparent,
+  //       builder: (context) => Container(
+  //           height: MediaQuery.of(context).size.height * 0.75,
+  //           decoration: new BoxDecoration(
+  //             color: Colors.blueGrey[50],
+  //             borderRadius: new BorderRadius.only(
+  //               topLeft: const Radius.circular(25.0),
+  //               topRight: const Radius.circular(25.0),
+  //             ),
+  //           ),
+  //           child: LikesList(widget.current)));
+  // }
 }

@@ -61,7 +61,6 @@ class _RecipeListState extends State<RecipeList> {
   ];
   @override
   void initState() {
-    print("1111111111111111111111");
     super.initState();
     init();
   }
@@ -108,64 +107,7 @@ class _RecipeListState extends State<RecipeList> {
           ],
         ),
         body: Column(children: <Widget>[
-          //פילטר
-          // Center(
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       new Padding(padding: EdgeInsets.only(left: 15.0)),
-          //       easyButton(),
-          //       new Padding(padding: EdgeInsets.only(left: 15.0)),
-          //       midButton(),
-          //       new Padding(padding: EdgeInsets.only(left: 15.0)),
-          //       hardButton(),
-          //       new Padding(padding: EdgeInsets.only(left: 15.0)),
-          //     ],
-          //   ),
-          // ),
           new Padding(padding: EdgeInsets.only(top: 15.0)),
-          new Center(
-              child: new Container(
-                  width: 400,
-                  decoration: new BoxDecoration(
-                    color: Colors.blueGrey[100],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    children: [
-                      DropdownButton<String>(
-                        dropdownColor: appBarBackgroundColor,
-                        value: selectedSubject,
-                        onChanged: (value) {
-                          setState(() {
-                            tagList.remove(value);
-                            widget.myTags.add(value);
-                            addtag(value);
-                          });
-                        },
-                        items: tagList.map<DropdownMenuItem<String>>((value) {
-                          return DropdownMenuItem(
-                              value: value, child: Text(value));
-                        }).toList(),
-                      ),
-                      //Flexible(
-                      //flex: (widget.myTags.length % 3) * 10,
-                      Container(
-                        height: MediaQuery.of(context).size.height * 0.13,
-                        child: GridView.count(
-                            shrinkWrap: true,
-                            crossAxisCount: 3,
-                            childAspectRatio: (30 / 10),
-                            children:
-                                List.generate(widget.myTags.length, (index) {
-                              return Flexible(child: tags(index));
-                            })),
-                      ),
-                    ],
-                  ))),
-          // SizedBox(
-          //   height: 10,
-          // ),
           Text(
             "num of results: " + widget.listForWatch.length.toString(),
             style: TextStyle(
@@ -174,21 +116,21 @@ class _RecipeListState extends State<RecipeList> {
           Flexible(
             child: ListView.builder(
               shrinkWrap: true,
-              padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
+              padding: EdgeInsets.only(top: 1, bottom: 1, left: 5, right: 5),
               itemCount: widget.listForWatch.length,
               itemBuilder: (context, index) {
                 // print('recipeList');
                 // print(widget.list[index]);
                 return Padding(
-                    padding: EdgeInsets.all(5),
+                    padding: EdgeInsets.all(8),
                     child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.blueGrey[50],
+                          color: Colors.white,
                           borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10.0),
-                              topRight: Radius.circular(10.0),
-                              bottomLeft: Radius.circular(10.0),
-                              bottomRight: Radius.circular(10.0)),
+                              topLeft: Radius.circular(30.0),
+                              topRight: Radius.circular(30.0),
+                              bottomLeft: Radius.circular(30.0),
+                              bottomRight: Radius.circular(30.0)),
                         ),
                         child: ClipRRect(
                             borderRadius: BorderRadius.only(
@@ -401,24 +343,28 @@ class _RecipeListState extends State<RecipeList> {
 
   Future<void> _showfilter() async {
     showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (context) => Container(
-                height: MediaQuery.of(context).size.height * 0.5,
-                decoration: new BoxDecoration(
-                  color: backgroundColor,
-                  borderRadius: new BorderRadius.only(
-                    topLeft: const Radius.circular(25.0),
-                    topRight: const Radius.circular(25.0),
-                  ),
-                ),
-                child:
-                    Filter(widget.list, widget.listForWatch, widget.levelList)))
-        .then((value) => cameBack(value));
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.5,
+            decoration: new BoxDecoration(
+              color: backgroundColor,
+              borderRadius: new BorderRadius.only(
+                topLeft: const Radius.circular(25.0),
+                topRight: const Radius.circular(25.0),
+              ),
+            ),
+            child: Filter(widget.list, widget.listForWatch, widget.levelList,
+                widget.myTags))).then((value) => cameBack(value));
   }
 
   cameBack(value) {
+    List myTagCameBack = value['c'];
+    // print(myTagCameBack);
+    for (int i = 0; i < myTagCameBack.length; i++) {
+      addtag(myTagCameBack[i]);
+    }
     setState(() {
       widget.listForWatch = value['a'];
       widget.levelList = value['b'];

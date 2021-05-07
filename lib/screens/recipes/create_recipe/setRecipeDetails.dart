@@ -88,7 +88,15 @@ class _SetRecipeDetailsState extends State<SetRecipeDetails> {
         icon: Icon(Icons.dns),
         hintText: 'Recipe Name',
       ),
-      validator: (val) => val.isEmpty ? 'Enter a name of your recipe' : null,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Please enter recipe name';
+        }
+        if (value.length > 20) {
+          return 'Recipe name is limited to 20 characters';
+        }
+        return null;
+      },
       onChanged: (val) {
         setState(() => recipeName = val);
       },
@@ -105,7 +113,7 @@ class _SetRecipeDetailsState extends State<SetRecipeDetails> {
         border: OutlineInputBorder(),
       ),
       validator: (val) =>
-          val.length < 6 ? 'Enter a description with 6 letter at least' : null,
+          val.length < 4 ? 'Enter a description with 4 letter at least' : null,
       onChanged: (val) {
         setState(() => recipeDescription = val);
       },

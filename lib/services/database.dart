@@ -21,13 +21,39 @@ class DataBaseService {
 
   Future updateUserData(String firstName, String lastName, String phone,
       int age, String email, String imagePath) async {
+    Map<String, int> tags = {
+      'choose recipe tag': 0,
+      'fish': 0,
+      'meat': 0,
+      'dairy': 0,
+      'desert': 0,
+      'for children': 0,
+      'other': 0,
+      //
+      'vegetarian': 0,
+      'Gluten free': 0,
+      'without sugar': 0,
+      'vegan': 0,
+      'Without milk': 0,
+      'No eggs': 0,
+      'kosher': 0,
+      'baking': 0,
+      'cakes and cookies': 0,
+      'Food toppings': 0,
+      'Salads': 0,
+      'Soups': 0,
+      'Pasta': 0,
+      'No carbs': 0,
+      'Spreads': 0
+    };
     return await userCollection.document(uid).setData({
       'firstName': firstName,
       'lastName': lastName,
       'Email': email,
       'age': age,
       'phone': phone,
-      'imagePath': imagePath
+      'imagePath': imagePath,
+      'tags': tags
     });
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
+import '../../config.dart';
 import '../recipes/watch_recipes/watchRecipeGroup.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 
@@ -9,14 +10,19 @@ class GroupRecipeHeadLine extends StatelessWidget {
   Color circleColor;
   String level;
   String groupId;
-
+  String time;
   String image = "";
+
   GroupRecipeHeadLine(Recipe r, String _groupId) {
     this.recipe = r;
     this.groupId = _groupId;
-
     image = r.imagePath;
-    switch (r.time) {
+    setLevelColor();
+    setTimeText();
+  }
+
+  setLevelColor() {
+    switch (recipe.level) {
       case 1:
         circleColor = Colors.green[400];
         level = 'easy';
@@ -34,19 +40,29 @@ class GroupRecipeHeadLine extends StatelessWidget {
         level = 'easy';
         break;
     }
-    // print("head line");
-    // print(r.publish);
   }
-  Future<Widget> _getImage(BuildContext context, String image) async {
-    print("imageeeeeeeeeeeeeeeeeeeee " + image);
+
+  setTimeText() {
+    switch (recipe.time) {
+      case 1:
+        time = 'Until half-hour';
+        break;
+      case 2:
+        time = 'Until hour';
+        break;
+      case 3:
+        time = 'Over an hour';
+        break;
+    }
+  }
+
+  Future<Widget> getImage(BuildContext context) async {
     if (image == "") {
       return null;
     }
-    image = "uploads/" + image;
     Image m;
-    await FireStorageService.loadFromStorage(context, image)
+    await FireStorageService.loadFromStorage(context, "uploads/" + image)
         .then((downloadUrl) {
-      print("downloadUrl:" + downloadUrl.toString());
       m = Image.network(
         downloadUrl.toString(),
         fit: BoxFit.scaleDown,
@@ -68,93 +84,110 @@ class GroupRecipeHeadLine extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => WatchRecipeGroup(recipe, groupId)));
         },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                CircleAvatar(
-                  child: FutureBuilder(
-                      future: _getImage(context, image),
-                      // ignore: missing_return
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done)
-                          return Container(
-                            // height: MediaQuery.of(context).size.height / 1.25,
-                            // width: MediaQuery.of(context).size.width / 1.25,
-                            child: snapshot.data,
-                          );
+        child: recipeRow(context),
+      ),
+    );
+  }
 
-                        if (snapshot.connectionState == ConnectionState.waiting)
-                          return Container(
-                              height: MediaQuery.of(context).size.height / 1.25,
-                              width: MediaQuery.of(context).size.width / 1.25,
-                              child: CircularProgressIndicator());
-                      }),
-                  radius: 35.0,
-                ),
-                SizedBox(width: 10.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      recipe.name,
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 5.0),
-                    Container(
-                      // width: MediaQuery.of(context).size.width * 0.45,
-                      child: Text(
-                        recipe.description,
-                        style: TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+  Widget recipeRow(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            recipeImage(context),
+            widthBox(10),
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  recipe.writer,
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 10.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 5.0),
-                Container(
-                  width: 80.0,
-                  height: 20.0,
-                  decoration: BoxDecoration(
-                    color: circleColor,
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  // hard();
-                  alignment: Alignment.center,
-                  child: Text(
-                    level,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                )
+                recipeName(),
+                heightBox(5),
               ],
             ),
           ],
         ),
+        Column(
+          children: <Widget>[
+            recipeWriter(),
+            heightBox(5),
+            recipeLevel(),
+            heightBox(5),
+            recipeTime()
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget recipeImage(BuildContext context) {
+    return CircleAvatar(
+      child: FutureBuilder(
+          future: getImage(context),
+          // ignore: missing_return
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done)
+              return Container(
+                child: snapshot.data,
+              );
+            if (snapshot.connectionState == ConnectionState.waiting)
+              return Container(
+                  height: MediaQuery.of(context).size.height / 1.25,
+                  width: MediaQuery.of(context).size.width / 1.25,
+                  child: CircularProgressIndicator());
+          }),
+      radius: 35.0,
+    );
+  }
+
+  Widget recipeName() {
+    return Text(
+      recipe.name,
+      style: TextStyle(
+          color: Colors.black,
+          fontSize: 15.0,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Raleway'),
+    );
+  }
+
+  Widget recipeWriter() {
+    return Text(
+      recipe.writer,
+      style: TextStyle(
+          color: Colors.grey,
+          fontSize: 10.0,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Raleway'),
+    );
+  }
+
+  Widget recipeLevel() {
+    return Container(
+      width: 80.0,
+      height: 20.0,
+      decoration: BoxDecoration(
+        color: circleColor,
+        borderRadius: BorderRadius.circular(30.0),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        level,
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 12.0,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget recipeTime() {
+    return Text(
+      time,
+      style: TextStyle(
+        color: Colors.grey,
+        fontSize: 10.0,
+        fontWeight: FontWeight.bold,
       ),
     );
   }

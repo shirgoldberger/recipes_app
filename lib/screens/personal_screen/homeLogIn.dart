@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:recipes_app/screens/groups/GroupList.dart';
 import 'settingForm.dart';
-import '../groups/GroupList.dart';
 import '../groups/newGroup.dart';
 import '../../services/auth.dart';
 import '../../services/fireStorageService.dart';
@@ -94,7 +94,6 @@ class _HomeLogInState extends State<HomeLogIn> {
       width: MediaQuery.of(context).size.width * 0.5,
       child: Drawer(
         child: ListView(
-          padding: EdgeInsets.zero,
           children: <Widget>[
             profileDetails(),
             Column(children: [settingsIcon(), logOutIcon()]),
@@ -141,9 +140,12 @@ class _HomeLogInState extends State<HomeLogIn> {
         ),
         onPressed: () async {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SettingForm(widget.uid, image)));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SettingForm(widget.uid, image)))
+              .then((value) => setState(() {
+                    imagePath = value;
+                  }));
         });
   }
 

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 
+import '../../config.dart';
+
 class Filter extends StatefulWidget {
-  Filter(List<Recipe> _list, List<Recipe> _listForWatch, List<int> _levelList) {
+  Filter(List<Recipe> _list, List<Recipe> _listForWatch, List<int> _levelList,
+      List<String> myTags) {
     this.list = _list;
     this.listForWatch = _listForWatch;
     this.levelList = _levelList;
+    this.myTags = myTags;
   }
 
   String easyButtom = 'easy';
@@ -16,7 +20,33 @@ class Filter extends StatefulWidget {
   Color hardButtomColor = Colors.blue[50];
   List<int> levelList = [];
   List<Recipe> list = [];
+  List<String> myTags = [];
   List<Recipe> listForWatch = [];
+  List tagList = [
+    'choose recipe tag',
+    'fish',
+    'meat',
+    'dairy',
+    'desert',
+    'for children',
+    'other',
+    //
+    'vegetarian',
+    'Gluten free',
+    'without sugar',
+    'vegan',
+    'Without milk',
+    'No eggs',
+    'kosher',
+    'baking',
+    'cakes and cookies',
+    'Food toppings',
+    'Salads',
+    'Soups',
+    'Pasta',
+    'No carbs',
+    'Spreads',
+  ];
 
   @override
   _FilterState createState() => _FilterState();
@@ -25,6 +55,9 @@ class Filter extends StatefulWidget {
 class _FilterState extends State<Filter> {
   @override
   Widget build(BuildContext context) {
+    for (int i = 0; i < widget.myTags.length; i++) {
+      widget.tagList.remove(widget.myTags[i]);
+    }
     if (widget.levelList.contains(1)) {
       setState(() {
         widget.easyButtom = '-easy';
@@ -43,6 +76,7 @@ class _FilterState extends State<Filter> {
         widget.hardButtomColor = Colors.blue[400];
       });
     }
+    String selectedSubject;
     return Container(
         child: Column(
       children: [
@@ -51,6 +85,45 @@ class _FilterState extends State<Filter> {
           style: TextStyle(
               fontFamily: 'Raleway', color: Colors.black, fontSize: 25),
         ),
+        new Center(
+            child: new Container(
+                width: 400,
+                decoration: new BoxDecoration(
+                  color: Colors.blueGrey[100],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    DropdownButton<String>(
+                      dropdownColor: appBarBackgroundColor,
+                      value: selectedSubject,
+                      onChanged: (value) {
+                        setState(() {
+                          tagList.remove(value);
+                          widget.myTags.add(value);
+                          // addtag(value);
+                        });
+                      },
+                      items: tagList.map<DropdownMenuItem<String>>((value) {
+                        return DropdownMenuItem(
+                            value: value, child: Text(value));
+                      }).toList(),
+                    ),
+                    //Flexible(
+                    //flex: (widget.myTags.length % 3) * 10,
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.13,
+                      child: GridView.count(
+                          shrinkWrap: true,
+                          crossAxisCount: 3,
+                          childAspectRatio: (30 / 10),
+                          children:
+                              List.generate(widget.myTags.length, (index) {
+                            return Flexible(child: tags(index));
+                          })),
+                    ),
+                  ],
+                ))),
         new Padding(padding: EdgeInsets.only(top: 25.0)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -70,6 +143,33 @@ class _FilterState extends State<Filter> {
     ));
   }
 
+  Widget tags(int index) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Row(
+        children: [
+          Flexible(
+            child: Text(
+              widget.myTags[index],
+              style: TextStyle(
+                  fontFamily: 'Raleway', color: Colors.black, fontSize: 13),
+            ),
+          ),
+          Expanded(
+            child: FlatButton(
+              child: Icon(Icons.cancel, size: 20),
+              onPressed: () {
+                setState(() {
+                  widget.myTags.remove(widget.myTags[index]);
+                });
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget save() {
     // ignore: deprecated_member_use
     return FlatButton.icon(
@@ -84,8 +184,11 @@ class _FilterState extends State<Filter> {
               fontFamily: 'Raleway', color: Colors.black, fontSize: 30),
         ),
         onPressed: () {
-          Navigator.pop(
-              context, {'a': widget.listForWatch, 'b': widget.levelList});
+          Navigator.pop(context, {
+            'a': widget.listForWatch,
+            'b': widget.levelList,
+            'c': widget.myTags
+          });
         });
   }
 

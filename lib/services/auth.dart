@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/services/database.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   // create user object based firebaseUser
   User _userFromFirebaseUser(FirebaseUser user) {
@@ -64,6 +67,22 @@ class AuthService {
     } catch (e) {
       print("erorr: " + e.toString());
       return e.toString();
+    }
+  }
+
+  Future _handleSignIn() async {
+    GoogleSignInAccount googleUser = await googleSignIn.signIn();
+    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    try {
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      AuthResult result = await _auth.signInWithCredential(credential);
+      final FirebaseUser user = result.user;
+      return _userFromFirebaseUser(user);
+    } catch (e) {
+      print("errorrrrrr");
     }
   }
 }

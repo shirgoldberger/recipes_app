@@ -51,86 +51,90 @@ class _AddRecipeNotesState extends State<AddRecipeNotes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ListView(children: [
-      box, box,
-      title(), box, box,
-      //notes
-      notes.length <= 0
-          ? Text(
-              'There is no notes in this recipe yet',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
-            )
-          : Container(
-              height: min(50 * notes.length.toDouble(), 300),
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  addAutomaticKeepAlives: true,
-                  itemCount: notes.length,
-                  itemBuilder: (_, i) => Row(children: <Widget>[
-                        SizedBox(
-                          width: 20,
-                        ),
-                        noteIndex(i),
-                        Expanded(
-                            child: SizedBox(
-                                height: 37.0,
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                    hintText: 'add note...',
-                                  ),
-                                  validator: (val) => val.length < 2
-                                      ? 'Enter a description eith 2 letter at least'
-                                      : null,
-                                  onChanged: (val) {
-                                    setState(() => notes[i] = val);
-                                  },
-                                ))),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        deleteButton(i)
-                      ]))),
+      body: ListView(children: [
+        box, box,
+        title(), box, box,
+        //notes
+        notes.length <= 0
+            ? Text(
+                'There is no notes in this recipe yet',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              )
+            : Container(
+                height: min(50 * notes.length.toDouble(), 300),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    addAutomaticKeepAlives: true,
+                    itemCount: notes.length,
+                    itemBuilder: (_, i) => Row(children: <Widget>[
+                          SizedBox(
+                            width: 20,
+                          ),
+                          noteIndex(i),
+                          Expanded(
+                              child: SizedBox(
+                                  height: 37.0,
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                      hintText: 'add note...',
+                                    ),
+                                    validator: (val) => val.length < 2
+                                        ? 'Enter a description eith 2 letter at least'
+                                        : null,
+                                    onChanged: (val) {
+                                      setState(() => notes[i] = val);
+                                    },
+                                  ))),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          deleteButton(i)
+                        ]))),
 
-      box,
-      addButton(),
-      SizedBox(
-        height: (min(50 * notes.length.toDouble(), 300) ==
-                50 * notes.length.toDouble())
-            ? 300 - 50 * notes.length.toDouble()
-            : 0,
-      ),
-      Row(
-        children: [
-          SizedBox(
-            width: 20,
-          ),
-          previousLevelButton(),
-          SizedBox(
-            width: 10,
-          ),
-          LinearPercentIndicator(
-            width: 250,
-            animation: true,
-            lineHeight: 18.0,
-            animationDuration: 1000,
-            percent: 0.75,
-            center: Text(
-              "75%",
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        box,
+        addButton(),
+        SizedBox(
+          height: (min(50 * notes.length.toDouble(), 300) ==
+                  50 * notes.length.toDouble())
+              ? 300 - 50 * notes.length.toDouble()
+              : 0,
+        ),
+        Row(
+          children: [
+            SizedBox(
+              width: 20,
             ),
-            linearStrokeCap: LinearStrokeCap.roundAll,
-            progressColor: Colors.grey[600],
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          nextLevelButton()
-        ],
-      )
-    ]));
+            previousLevelButton(),
+            SizedBox(
+              width: 10,
+            ),
+            LinearPercentIndicator(
+              width: 250,
+              animation: true,
+              lineHeight: 18.0,
+              animationDuration: 1000,
+              percent: 0.75,
+              center: Text(
+                "75%",
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              linearStrokeCap: LinearStrokeCap.roundAll,
+              progressColor: Colors.grey[600],
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            nextLevelButton()
+          ],
+        )
+      ]),
+      resizeToAvoidBottomInset: false,
+    );
   }
 
   void addNotes() {

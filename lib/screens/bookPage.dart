@@ -29,29 +29,29 @@ class RecipesBookPage extends StatelessWidget {
               title(),
               box,
               // ignore: deprecated_member_use
-              FlatButton.icon(
-                minWidth: 110,
-                color: Colors.blueGrey[400],
-                icon: Icon(Icons.person_pin, color: Colors.white),
-                label: Text('Log In', style: TextStyle(color: Colors.white)),
-                onPressed: () async {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Personal()));
-                },
-              ),
-              box,
-              // ignore: deprecated_member_use
-              FlatButton.icon(
-                minWidth: 110,
-                color: Colors.blueGrey[400],
-                icon:
-                    Icon(Icons.person_add_alt_1_outlined, color: Colors.white),
-                label: Text('Sign Up', style: TextStyle(color: Colors.white)),
-                onPressed: () async {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Register()));
-                },
-              ),
+              // FlatButton.icon(
+              //   minWidth: 110,
+              //   color: Colors.blueGrey[400],
+              //   icon: Icon(Icons.person_pin, color: Colors.white),
+              //   label: Text('Log In', style: TextStyle(color: Colors.white)),
+              //   onPressed: () async {
+              //     Navigator.push(context,
+              //         MaterialPageRoute(builder: (context) => Personal()));
+              //   },
+              // ),
+              // box,
+              // // ignore: deprecated_member_use
+              // FlatButton.icon(
+              //   minWidth: 110,
+              //   color: Colors.blueGrey[400],
+              //   icon:
+              //       Icon(Icons.person_add_alt_1_outlined, color: Colors.white),
+              //   label: Text('Sign Up', style: TextStyle(color: Colors.white)),
+              //   onPressed: () async {
+              //     Navigator.push(context,
+              //         MaterialPageRoute(builder: (context) => Register()));
+              //   },
+              // ),
             ],
           ));
     } else {

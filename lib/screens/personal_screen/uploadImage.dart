@@ -83,13 +83,8 @@ class _UploadingImageToFirebaseStorageState
                 ),
                 Row(
                   children: [
-                    if (_imageFile != null)
-                      uploadImageButton(context)
-                    else
-                      SizedBox(
-                        width: 110,
-                      ),
-                    cancleButton(context)
+                    cancleButton(context),
+                    if (_imageFile != null) uploadImageButton(context)
                   ],
                 )
               ],

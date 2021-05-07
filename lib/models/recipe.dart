@@ -1,4 +1,5 @@
 import 'package:recipes_app/models/ingredient.dart';
+import 'package:recipes_app/models/stage.dart';
 
 class Recipe {
   String id;
@@ -13,6 +14,7 @@ class Recipe {
   int level;
   int time;
   String imagePath;
+  List<Stages> stages;
 
   //אם המתכון שמור בתיקית ביוזר או אם המתכון שמור בתיקית המתכונים.
   bool saveInUser;

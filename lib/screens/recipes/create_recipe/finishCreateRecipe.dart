@@ -6,6 +6,7 @@ import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/models/user.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import '../../../config.dart';
 
 // ignore: must_be_immutable
@@ -64,12 +65,14 @@ class _FinishCreateRecipeState extends State<FinishCreateRecipe> {
           SizedBox(
             width: 100,
           ),
-          yesButton(),
+          noButton(),
           SizedBox(
             width: 20,
           ),
-          noButton()
-        ])
+          yesButton(),
+        ]),
+        heightBox(350),
+        previousLevelButton()
       ]),
     );
   }
@@ -117,10 +120,19 @@ class _FinishCreateRecipeState extends State<FinishCreateRecipe> {
         });
   }
 
-  void saveThisRecipe() async {
-    final db = Firestore.instance;
-    final user = Provider.of<User>(context);
+  Widget previousLevelButton() {
+    return FloatingActionButton(
+      heroTag: null,
+      backgroundColor: Colors.black,
+      onPressed: () {
+        Navigator.pop(context);
+      },
+      tooltip: 'previous',
+      child: Icon(Icons.navigate_before),
+    );
+  }
 
+  void saveThisRecipe() async {
     Recipe recipe = Recipe(
         widget.name,
         widget.description,
@@ -134,40 +146,9 @@ class _FinishCreateRecipeState extends State<FinishCreateRecipe> {
         '',
         '',
         widget.imagePath);
-    var currentRecipe = await db
-        .collection('users')
-        .document(user.uid)
-        .collection('recipes')
-        .add(recipe.toJson());
-    //set the new id to data base
-
-    String id = currentRecipe.documentID.toString();
-    recipe.setId(id);
-    await db
-        .collection('users')
-        .document(user.uid)
-        .collection('recipes')
-        .document(id)
-        .updateData({'recipeID': id});
-
-    for (int i = 0; i < widget.ingredients.length; i++) {
-      await db
-          .collection('users')
-          .document(user.uid)
-          .collection('recipes')
-          .document(id)
-          .collection('ingredients')
-          .add(widget.ingredients[i].toJson());
-    }
-    for (int i = 0; i < widget.stages.length; i++) {
-      await db
-          .collection('users')
-          .document(user.uid)
-          .collection('recipes')
-          .document(id)
-          .collection('stages')
-          .add(widget.stages[i].toJson(i));
-    }
+    recipe.ingredients = widget.ingredients;
+    recipe.stages = widget.stages;
+    RecipeFromDB.insertNewRecipe(recipe);
   }
 
   Future<void> _showAlertDialog(String message) async {
@@ -186,17 +167,17 @@ class _FinishCreateRecipeState extends State<FinishCreateRecipe> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Ok'),
-              onPressed: () {
-                cancel = true;
-                Navigator.pop(context);
-              },
-            ),
-            TextButton(
               child: Text('Back'),
               onPressed: () {
                 cancel = false;
                 Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {
+                cancel = true;
+                Navigator.pop(context);
               },
             ),
           ],

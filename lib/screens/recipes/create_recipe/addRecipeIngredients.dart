@@ -13,6 +13,7 @@ class AddRecipeIngredients extends StatefulWidget {
   String name;
   String description;
   String imagePath;
+  List<String> errorIng = [];
   AddRecipeIngredients(String _username, String _uid, String _name,
       String _description, String _imagePath) {
     username = _username;
@@ -78,14 +79,18 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
 
   Widget ingredientsContainer() {
     return Container(
-      height: min(50 * ingredients.length.toDouble(), 300),
-      child: ListView.builder(
+        height: min(50 * ingredients.length.toDouble(), 300),
+        child: ListView.builder(
           shrinkWrap: true,
           itemCount: ingredients.length,
           itemBuilder: (_, i) => Column(children: [
-                ingredientRow(i),
-              ])),
-    );
+            ingredientRow(i),
+            Text(widget.errorIng[i],
+                style: TextStyle(
+                  color: Colors.red,
+                ))
+          ]),
+        ));
   }
 
   Widget ingredientRow(int i) {
@@ -123,7 +128,21 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
       validator: (val) =>
           val.length < 6 ? 'Enter a description eith 6 letter at least' : null,
       onChanged: (val) {
-        setState(() => ingredients[i].count = int.parse(val));
+        print(val);
+        if (val.toString() == '0') {
+          setState(() {
+            widget.errorIng[i] = 'The amount should be greater than 0';
+          });
+        } else if ((double.tryParse(val) == null) && (val != null)) {
+          setState(() {
+            widget.errorIng[i] = 'The amount should be a number';
+          });
+        } else {
+          setState(() {
+            widget.errorIng[i] = '';
+          });
+          setState(() => ingredients[i].count = int.parse(val));
+        }
       },
     );
   }
@@ -178,12 +197,15 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
     setState(() {
       ingredients.removeAt(i);
       error = "";
+      widget.errorIng.removeAt(i);
     });
   }
 
   void addIng() {
     setState(() {
+      widget.errorIng.add('');
       ingredients.add(IngredientsModel());
+      ingredients.last.setIndex(ingredients.length);
     });
   }
 

@@ -1,23 +1,19 @@
 import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../config.dart';
 
 // ignore: must_be_immutable
 class AddParticipent extends StatefulWidget {
-  AddParticipent(List _userId, String groupId, String _groupName) {
-    this.userId = _userId.toList();
-    this.groupId = groupId;
-    this.groupName = _groupName;
-
-    // this.userName = _userName;
-  }
-  //List userName;
   List userId = [];
   String groupId;
   bool done = false;
   String groupName;
+  AddParticipent(List _userId, String groupId, String _groupName) {
+    this.userId = _userId.toList();
+    this.groupId = groupId;
+    this.groupName = _groupName;
+  }
 
   @override
   _AddParticipentState createState() => _AddParticipentState();
@@ -25,98 +21,67 @@ class AddParticipent extends StatefulWidget {
 
 class _AddParticipentState extends State<AddParticipent> {
   List usersID = [];
-//  List<String> userEmail = [];
-  //String groupName;
   String error = '';
   bool findUser = false;
   String emailTocheck = '';
-  // bool done = false;
+
   @override
   Widget build(BuildContext context) {
-    usersID = widget.userId;
-    //groupName = widget.groupName;
-    // userEmail = widget.userName;
-    //if (widget.doneLoad) {
     return Container(
         padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
         child: Column(children: <Widget>[
           Flexible(
               child: ListView(children: [
-            SizedBox(
-              height: 10.0,
-            ),
-            Text("add new member or change the group name:"),
-            SizedBox(
-              height: 10.0,
-            ),
-            // TextFormField(
-            //   decoration: InputDecoration(
-            //     hintText: widget.groupName,
-            //   ),
-            //   validator: (val) => val.isEmpty ? widget.groupName : null,
-            //   onChanged: (val) {
-            //     setState(() {
-            //       widget.groupName = val;
-            //       widget.done = true;
-            //     });
-            //   },
-            // ),
-            TextFormField(
-              decoration: InputDecoration(
-                hintText: 'add new mamber Email',
-              ),
-              validator: (val) => val.isEmpty ? '' : null,
-              onChanged: (val) {
-                setState(() => emailTocheck = val);
-              },
-            ),
-            Text(
-              error,
-              style: TextStyle(color: Colors.red),
-            ),
-            SizedBox(
-              height: 20.0,
-            ),
-            MaterialButton(
-                minWidth: 200.0,
-                height: 35,
-                color: appBarBackgroundColor,
-                child: new Text('add user and save',
-                    style: new TextStyle(fontSize: 16.0, color: Colors.white)),
-                onPressed: () {
-                  saveUser(emailTocheck);
-                }),
+            heightBox(10),
+            title(),
+            heightBox(10),
+            emailBox(),
+            errorText(),
+            box,
+            addButton(),
           ]))
         ]));
   }
 
+  Widget title() {
+    return Text("Add new member to your group:");
+  }
+
+  Widget emailBox() {
+    return TextFormField(
+      decoration: InputDecoration(
+        hintText: 'Add new member Email',
+      ),
+      validator: (val) => val.isEmpty ? '' : null,
+      onChanged: (val) {
+        setState(() => emailTocheck = val);
+      },
+    );
+  }
+
+  Widget errorText() {
+    return Text(
+      error,
+      style: TextStyle(color: errorColor),
+    );
+  }
+
+  Widget addButton() {
+    return MaterialButton(
+        minWidth: 200.0,
+        height: 35,
+        color: appBarBackgroundColor,
+        child: Text('Add user & save',
+            style: TextStyle(fontSize: 16.0, color: Colors.white)),
+        onPressed: () {
+          saveUser(emailTocheck);
+        });
+  }
+
+  // database function //
   Future<void> saveUser(String email) async {
     final db = Firestore.instance;
-    // if (widget.done) {
-    //   // db
-    //   //     .collection('Group')
-    //   //     .document(widget.groupId)
-    //   //     .updateData({'groupName': widget.groupName});
-    //   for (int i = 0; i < widget.userId.length; i++) {
-    //     QuerySnapshot a = await Firestore.instance
-    //         .collection('users')
-    //         .document(widget.userId[i])
-    //         .collection('groups')
-    //         .getDocuments();
-    //     a.documents.forEach((element) {
-    //       if (element.data['groupId'] == widget.groupId) {
-    //         db
-    //             .collection('users')
-    //             .document(widget.userId[i])
-    //             .collection('groups')
-    //             .document(element.documentID)
-    //             .updateData({'groupName': widget.groupName});
-    //       }
-    //     });
-    //   }
-    // }
     String mailCheck;
-
     QuerySnapshot snap =
         await Firestore.instance.collection('users').getDocuments();
     snap.documents.forEach((element) async {

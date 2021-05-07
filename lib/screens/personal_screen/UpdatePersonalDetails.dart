@@ -10,19 +10,19 @@ import '../../config.dart';
 import 'uploadImage.dart';
 
 // ignore: must_be_immutable
-class SettingForm extends StatefulWidget {
+class UpdatePersonalDetails extends StatefulWidget {
   String uid;
   String imagePath = "";
   NetworkImage m;
-  SettingForm(String _uid, NetworkImage _m) {
+  UpdatePersonalDetails(String _uid, NetworkImage _m) {
     uid = _uid;
     m = _m;
   }
   @override
-  _SettingFormState createState() => _SettingFormState();
+  _UpdatePersonalDetailsState createState() => _UpdatePersonalDetailsState();
 }
 
-class _SettingFormState extends State<SettingForm> {
+class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
   final _formKey = GlobalKey<FormState>();
   String _currentFirstName;
   String _currentLastName;

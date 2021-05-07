@@ -60,22 +60,19 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
     return Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
-            backgroundColor: appBarBackgroundColor,
-            elevation: 0.0,
-            title: Text(
-              'Watch Recipe',
-              style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
-            ),
-            actions: <Widget>[
-              // like icon
-              likeIcon(),
-              // show likes button
-              showLikesIcon(),
-              // delete button
-              deleteFromSaveIcon(),
-              // add note icon
-              addNoteIcon(),
-            ]),
+          backgroundColor: appBarBackgroundColor,
+          elevation: 0.0,
+          title: Text(
+            'Watch Recipe',
+            style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+          ),
+        ),
+        drawer: ListView(children: [
+          Container(
+              child: Column(
+            children: [box, box, box, deleteFromSaveIcon(), addNoteIcon()],
+          ))
+        ]),
         body: WatchRecipeBody(widget.currentRecipe, widget.ingredients,
             widget.stages, widget.levelColor, widget.levelString, widget.uid));
   }

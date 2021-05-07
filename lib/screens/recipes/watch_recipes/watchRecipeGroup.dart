@@ -16,9 +16,6 @@ class WatchRecipeGroup extends StatefulWidget {
   WatchRecipeGroup(Recipe r, String _groupId) {
     this.current = r;
     this.groupId = _groupId;
-    // print("watch recipe");
-    // print(current.publish);
-    // print(r.publish);
   }
 
   String groupId;
@@ -61,21 +58,6 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
       widget.iconPublish = Icons.public_off;
       widget.publishString = "un publish";
     }
-    print(widget.uid);
-    // if (widget.uid != null) {
-    //   print("user:   " + widget.uid);
-    //   Firestore.instance
-    //       .collection("users")
-    //       .document(widget.uid)
-    //       .get()
-    //       .then((doc) {
-    //     if (doc.data['recipeID'] == widget.current.id) {
-    //       print("save");
-    //     } else {
-    //       print("unsave");
-    //     }
-    //   });
-    // }
   }
 
   void getuser() async {
@@ -84,10 +66,8 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
     setState(() {
       widget.uid = user.uid;
       print(widget.uid);
-      //print("user uid");
     });
     if (widget.uid != null) {
-      // print("user:   " + widget.uid);
       QuerySnapshot snap = await Firestore.instance
           .collection("users")
           .document(widget.uid)
@@ -97,18 +77,8 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
         if (element.data['recipeID'] == widget.current.id) {
           widget.iconSave = Icons.favorite;
           widget.saveString = 'unsave';
-          print("unsave");
         }
       });
-      print(widget.saveString);
-
-      //     .then((doc) {
-      //   if (doc.data['recipeID'] == widget.current.id) {
-      //     print("save");
-      //   } else {
-      //     print("unsave");
-      //   }
-      // });
     }
   }
 
@@ -150,23 +120,7 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
                   ),
                   onPressed: () {
                     deleteFromGroupRecipe();
-                    //go back
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => HomeLogIn()));
                   }),
-              // FlatButton.icon(
-              //     icon: Icon(
-              //       Icons.note_add,
-              //       color: Colors.white,
-              //     ),
-              //     label: Text(
-              //       'add note',
-              //       style:
-              //           TextStyle(fontFamily: 'Raleway', color: Colors.white),
-              //     ),
-              //     onPressed: () {}),
             ]),
         body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
             widget.levelColor, widget.levelString, widget.uid));
@@ -175,11 +129,7 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
   Future<void> makeList() async {
     if (!widget.done) {
       if (widget.current.saveInUser) {
-        //final user = Provider.of<User>(context);
         String uid = widget.current.writerUid;
-        // print('save in user');
-        //print(uid);
-        //print(widget.current.id.toString());
         QuerySnapshot snap = await Firestore.instance
             .collection('users')
             .document(uid)
@@ -192,7 +142,8 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
             widget.ing.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
                 element.data['count'] ?? 0,
-                element.data['unit'] ?? ''));
+                element.data['unit'] ?? '',
+                element.data['index'] ?? 0));
           });
         });
         QuerySnapshot snap2 = await Firestore.instance
@@ -203,7 +154,6 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
             .collection('stages')
             .getDocuments();
         snap2.documents.forEach((element1) {
-          // print(element1.data.toString());
           setState(() {
             widget.stages.add(Stages.antheeConstractor(
                 element1.data['stage'] ?? '', element1.data['number'] ?? ''));
@@ -220,7 +170,8 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
             widget.ing.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
                 element.data['count'] ?? 0,
-                element.data['unit'] ?? ''));
+                element.data['unit'] ?? '',
+                element.data['index'] ?? 0));
           });
         });
         QuerySnapshot snap2 = await Firestore.instance
@@ -229,14 +180,12 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
             .collection('stages')
             .getDocuments();
         snap2.documents.forEach((element1) {
-          //print(element1.data.toString());
           setState(() {
             widget.stages.add(Stages.antheeConstractor(
                 element1.data['stage'] ?? '', element1.data['number'] ?? ''));
           });
         });
       }
-
       setState(() {
         widget.done = true;
       });

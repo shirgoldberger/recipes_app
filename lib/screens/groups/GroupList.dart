@@ -6,71 +6,55 @@ import 'package:recipes_app/config.dart';
 
 // ignore: must_be_immutable
 class GroupList extends StatefulWidget {
-  GroupList(String _uid) {
-    this.uid = _uid;
-  }
   String uid;
   List<String> groupName = [];
   List<String> groupId = [];
   bool doneLoad = false;
+
+  GroupList(String _uid) {
+    this.uid = _uid;
+  }
 
   @override
   _GroupListState createState() => _GroupListState();
 }
 
 class _GroupListState extends State<GroupList> {
-  Future<void> getGroups() async {
-    // print(getGroups());
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(widget.uid)
-        .collection('groups')
-        .getDocuments();
-    snap.documents.forEach((element) async {
-      setState(() {
-        // print(element.data);
-        widget.groupId.add(element.data['groupId']);
-        widget.groupName.add(element.data['groupName']);
-      });
-    });
-    setState(() {
-      widget.doneLoad = true;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    //getGroups();
     if (!widget.doneLoad) {
       getGroups();
       return Loading();
     } else {
-      // print("group name");
-      //print(widget.groupName);
-      // return Text("A");
       return Scaffold(
           backgroundColor: backgroundColor,
-          appBar: AppBar(
-            title: Text(
-              'your recipe groups',
-              style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
-            ),
-            backgroundColor: appBarBackgroundColor,
-            elevation: 0.0,
-            actions: <Widget>[],
-          ),
+          appBar: appBar(),
           body: Column(children: <Widget>[
             Expanded(
                 child: Padding(
               padding: EdgeInsets.all(8),
-              child: ListView.builder(
-                  itemCount: widget.groupId.length,
-                  itemBuilder: (context, index) {
-                    return groupTitle(index);
-                  }),
+              child: groupsList(),
             ))
           ]));
     }
+  }
+
+  Widget appBar() {
+    return AppBar(
+      title: Text(
+        'Your Groups',
+        style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+      ),
+      backgroundColor: appBarBackgroundColor,
+    );
+  }
+
+  Widget groupsList() {
+    return ListView.builder(
+        itemCount: widget.groupId.length,
+        itemBuilder: (context, index) {
+          return groupTitle(index);
+        });
   }
 
   Widget groupTitle(int index) {
@@ -89,11 +73,33 @@ class _GroupListState extends State<GroupList> {
                       widget.groupName[index], widget.uid)));
         },
         padding: EdgeInsets.all(20.0),
-        color: Colors.blueGrey[300],
+        color: subButtonColor,
         textColor: Colors.white,
-        child: Text(widget.groupName[index],
-            style: TextStyle(fontSize: 25, fontFamily: 'frik')),
+        child: groupName(index),
       ),
     );
+  }
+
+  Widget groupName(int index) {
+    return Text(widget.groupName[index],
+        style: TextStyle(fontSize: 25, fontFamily: 'Raleway'));
+  }
+
+  // database function //
+  Future<void> getGroups() async {
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .collection('groups')
+        .getDocuments();
+    snap.documents.forEach((element) async {
+      setState(() {
+        widget.groupId.add(element.data['groupId']);
+        widget.groupName.add(element.data['groupName']);
+      });
+    });
+    setState(() {
+      widget.doneLoad = true;
+    });
   }
 }

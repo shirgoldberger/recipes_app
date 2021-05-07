@@ -15,6 +15,7 @@ Color appBarBackgroundColor = Colors.blueGrey[700];
 Color titleColor = Colors.blueGrey[800];
 Color borderColor = Colors.blueGrey;
 Color mainButtonColor = Colors.blueGrey[500];
+Color subButtonColor = Colors.blueGrey[300];
 Color errorColor = Colors.red;
 
 // collections names
@@ -22,6 +23,8 @@ String usersCollectionName = 'users';
 String publishCollectionName = 'publish recipe';
 
 // widgets
+Padding padding = new Padding(padding: EdgeInsets.only(top: 15.0));
+
 Widget box = SizedBox(
   height: 20.0,
 );
