@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/screens/groups/GroupList.dart';
+import 'package:recipes_app/services/userFromDB.dart';
 import 'settingForm.dart';
 import '../groups/newGroup.dart';
 import '../../services/auth.dart';
@@ -34,12 +35,13 @@ class _HomeLogInState extends State<HomeLogIn> {
   }
 
   void getUserData() async {
-    DocumentSnapshot a =
-        await Firestore.instance.collection('users').document(widget.uid).get();
+    String firstName = await UserFromDB.getUserFirstName(widget.uid);
+    String email = await UserFromDB.getUserEmail(widget.uid);
+    String path = await UserFromDB.getUserImage(widget.uid);
     setState(() {
-      name = a.data["firstName"];
-      mail = a.data["Email"];
-      imagePath = a.data['imagePath'];
+      name = firstName;
+      mail = email;
+      imagePath = path;
     });
   }
 

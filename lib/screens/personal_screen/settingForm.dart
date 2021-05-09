@@ -4,6 +4,7 @@ import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../config.dart';
@@ -14,10 +15,12 @@ class SettingForm extends StatefulWidget {
   String uid;
   String imagePath = "";
   NetworkImage m;
+
   SettingForm(String _uid, NetworkImage _m) {
     uid = _uid;
     m = _m;
   }
+
   @override
   _SettingFormState createState() => _SettingFormState();
 }
@@ -75,35 +78,15 @@ class _SettingFormState extends State<SettingForm> {
         });
   }
 
-  void changeNameInRecipes(UserData ud) async {
-    String writerName = "";
-    // get the new name if it exist
-    if (_currentFirstName != null) {
-      writerName = _currentFirstName + " ";
-    } else {
-      writerName = ud.firstName + " ";
-    }
-    if (_currentLastName != null) {
-      writerName += _currentLastName;
-    } else {
-      writerName += ud.lastName;
-    }
-    // get all user's recipes
-    var recipes = await Firestore.instance
-        .collection(usersCollectionName)
-        .document(ud.uid)
-        .collection('recipes')
-        .getDocuments();
-    // change the writer name in all the recipes
-    recipes.documents.forEach((element) async {
-      var recipeId = element.documentID.toString();
-      await Firestore.instance
-          .collection(usersCollectionName)
-          .document(ud.uid)
-          .collection('recipes')
-          .document(recipeId)
-          .updateData({'writer': writerName});
-    });
+  Widget appBar() {
+    return AppBar(
+      title: Text(
+        'Cook Book',
+        style: TextStyle(fontFamily: logoFont),
+      ),
+      backgroundColor: appBarBackgroundColor,
+      elevation: 0.0,
+    );
   }
 
   Widget imageBox() {
@@ -156,7 +139,6 @@ class _SettingFormState extends State<SettingForm> {
     return TextFormField(
       initialValue: lastName,
       decoration: InputDecoration(labelText: 'Last name'),
-      validator: (val) => val.isEmpty ? 'Please enter a last name' : null,
       onChanged: (val) => setState(() => _currentLastName = val),
     );
   }
@@ -213,14 +195,19 @@ class _SettingFormState extends State<SettingForm> {
         });
   }
 
-  Widget appBar() {
-    return AppBar(
-      title: Text(
-        'Cook Book',
-        style: TextStyle(fontFamily: logoFont),
-      ),
-      backgroundColor: appBarBackgroundColor,
-      elevation: 0.0,
-    );
+  void changeNameInRecipes(UserData ud) async {
+    String writerName = "";
+    // get the new name if it exist
+    if (_currentFirstName != null) {
+      writerName = _currentFirstName + " ";
+    } else {
+      writerName = ud.firstName + " ";
+    }
+    if (_currentLastName != null) {
+      writerName += _currentLastName;
+    } else {
+      writerName += ud.lastName;
+    }
+    await RecipeFromDB.updateWriterOfRecipes(ud.uid, writerName);
   }
 }

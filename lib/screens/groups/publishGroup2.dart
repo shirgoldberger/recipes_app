@@ -1,23 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
 import '../../config.dart';
 
 // ignore: must_be_immutable
 class PublishGroup2 extends StatefulWidget {
-  PublishGroup2(String _uid, String _recipeId, Recipe _recipe) {
-    this.uid = _uid;
-    this.recipeId = _recipeId;
-    this.recipe = _recipe;
-  }
   String uid;
   String recipeId;
   List<String> groupName = [];
-  List<String> groupName2 = [];
+  // List<String> groupName2 = [];
   List<String> groupId = [];
   List<bool> isCheck = [];
   List<String> publish = [];
@@ -30,31 +23,18 @@ class PublishGroup2 extends StatefulWidget {
   String stringPublish;
   Color colorPublish;
   bool donePublish = true;
+
+  PublishGroup2(String _uid, String _recipeId, Recipe _recipe) {
+    this.uid = _uid;
+    this.recipeId = _recipeId;
+    this.recipe = _recipe;
+  }
+
   @override
   _PublishGroup2State createState() => _PublishGroup2State();
 }
 
 class _PublishGroup2State extends State<PublishGroup2> {
-  // void convertToCheck() {
-  //   widget.groupName2 = widget.groupName;
-  //   print("convert to shack");
-  //   for (int i = 0; i < widget.publish.length; i++) {
-  //     for (int j = 0; j < widget.groupName.length; j++) {
-  //       if (widget.groupName[j] == widget.publish[i]) {
-  //         setState(() {
-  //           widget.isCheck[j] = !widget.isCheck[j];
-  //           widget.colors[j] = Colors.grey;
-  //         });
-  //       }
-  //     }
-  //   }
-  //   print("check list");
-  //   print(widget.isCheck);
-  //   setState(() {
-  //     widget.check = true;
-  //   });
-  // }
-
   Future<void> getGroups() async {
     if (widget.recipe.publish == '') {
       widget.iconPublish = Icons.public;
@@ -67,7 +47,6 @@ class _PublishGroup2State extends State<PublishGroup2> {
       widget.colorPublish = Colors.grey[300];
     }
 
-    // print(getGroups());
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(widget.uid)
@@ -82,26 +61,19 @@ class _PublishGroup2State extends State<PublishGroup2> {
         widget.colors.add(Colors.blueGrey[400]);
       });
 
-      //  print("b");
-      // print(widget.groupName);
-
       QuerySnapshot snap2 = await Firestore.instance
           .collection('Group')
           .document(element.data['groupId'])
           .collection('recipes')
           .getDocuments();
-      //    print(element.data['groupId']);
-      //  print(snap2.documents.length);
+
       if (snap2.documents.length != 0) {
         snap2.documents.forEach((element2) async {
           if (element2.data['recipeId'] == widget.recipeId) {
-            //  print('sucses');
             setState(() {
-              // widget.colors[]
               widget.map.update(element.data['groupName'], (value) => true);
               widget.publish.add(element.data['groupName']);
             });
-            //widget.publish.add(element.data['groupName']);
           }
         });
       }
@@ -217,11 +189,7 @@ class _PublishGroup2State extends State<PublishGroup2> {
             label: Text(
               widget.stringPublish,
               style: TextStyle(
-                  color: Colors.white,
-                  //fontWeight: FontWeight.w900,
-                  // fontStyle: FontStyle.italic,
-                  fontFamily: 'Raleway',
-                  fontSize: 20),
+                  color: Colors.white, fontFamily: 'Raleway', fontSize: 20),
             ),
             onPressed: () {
               if (widget.recipe.publish == '') {
@@ -289,7 +257,6 @@ class _PublishGroup2State extends State<PublishGroup2> {
   }
 
   Future<void> publishRecipe() async {
-    // final user = Provider.of<User>(context);
     final db = Firestore.instance;
     Map<String, dynamic> publishRecipe = {
       'recipeId': widget.recipeId,
@@ -315,7 +282,6 @@ class _PublishGroup2State extends State<PublishGroup2> {
   }
 
   void unPublishRecipe() {
-    // final user = Provider.of<User>(context);
     final db = Firestore.instance;
     db.collection('publish recipe').document(widget.recipe.publish).delete();
     widget.recipe.publishThisRecipe('');

@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:recipes_app/models/recipe.dart';
 
+import '../config.dart';
+
 class RecipeFromDB {
   static final db = Firestore.instance;
 
@@ -103,5 +105,30 @@ class RecipeFromDB {
         .document(recipeId)
         .get();
     return convertSnapshotToRecipe(recipe);
+  }
+
+  static Future<List<String>> getLikesPublishRecipe(String publishId) async {
+    var publishRecipe =
+        await db.collection(publishCollectionName).document(publishId).get();
+    return await publishRecipe.data['likes'] ?? [];
+  }
+
+  static Future<void> updateWriterOfRecipes(String uid, String fullName) async {
+    var recipes = await Firestore.instance
+        .collection(usersCollectionName)
+        .document(uid)
+        .collection('recipes')
+        .getDocuments();
+
+    // change the writer name in all the recipes
+    for (int i = 0; i < recipes.documents.length; i++) {
+      var recipeId = recipes.documents[i].documentID.toString();
+      await Firestore.instance
+          .collection(usersCollectionName)
+          .document(uid)
+          .collection('recipes')
+          .document(recipeId)
+          .updateData({'writer': fullName});
+    }
   }
 }
