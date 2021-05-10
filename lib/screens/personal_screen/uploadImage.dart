@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import '../../config.dart';
@@ -18,7 +19,9 @@ class _UploadingImageToFirebaseStorageState
   final picker = ImagePicker();
 
   Future pickImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    final pickedFile = await picker.getImage(
+      source: ImageSource.camera,
+    );
     setState(() {
       _imageFile = File(pickedFile.path);
     });
@@ -111,9 +114,7 @@ class _UploadingImageToFirebaseStorageState
                 borderRadius: BorderRadius.circular(10.0)),
             // ignore: deprecated_member_use
             child: FlatButton(
-              onPressed: _imageFile != null
-                  ? () => uploadImageToFirebase(context)
-                  : null,
+              onPressed: _imageFile != null ? () => a(context) : null,
               child: Text(
                 "Upload Image",
                 style: TextStyle(fontSize: 20),
@@ -123,6 +124,10 @@ class _UploadingImageToFirebaseStorageState
         ],
       ),
     );
+  }
+
+  void a(BuildContext context) {
+    uploadImageToFirebase(context);
   }
 
   Widget cancleButton(BuildContext context) {

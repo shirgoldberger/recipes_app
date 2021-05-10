@@ -214,6 +214,12 @@ class _SearchPage extends State<SearchPage> {
         .document(uid)
         .collection('groups')
         .getDocuments();
+    if (snap.documents.length == 0) {
+      setState(() {
+        widget.doneLoadCounter++;
+      });
+      return;
+    }
     snap.documents.forEach((element) async {
       String groupId = element.data['groupId'];
       DocumentSnapshot snapGroup =

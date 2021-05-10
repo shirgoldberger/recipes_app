@@ -123,12 +123,30 @@ class RecipeFromDB {
     // change the writer name in all the recipes
     for (int i = 0; i < recipes.documents.length; i++) {
       var recipeId = recipes.documents[i].documentID.toString();
-      await Firestore.instance
+      await db
           .collection(usersCollectionName)
           .document(uid)
           .collection('recipes')
           .document(recipeId)
           .updateData({'writer': fullName});
     }
+  }
+
+  static Future<void> deletePublushRecipesOfUser(String uid) async {
+    QuerySnapshot userRecipes = await db
+        .collection('users')
+        .document(uid)
+        .collection('recipes')
+        .getDocuments();
+    for (int i = 0; i < userRecipes.documents.length; i++) {
+      String publishId = await userRecipes.documents[i].data['publishID'] ?? "";
+      if (publishId != "") {
+        deletePublishRecipe(publishId);
+      }
+    }
+  }
+
+  static deletePublishRecipe(String publishId) async {
+    await db.collection('publish recipe').document(publishId).delete();
   }
 }

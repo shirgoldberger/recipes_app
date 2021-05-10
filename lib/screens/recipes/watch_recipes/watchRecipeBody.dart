@@ -7,6 +7,7 @@ import 'package:recipes_app/screens/personal_screen/likesList.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../../config.dart';
+import '../../userRecipeList.dart';
 
 // ignore: must_be_immutable
 class WatchRecipeBody extends StatefulWidget {
@@ -178,12 +179,22 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     // there is no image yet
     if (widget.imagePath == "") {
       return CircleAvatar(
+          child: TextButton(
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UserRecipeList(widget.uid)))),
           backgroundColor: backgroundColor,
           radius: 40,
           backgroundImage: ExactAssetImage(noImagePath));
     } else {
       if (widget.image != null) {
         return CircleAvatar(
+            child: TextButton(
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => UserRecipeList(widget.uid)))),
             backgroundColor: backgroundColor,
             radius: 30,
             backgroundImage: widget.image);

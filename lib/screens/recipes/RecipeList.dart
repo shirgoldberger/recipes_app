@@ -27,6 +27,7 @@ class RecipeList extends StatefulWidget {
   String hardButtom = 'hard';
   Color hardButtomColor = Colors.blue[100];
   List<int> levelList = [];
+  List<int> timeList = [];
 
   //Color noteEasyButtomColor = Colors.red[400];
   @override
@@ -355,8 +356,12 @@ class _RecipeListState extends State<RecipeList> {
                 topRight: const Radius.circular(25.0),
               ),
             ),
-            child: Filter(widget.list, widget.listForWatch, widget.levelList,
-                widget.myTags))).then((value) => cameBack(value));
+            child: Filter(
+                widget.list,
+                widget.listForWatch,
+                widget.levelList,
+                widget.myTags,
+                widget.timeList))).then((value) => cameBack(value));
   }
 
   cameBack(value) {
@@ -368,6 +373,7 @@ class _RecipeListState extends State<RecipeList> {
     setState(() {
       widget.listForWatch = value['a'];
       widget.levelList = value['b'];
+      widget.timeList = value['d'];
     });
   }
 }

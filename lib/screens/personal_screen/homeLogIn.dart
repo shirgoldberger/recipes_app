@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/screens/groups/GroupList.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
 import 'settingForm.dart';
 import '../groups/newGroup.dart';
@@ -173,6 +173,8 @@ class _HomeLogInState extends State<HomeLogIn> {
       label: Text('Delete Account'),
       onPressed: () async {
         await _auth.deleteAccount();
+        await UserFromDB.deleteUser(widget.uid);
+        await RecipeFromDB.deletePublushRecipesOfUser(widget.uid);
         Phoenix.rebirth(context);
       },
     );

@@ -5,11 +5,12 @@ import '../../config.dart';
 
 class Filter extends StatefulWidget {
   Filter(List<Recipe> _list, List<Recipe> _listForWatch, List<int> _levelList,
-      List<String> myTags) {
+      List<String> myTags, List<int> _timeList) {
     this.list = _list;
     this.listForWatch = _listForWatch;
     this.levelList = _levelList;
     this.myTags = myTags;
+    this.timeList = _timeList;
   }
 
   String easyButtom = 'easy';
@@ -19,6 +20,13 @@ class Filter extends StatefulWidget {
   String hardButtom = 'hard';
   Color hardButtomColor = Colors.blue[50];
   List<int> levelList = [];
+  String time1Buttom = 'Until half-hour';
+  Color time1ButtomColor = Colors.green[50];
+  String time2Buttom = 'Until hour';
+  Color time2ButtomColor = Colors.yellow[50];
+  String time3Buttom = 'Over an hour';
+  Color time3ButtomColor = Colors.blue[50];
+  List<int> timeList = [];
   List<Recipe> list = [];
   List<String> myTags = [];
   List<Recipe> listForWatch = [];
@@ -76,6 +84,25 @@ class _FilterState extends State<Filter> {
         widget.hardButtomColor = Colors.blue[400];
       });
     }
+
+    if (widget.timeList.contains(1)) {
+      setState(() {
+        widget.time1Buttom = '-Until half-hour';
+        widget.time1ButtomColor = Colors.green[400];
+      });
+    }
+    if (widget.timeList.contains(2)) {
+      setState(() {
+        widget.time2Buttom = '-Until hour';
+        widget.time2ButtomColor = Colors.yellow[400];
+      });
+    }
+    if (widget.timeList.contains(3)) {
+      setState(() {
+        widget.time3Buttom = '-Over an hour';
+        widget.time3ButtomColor = Colors.blue[400];
+      });
+    }
     String selectedSubject;
     return Container(
         child: Column(
@@ -124,7 +151,6 @@ class _FilterState extends State<Filter> {
                     ),
                   ],
                 ))),
-        new Padding(padding: EdgeInsets.only(top: 25.0)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -137,7 +163,18 @@ class _FilterState extends State<Filter> {
             new Padding(padding: EdgeInsets.only(left: 15.0)),
           ],
         ),
-        new Padding(padding: EdgeInsets.only(top: 25.0)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            new Padding(padding: EdgeInsets.only(left: 15.0)),
+            time1Button(),
+            new Padding(padding: EdgeInsets.only(left: 15.0)),
+            time2Button(),
+            new Padding(padding: EdgeInsets.only(left: 15.0)),
+            time3Button(),
+            new Padding(padding: EdgeInsets.only(left: 15.0)),
+          ],
+        ),
         save(),
       ],
     ));
@@ -181,13 +218,24 @@ class _FilterState extends State<Filter> {
         label: Text(
           "save",
           style: TextStyle(
-              fontFamily: 'Raleway', color: Colors.black, fontSize: 30),
+              fontFamily: 'Raleway', color: Colors.black, fontSize: 20),
         ),
         onPressed: () {
+          if (widget.timeList.isEmpty) {
+            widget.timeList.add(1);
+            widget.timeList.add(2);
+            widget.timeList.add(3);
+          }
+          if (widget.levelList.isEmpty) {
+            widget.levelList.add(1);
+            widget.levelList.add(2);
+            widget.levelList.add(3);
+          }
           Navigator.pop(context, {
             'a': widget.listForWatch,
             'b': widget.levelList,
-            'c': widget.myTags
+            'c': widget.myTags,
+            'd': widget.timeList
           });
         });
   }
@@ -282,6 +330,99 @@ class _FilterState extends State<Filter> {
         });
   }
 
+  Widget time1Button() {
+    // ignore: deprecated_member_use
+    return FlatButton.icon(
+        color: widget.time1ButtomColor,
+        icon: Icon(
+          Icons.label,
+          color: Colors.black,
+        ),
+        label: Text(
+          "1",
+          style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
+        ),
+        onPressed: () {
+          if (widget.time1Buttom == 'Until half-hour') {
+            setState(() {
+              widget.timeList.add(1);
+              widget.time1Buttom = '-Until half-hour';
+              widget.time1ButtomColor = Colors.green[400];
+            });
+            pushEasy();
+          } else {
+            setState(() {
+              widget.timeList.remove(1);
+              widget.time1Buttom = 'Until half-hour';
+              widget.time1ButtomColor = Colors.green[50];
+            });
+            unPushEasy();
+          }
+        });
+  }
+
+  Widget time2Button() {
+    // ignore: deprecated_member_use
+    return FlatButton.icon(
+        color: widget.time2ButtomColor,
+        icon: Icon(
+          Icons.label,
+          color: Colors.black,
+        ),
+        label: Text(
+          "2",
+          style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
+        ),
+        onPressed: () {
+          if (widget.time2Buttom == 'Until hour') {
+            setState(() {
+              widget.timeList.add(2);
+              widget.time2Buttom = '-Until hour';
+              widget.time2ButtomColor = Colors.green[400];
+            });
+            pushEasy();
+          } else {
+            setState(() {
+              widget.timeList.remove(2);
+              widget.time2Buttom = 'Until hour';
+              widget.time2ButtomColor = Colors.green[50];
+            });
+            unPushEasy();
+          }
+        });
+  }
+
+  Widget time3Button() {
+    // ignore: deprecated_member_use
+    return FlatButton.icon(
+        color: widget.time3ButtomColor,
+        icon: Icon(
+          Icons.label,
+          color: Colors.black,
+        ),
+        label: Text(
+          "3",
+          style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
+        ),
+        onPressed: () {
+          if (widget.time3Buttom == 'Over an hour') {
+            setState(() {
+              widget.timeList.add(3);
+              widget.time3Buttom = '-Over an hour';
+              widget.time3ButtomColor = Colors.green[400];
+            });
+            pushEasy();
+          } else {
+            setState(() {
+              widget.timeList.remove(3);
+              widget.time3Buttom = 'Over an hour';
+              widget.time3ButtomColor = Colors.green[50];
+            });
+            unPushEasy();
+          }
+        });
+  }
+
   void pushEasy() {
     setState(() {
       widget.listForWatch.clear();
@@ -298,7 +439,31 @@ class _FilterState extends State<Filter> {
     }
   }
 
+  void pushTime() {
+    setState(() {
+      widget.listForWatch.clear();
+    });
+    for (int i = 0; i < widget.list.length; i++) {
+      if (widget.timeList.contains(widget.list[i].time)) {
+        setState(() {
+          widget.listForWatch.add(widget.list[i]);
+        });
+      }
+    }
+  }
+
   void unPushEasy() {
+    if (widget.timeList.isEmpty) {
+      setState(() {
+        widget.listForWatch.clear();
+        widget.listForWatch.addAll(widget.list);
+      });
+    } else {
+      pushTime();
+    }
+  }
+
+  void unPushTime() {
     if (widget.levelList.isEmpty) {
       setState(() {
         widget.listForWatch.clear();
