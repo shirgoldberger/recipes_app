@@ -74,4 +74,8 @@ class UserFromDB {
     }
     return null;
   }
+
+  static Future deleteUser(String uid) async {
+    await db.collection('users').document(uid).delete();
+  }
 }

@@ -98,7 +98,8 @@ class _HomeLogInState extends State<HomeLogIn> {
         child: ListView(
           children: <Widget>[
             profileDetails(),
-            Column(children: [settingsIcon(), logOutIcon()]),
+            Column(
+                children: [settingsIcon(), logOutIcon(), deleteAccountIcon()]),
           ],
         ),
       ),
@@ -159,6 +160,19 @@ class _HomeLogInState extends State<HomeLogIn> {
       label: Text('Log Out'),
       onPressed: () async {
         await _auth.signOut();
+        Phoenix.rebirth(context);
+      },
+    );
+  }
+
+  Widget deleteAccountIcon() {
+    // ignore: deprecated_member_use
+    return FlatButton.icon(
+      minWidth: 300,
+      icon: Icon(Icons.person),
+      label: Text('Delete Account'),
+      onPressed: () async {
+        await _auth.deleteAccount();
         Phoenix.rebirth(context);
       },
     );

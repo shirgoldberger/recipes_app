@@ -14,10 +14,12 @@ class _RegisterState extends State<Register> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
+  bool _isHidden = true;
 
   // text field state
   String email = '';
   String password = '';
+  String confirmPassword = '';
   String name = '';
 
   // error text
@@ -79,6 +81,8 @@ class _RegisterState extends State<Register> {
                       nameField(),
                       box,
                       passwordField(),
+                      box,
+                      confirmPasswordField(),
                       box,
                       registerButton(),
                       errorText(),
@@ -146,17 +150,46 @@ class _RegisterState extends State<Register> {
   Widget passwordField() {
     return TextFormField(
       decoration: InputDecoration(
+        suffix: InkWell(
+          onTap: _togglePasswordView,
+          child: Icon(
+            _isHidden ? Icons.visibility : Icons.visibility_off,
+          ),
+        ),
         hintText: 'Password',
         enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: borderColor, width: 2.0)),
         focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: borderColor, width: 2.0)),
       ),
-      obscureText: true,
+      obscureText: _isHidden,
       validator: (val) =>
           val.length < 6 ? 'Enter a password with 6+ characters' : null,
       onChanged: (val) {
         setState(() => password = val);
+      },
+    );
+  }
+
+  void _togglePasswordView() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
+  }
+
+  Widget confirmPasswordField() {
+    return TextFormField(
+      decoration: InputDecoration(
+        hintText: 'Confirm password',
+        enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: borderColor, width: 2.0)),
+        focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: borderColor, width: 2.0)),
+      ),
+      obscureText: true,
+      validator: (val) => val != password ? 'Not match password' : null,
+      onChanged: (val) {
+        setState(() => confirmPassword = val);
       },
     );
   }
