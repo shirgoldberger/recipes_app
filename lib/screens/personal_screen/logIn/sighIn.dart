@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:recipes_app/screens/personal_screen/homeLogIn.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../../config.dart';
@@ -38,13 +39,24 @@ class _SignInState extends State<SignIn> {
           error =
               'Network connection failed. Please connect to the internet and try again';
         });
+        return;
+      }
+      if (result == "Email not verify") {
+        setState(() {
+          loading = false;
+          error = result;
+        });
+        return;
       }
       if (result == null) {
         setState(() {
           loading = false;
           error = 'Could not log in - check your email and password again';
         });
+        return;
       }
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => HomeLogIn(result.uid)));
     }
   }
 
@@ -72,6 +84,8 @@ class _SignInState extends State<SignIn> {
                       logInButton(),
                       box,
                       errorText(),
+                      signInWithGoogleButton(),
+                      box,
                       registerButton(),
                       box,
                       image(),
@@ -174,6 +188,23 @@ class _SignInState extends State<SignIn> {
         textAlign: TextAlign.center,
       ),
     );
+  }
+
+  Widget signInWithGoogleButton() {
+    // ignore: deprecated_member_use
+    return OutlineButton(
+      borderSide: BorderSide.none,
+      onPressed: _signInWithGoogle,
+      child: Text(
+        'Sign-In with Google',
+        style: TextStyle(fontSize: 15),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  void _signInWithGoogle() async {
+    await _auth.handleSignIn();
   }
 
   Widget image() {

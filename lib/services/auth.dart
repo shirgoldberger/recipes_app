@@ -10,7 +10,9 @@ class AuthService {
 
   // create user object based firebaseUser
   User _userFromFirebaseUser(FirebaseUser user) {
-    return user != null ? User(uid: user.uid) : null;
+    return user != null
+        ? User(uid: user.uid, verified: user.isEmailVerified)
+        : null;
   }
 
   // auth change user stream
@@ -48,6 +50,7 @@ class AuthService {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
           email: email, password: pass);
       FirebaseUser user = result.user;
+      user.sendEmailVerification();
       // create an new document fot the new user with this uid
       await DataBaseService(user.uid)
           .updateUserData(name, '', '', 0, user.email, '');
@@ -63,6 +66,9 @@ class AuthService {
       AuthResult result =
           await _auth.signInWithEmailAndPassword(email: email, password: pass);
       FirebaseUser user = result.user;
+      if (!user.isEmailVerified) {
+        return "Email not verify";
+      }
       return _userFromFirebaseUser(user);
     } catch (e) {
       print("erorr: " + e.toString());
@@ -70,16 +76,19 @@ class AuthService {
     }
   }
 
-  Future _handleSignIn() async {
-    GoogleSignInAccount googleUser = await googleSignIn.signIn();
-    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+  Future handleSignIn() async {
+    final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
     try {
       final AuthCredential credential = GoogleAuthProvider.getCredential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      AuthResult result = await _auth.signInWithCredential(credential);
+      final result = await _auth.signInWithCredential(credential);
       final FirebaseUser user = result.user;
+      await DataBaseService(user.uid)
+          .updateUserData(user.email, '', '', 0, user.email, '');
       return _userFromFirebaseUser(user);
     } catch (e) {
       print("errorrrrrr");

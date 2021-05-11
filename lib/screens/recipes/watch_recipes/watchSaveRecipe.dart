@@ -5,6 +5,7 @@ import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import 'watchRecipeBody.dart';
 import '../../personal_screen/likesList.dart';
 import '../../personal_screen/notesForm.dart';
@@ -60,6 +61,10 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
     return Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
+          ),
           backgroundColor: appBarBackgroundColor,
           elevation: 0.0,
           title: Text(
@@ -67,14 +72,32 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
             style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
           ),
         ),
-        drawer: ListView(children: [
-          Container(
-              child: Column(
-            children: [box, box, box, deleteFromSaveIcon(), addNoteIcon()],
-          ))
-        ]),
+        endDrawer: leftMenu(),
         body: WatchRecipeBody(widget.currentRecipe, widget.ingredients,
             widget.stages, widget.levelColor, widget.levelString, widget.uid));
+  }
+
+  Widget leftMenu() {
+    return Container(
+      color: backgroundColor,
+      width: MediaQuery.of(context).size.width * 0.5,
+      child: ListView(
+        children: <Widget>[
+          drawerTitle(),
+          Column(children: [deleteFromSaveIcon(), addNoteIcon()]),
+        ],
+      ),
+    );
+  }
+
+  Widget drawerTitle() {
+    return UserAccountsDrawerHeader(
+      decoration: BoxDecoration(
+        color: appBarBackgroundColor,
+      ),
+      arrowColor: appBarBackgroundColor,
+      accountName: Text('Options:'),
+    );
   }
 
   void initLikeIcon() async {
@@ -114,24 +137,6 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
             ),
             child: LikesList(widget.currentRecipe)));
   }
-
-  // Future<void> _showSavedGroupPanel() async {
-  //   showModalBottomSheet(
-  //       context: context,
-  //       isScrollControlled: true,
-  //       backgroundColor: Colors.transparent,
-  //       builder: (context) => Container(
-  //           height: MediaQuery.of(context).size.height * 0.75,
-  //           decoration: new BoxDecoration(
-  //             color: Colors.blueGrey[50],
-  //             borderRadius: new BorderRadius.only(
-  //               topLeft: const Radius.circular(25.0),
-  //               topRight: const Radius.circular(25.0),
-  //             ),
-  //           ),
-  //           child: SaveGroup(
-  //               widget.uid, widget.currentRecipe.id, widget.currentRecipe)));
-  // }
 
   Future<void> _showNotesPanel(String id) async {
     QuerySnapshot snap = await Firestore.instance
@@ -261,25 +266,27 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
     String id,
   ) async {
     final db = Firestore.instance;
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(id)
-        .collection('saved recipe')
-        .getDocuments();
-    snap.documents.forEach((element) async {
-      String recipeIdfromSnap = element.data['recipeID'];
-      if (recipeIdfromSnap == widget.currentRecipe.id) {
-        db
-            .collection('users')
-            .document(id)
-            .collection('saved recipe')
-            .document(element.documentID)
-            .delete();
-      }
-    });
+    await RecipeFromDB.deleteFromSavedRecipe(
+        widget.uid, widget.currentRecipe.id);
+    // QuerySnapshot snap = await Firestore.instance
+    //     .collection('users')
+    //     .document(id)
+    //     .collection('saved recipe')
+    //     .getDocuments();
+    // snap.documents.forEach((element) async {
+    //   String recipeIdfromSnap = element.data['recipeID'];
+    //   if (recipeIdfromSnap == widget.currentRecipe.id) {
+    //     db
+    //         .collection('users')
+    //         .document(id)
+    //         .collection('saved recipe')
+    //         .document(element.documentID)
+    //         .delete();
+    //   }
+    // });
     int count = 0;
     Navigator.popUntil(context, (route) {
-      return count++ == 2;
+      return count++ == 3;
     });
   }
 
@@ -352,11 +359,10 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
     return FlatButton.icon(
         icon: Icon(
           Icons.delete,
-          color: Colors.white,
         ),
         label: Text(
           'Delete From Saves',
-          style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+          style: TextStyle(fontFamily: 'Raleway'),
         ),
         onPressed: () {
           deleteFromSavedRecipe(widget.uid);
@@ -368,11 +374,10 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
     return FlatButton.icon(
         icon: Icon(
           Icons.note_add,
-          color: Colors.white,
         ),
         label: Text(
           'add note',
-          style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+          style: TextStyle(fontFamily: 'Raleway'),
         ),
         onPressed: () {
           _showNotesPanel(widget.uid);

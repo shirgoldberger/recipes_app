@@ -149,4 +149,23 @@ class RecipeFromDB {
   static deletePublishRecipe(String publishId) async {
     await db.collection('publish recipe').document(publishId).delete();
   }
+
+  static Future<void> deleteFromSavedRecipe(String uid, String recipeId) async {
+    QuerySnapshot savedRecipes = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('saved recipe')
+        .getDocuments();
+    for (int i = 0; i < savedRecipes.documents.length; i++) {
+      String recipeIdfromSnap = savedRecipes.documents[i].data['recipeID'];
+      if (recipeIdfromSnap == recipeId) {
+        db
+            .collection('users')
+            .document(uid)
+            .collection('saved recipe')
+            .document(savedRecipes.documents[i].documentID)
+            .delete();
+      }
+    }
+  }
 }

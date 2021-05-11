@@ -130,6 +130,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
   Future<bool> refresh() async {
     await Future.delayed(Duration(seconds: 3));
     changeState();
+    setState(() {});
     return true;
   }
 

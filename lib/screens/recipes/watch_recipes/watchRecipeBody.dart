@@ -400,7 +400,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   }
 
   Widget showLikesButton() {
-    return RaisedButton(
+    return TextButton(
       child: Text(widget.usersLikes.length.toString() + " Likes",
           style: TextStyle(
               color: Colors.black,

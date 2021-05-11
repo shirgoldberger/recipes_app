@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/recipes/recipesFolder.dart';
 import 'package:recipes_app/services/dataBaseAllRecipe.dart';
@@ -26,15 +27,14 @@ class HomePage extends StatelessWidget {
     return StreamProvider<List<Recipe>>.value(
         value: DataBaseAllRecipes().allRecipe,
         child: Scaffold(
-            backgroundColor: Colors.teal[50],
+            backgroundColor: backgroundColor,
             appBar: AppBar(
               title: Text(
                 'cook book',
                 style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
               ),
-              backgroundColor: Colors.teal[900],
+              backgroundColor: appBarBackgroundColor,
               elevation: 0.0,
-              actions: <Widget>[],
             ),
             body: RecipeFolder(true)));
   }

@@ -3,22 +3,22 @@ import 'sighIn.dart';
 import 'register.dart';
 
 class Authentication extends StatefulWidget {
+  bool showSignIn = true;
+  Authentication({this.showSignIn});
   @override
   _AuthenticationState createState() => _AuthenticationState();
 }
 
 class _AuthenticationState extends State<Authentication> {
-  bool showSignIn = true;
-
   void toggleview() {
     setState(() {
-      showSignIn = !showSignIn;
+      widget.showSignIn = !widget.showSignIn;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (showSignIn) {
+    if (widget.showSignIn) {
       return SignIn(toggleView: toggleview);
     } else {
       return Register(toggleView: toggleview);

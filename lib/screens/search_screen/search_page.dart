@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
 import 'package:recipes_app/screens/userHeadLine.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
@@ -30,8 +31,13 @@ class SearchPage extends StatefulWidget {
   Map<String, int> amountUsersOfRecipe = {};
   List<Pair> popular = [];
   List<String> usersId = [];
-  bool searchMode = false;
 
+  List<Recipe> recipesSearch = [];
+  bool userPress = true;
+  bool recipePress = false;
+  bool searchMode = false;
+  Color recipePresColor = Colors.white;
+  Color userPressColor = Colors.grey[350];
   @override
   _SearchPage createState() => _SearchPage();
 }
@@ -115,10 +121,94 @@ class _SearchPage extends State<SearchPage> {
                 box,
                 Center(
                   child:
-                      (widget.searchMode) ? searchUsersWidget() : recipeGrid(),
+                      (widget.searchMode) ? searchButtomWidget() : recipeGrid(),
                 ),
               ]))))));
     }
+  }
+
+  Widget searchButtomWidget() {
+    return Container(
+      child: Column(
+        children: [
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                      bottomLeft: Radius.circular(30.0),
+                      bottomRight: Radius.circular(30.0)),
+                  child: FlatButton(
+                    onPressed: () => {
+                      setState(() {
+                        widget.userPress = false;
+                        widget.recipePress = true;
+                        widget.recipePresColor = Colors.grey[350];
+                        widget.userPressColor = Colors.white;
+                      })
+                    },
+                    color: widget.recipePresColor,
+                    padding: EdgeInsets.all(10.0),
+                    child: Row(
+                      // Replace with a Row for horizontal icon + text
+                      children: <Widget>[
+                        Icon(Icons.auto_stories),
+                        Text(
+                          "  Recipes  ",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'Raleway',
+                              fontSize: 12),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 50.0,
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                      bottomLeft: Radius.circular(30.0),
+                      bottomRight: Radius.circular(30.0)),
+                  child: FlatButton(
+                    onPressed: () => {
+                      setState(() {
+                        widget.userPress = true;
+                        widget.recipePress = false;
+                        widget.recipePresColor = Colors.white;
+                        widget.userPressColor = Colors.grey[350];
+                      })
+                    },
+                    color: widget.userPressColor,
+                    padding: EdgeInsets.all(10.0),
+                    child: Row(
+                      // Replace with a Row for horizontal icon + text
+                      children: <Widget>[
+                        Icon(Icons.person),
+                        Text(
+                          "  users  ",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'Raleway',
+                              fontSize: 12),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          widget.userPress ? searchUsersWidget() : searcRecipesWidget(),
+        ],
+      ),
+    );
   }
 
   Widget recipeGrid() {
@@ -169,6 +259,37 @@ class _SearchPage extends State<SearchPage> {
                               bottomRight: Radius.circular(30.0)),
                           child: UserHeadLine(widget.usersId[index]))));
             }));
+  }
+
+  Widget searcRecipesWidget() {
+    //recipes
+    return Container(
+        child: ListView.builder(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(top: 1, bottom: 1, left: 5, right: 5),
+            itemCount: widget.recipesSearch.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30.0),
+                            topRight: Radius.circular(30.0),
+                            bottomLeft: Radius.circular(30.0),
+                            bottomRight: Radius.circular(30.0)),
+                      ),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30.0),
+                              topRight: Radius.circular(30.0),
+                              bottomLeft: Radius.circular(30.0),
+                              bottomRight: Radius.circular(30.0)),
+                          child: RecipeHeadLine(
+                              widget.recipesSearch[index], true))));
+            }));
+
     // child: UserHeadLine(
     //     widget.listForWatch[index], widget.home))));
   }
@@ -484,6 +605,7 @@ class _SearchPage extends State<SearchPage> {
             });
           } else {
             startSearch(val);
+            startSearchRecipes(val);
             setState(() {
               widget.searchMode = true;
             });
@@ -521,10 +643,95 @@ class _SearchPage extends State<SearchPage> {
       }
     });
   }
-  // class Pair<T1, T2> {
-//   final String user;
-//   final String recipe;
 
-//   Pair(this.user, this.recipe);
-// }
+  Future<void> startSearchRecipes(String val) async {
+    setState(() {
+      widget.recipesSearch.clear();
+    });
+    QuerySnapshot snap =
+        await Firestore.instance.collection('publish recipe').getDocuments();
+    snap.documents.forEach((element) async {
+      String recipeId = element.data['recipeId'];
+      String uidRecipe = element.data['userID'];
+      DocumentSnapshot doc = await Firestore.instance
+          .collection('users')
+          .document(uidRecipe)
+          .collection('recipes')
+          .document(recipeId)
+          .get();
+      String recipeName = doc.data['name'] ?? '';
+      if (recipeName.contains(val)) {
+        convertToRecipeForSearch(Pair(uidRecipe, recipeId));
+      }
+    });
+  }
+
+  Future convertToRecipeForSearch(Pair pair) async {
+    //  print("convert");
+    //print(pair);
+
+    String uid = pair.user;
+    String recipeId = pair.recipe;
+    // print("aaaaaaaa    " + uid);
+    //  print("aaaaaaaa    " + recipeId);
+    DocumentSnapshot doc = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('recipes')
+        .document(recipeId)
+        .get();
+    if (doc == null) {
+      //  print("null");
+      //  print(doc.documentID);
+      //  print(uid);
+    }
+    String n = doc.data['name'] ?? '';
+    String de = doc.data['description'] ?? '';
+    String level = doc.data['level'] ?? 0;
+    String time = doc.data['time'] ?? '0';
+    int timeI = int.parse(time);
+    String writer = doc.data['writer'] ?? '';
+    String writerUid = doc.data['writerUid'] ?? '';
+    String id = doc.data['recipeID'] ?? '';
+    //
+    String publish = doc.data['publishID'] ?? '';
+    String path = doc.data['imagePath'] ?? '';
+    int levlelInt = int.parse(level);
+    //tags
+    var tags = doc.data['tags'];
+    String tagString = tags.toString();
+    List<String> l = [];
+    if (tagString != "[]") {
+      String tag = tagString.substring(1, tagString.length - 1);
+      l = tag.split(',');
+      for (int i = 0; i < l.length; i++) {
+        if (l[i][0] == ' ') {
+          l[i] = l[i].substring(1, l[i].length);
+        }
+      }
+    }
+    //notes
+    var note = doc.data['tags'];
+    String noteString = note.toString();
+    List<String> nList = [];
+    if (noteString != "[]") {
+      String tag = noteString.substring(1, noteString.length - 1);
+      nList = tag.split(',');
+      for (int i = 0; i < nList.length; i++) {
+        if (nList[i][0] == ' ') {
+          nList[i] = nList[i].substring(1, nList[i].length);
+        }
+      }
+    }
+    bool check = false;
+    Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
+        true, id, publish, path);
+    // print(r.id + "9999999999999999999999999999999999");
+    if (!widget.recipesSearch.contains(r)) {
+      setState(() {
+        print(r);
+        widget.recipesSearch.add(r);
+      });
+    }
+  }
 }

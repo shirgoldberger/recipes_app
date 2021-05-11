@@ -301,7 +301,7 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
     // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
-          widget.isSaveRecipe ? Icons.favorite : Icons.favorite_border,
+          Icons.favorite,
           color: Colors.red,
         ),
         label: Text(
