@@ -5,6 +5,7 @@ import 'package:recipes_app/screens/personal_screen/uploadImage.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/addRecipeIngredients.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import '../../../config.dart';
+import 'dart:io';
 
 // ignore: must_be_immutable
 class UploadRecipeImage extends StatefulWidget {
@@ -25,6 +26,7 @@ class UploadRecipeImage extends StatefulWidget {
 
 class _UploadRecipeImageState extends State<UploadRecipeImage> {
   String imagePath = "";
+  File imageFile;
   bool hasImage = false;
   @override
   Widget build(BuildContext context) {
@@ -134,22 +136,23 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
               style: TextStyle(fontFamily: 'Raleway', fontSize: 20),
             ),
             box,
-            FutureBuilder(
-                future: _getImage(context, imagePath),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done)
-                    return CircleAvatar(
-                      backgroundColor: backgroundColor,
-                      backgroundImage: snapshot.data,
-                      radius: 150,
-                    );
-                  // if (snapshot.connectionState == ConnectionState.waiting)
-                  else
-                    return Container(
-                        height: MediaQuery.of(context).size.height / 10,
-                        width: MediaQuery.of(context).size.width / 10,
-                        child: CircularProgressIndicator());
-                }),
+            Image.file(imageFile),
+            // FutureBuilder(
+            //     future: _getImage(context, imagePath),
+            //     builder: (context, snapshot) {
+            //       if (snapshot.connectionState == ConnectionState.done)
+            //         return CircleAvatar(
+            //           backgroundColor: backgroundColor,
+            //           backgroundImage: snapshot.data,
+            //           radius: 150,
+            //         );
+            //       // if (snapshot.connectionState == ConnectionState.waiting)
+            //       else
+            //         return Container(
+            //             height: MediaQuery.of(context).size.height / 10,
+            //             width: MediaQuery.of(context).size.width / 10,
+            //             child: CircularProgressIndicator());
+            //     }),
             TextButton(
                 onPressed: uploadImagePressed,
                 child: Text(
@@ -184,7 +187,8 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
                 builder: (context) => UploadingImageToFirebaseStorage()))
         .then((value) => {
               setState(() {
-                imagePath = value.toString();
+                imageFile = value["file"];
+                imagePath = value["path"];
               })
             });
   }

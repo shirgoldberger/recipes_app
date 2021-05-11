@@ -348,7 +348,7 @@ class _RecipeListState extends State<RecipeList> {
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (context) => Container(
-            height: MediaQuery.of(context).size.height * 0.5,
+            height: MediaQuery.of(context).size.height * 0.75,
             decoration: new BoxDecoration(
               color: backgroundColor,
               borderRadius: new BorderRadius.only(

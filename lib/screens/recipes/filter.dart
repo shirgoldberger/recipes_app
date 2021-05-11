@@ -128,7 +128,6 @@ class _FilterState extends State<Filter> {
                         setState(() {
                           tagList.remove(value);
                           widget.myTags.add(value);
-                          // addtag(value);
                         });
                       },
                       items: tagList.map<DropdownMenuItem<String>>((value) {
@@ -136,8 +135,6 @@ class _FilterState extends State<Filter> {
                             value: value, child: Text(value));
                       }).toList(),
                     ),
-                    //Flexible(
-                    //flex: (widget.myTags.length % 3) * 10,
                     Container(
                       height: MediaQuery.of(context).size.height * 0.13,
                       child: GridView.count(
@@ -339,7 +336,7 @@ class _FilterState extends State<Filter> {
           color: Colors.black,
         ),
         label: Text(
-          "1",
+          widget.time1Buttom,
           style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
         ),
         onPressed: () {
@@ -370,7 +367,7 @@ class _FilterState extends State<Filter> {
           color: Colors.black,
         ),
         label: Text(
-          "2",
+          widget.time2Buttom,
           style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
         ),
         onPressed: () {
@@ -401,7 +398,7 @@ class _FilterState extends State<Filter> {
           color: Colors.black,
         ),
         label: Text(
-          "3",
+          widget.time3Buttom,
           style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
         ),
         onPressed: () {

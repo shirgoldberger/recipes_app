@@ -43,7 +43,7 @@ class _UploadingImageToFirebaseStorageState
     taskSnapshot.ref.getDownloadURL().then(
           (value) => print("Done: $value"),
         );
-    Navigator.pop(context, fileName);
+    Navigator.pop(context, {"file": _imageFile, "path": _imageFile.path});
   }
 
   @override

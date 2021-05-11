@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/user.dart';
@@ -15,6 +17,7 @@ class SettingForm extends StatefulWidget {
   String uid;
   String imagePath = "";
   NetworkImage m;
+  File imageFile;
 
   SettingForm(String _uid, NetworkImage _m) {
     uid = _uid;
@@ -94,8 +97,9 @@ class _SettingFormState extends State<SettingForm> {
       child: CircleAvatar(
           backgroundColor: backgroundColor,
           radius: 40,
-          backgroundImage:
-              (widget.m == null) ? ExactAssetImage(noImagePath) : widget.m),
+          backgroundImage: (widget.imageFile == null)
+              ? ExactAssetImage(noImagePath)
+              : widget.imageFile),
       onPressed: uploadImagePressed,
     );
   }
@@ -109,9 +113,9 @@ class _SettingFormState extends State<SettingForm> {
               FireStorageService.loadFromStorage(context, "uploads/" + value)
                   .then((downloadUrl) {
                 setState(() {
-                  widget.imagePath = value.toString();
-                  UserFromDB.setUserImage(widget.uid, widget.imagePath);
-                  widget.m = NetworkImage(downloadUrl);
+                  widget.imageFile = value["file"];
+                  UserFromDB.setUserImage(widget.uid, value["path"]);
+                  // widget.m = NetworkImage(downloadUrl);
                 });
               })
             });
