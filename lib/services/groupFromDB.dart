@@ -131,4 +131,14 @@ class GroupFromDB {
           .add({'groupName': groupName, 'groupId': id});
     }
   }
+
+  static Future<void> deleteUserFromAllGroups(String uid) async {
+    QuerySnapshot groups = await db.collection('Group').getDocuments();
+    for (int i = 0; i < groups.documents.length; i++) {
+      List users = groups.documents[i].data["users"];
+      if (users.contains(uid)) {
+        await deleteUserFromGroup(uid, groups.documents[i].documentID);
+      }
+    }
+  }
 }

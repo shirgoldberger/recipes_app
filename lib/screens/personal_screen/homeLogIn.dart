@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/screens/groups/GroupList.dart';
+import 'package:recipes_app/services/groupFromDB.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
 import 'settingForm.dart';
@@ -175,6 +176,7 @@ class _HomeLogInState extends State<HomeLogIn> {
         await _auth.deleteAccount();
         await UserFromDB.deleteUser(widget.uid);
         await RecipeFromDB.deletePublushRecipesOfUser(widget.uid);
+        await GroupFromDB.deleteUserFromAllGroups(widget.uid);
         Phoenix.rebirth(context);
       },
     );

@@ -74,7 +74,7 @@ class RecipeFromDB {
     }
 
     // notes
-    var note = recipe.data['tags'];
+    var note = recipe.data['notes'];
     String noteString = note.toString();
     List<String> nList = [];
     if (noteString != "[]") {

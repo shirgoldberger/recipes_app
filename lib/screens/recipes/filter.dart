@@ -14,18 +14,18 @@ class Filter extends StatefulWidget {
   }
 
   String easyButtom = 'easy';
-  Color easyButtomColor = Colors.green[50];
+  Color easyButtomColor = Colors.green[100];
   String midButtom = 'medium';
-  Color midButtomColor = Colors.yellow[50];
+  Color midButtomColor = Colors.yellow[100];
   String hardButtom = 'hard';
-  Color hardButtomColor = Colors.blue[50];
+  Color hardButtomColor = Colors.red[100];
   List<int> levelList = [];
   String time1Buttom = 'Until half-hour';
-  Color time1ButtomColor = Colors.green[50];
+  Color time1ButtomColor = Colors.green[100];
   String time2Buttom = 'Until hour';
-  Color time2ButtomColor = Colors.yellow[50];
+  Color time2ButtomColor = Colors.yellow[100];
   String time3Buttom = 'Over an hour';
-  Color time3ButtomColor = Colors.blue[50];
+  Color time3ButtomColor = Colors.red[100];
   List<int> timeList = [];
   List<Recipe> list = [];
   List<String> myTags = [];
@@ -108,21 +108,45 @@ class _FilterState extends State<Filter> {
         child: Column(
       children: [
         Text(
-          "Filter:",
+          "Filter recipes:",
           style: TextStyle(
               fontFamily: 'Raleway', color: Colors.black, fontSize: 25),
         ),
-        new Center(
-            child: new Container(
+        box,
+        Row(children: [
+          widthBox(20),
+          Column(children: [
+            Text("Choose level of hardness:",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            time1Button(),
+            time2Button(),
+            time3Button()
+          ]),
+          widthBox(80),
+          Column(children: [
+            Text(
+              "Choose time:",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            easyButton(),
+            midButton(),
+            hardButton()
+          ])
+        ]),
+        box,
+        Text(
+          "Choose more tags:",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        Center(
+            child: Container(
                 width: 400,
-                decoration: new BoxDecoration(
-                  color: Colors.blueGrey[100],
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
                   children: [
                     DropdownButton<String>(
-                      dropdownColor: appBarBackgroundColor,
                       value: selectedSubject,
                       onChanged: (value) {
                         setState(() {
@@ -136,7 +160,7 @@ class _FilterState extends State<Filter> {
                       }).toList(),
                     ),
                     Container(
-                      height: MediaQuery.of(context).size.height * 0.13,
+                      height: 150,
                       child: GridView.count(
                           shrinkWrap: true,
                           crossAxisCount: 3,
@@ -148,30 +172,6 @@ class _FilterState extends State<Filter> {
                     ),
                   ],
                 ))),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            new Padding(padding: EdgeInsets.only(left: 15.0)),
-            easyButton(),
-            new Padding(padding: EdgeInsets.only(left: 15.0)),
-            midButton(),
-            new Padding(padding: EdgeInsets.only(left: 15.0)),
-            hardButton(),
-            new Padding(padding: EdgeInsets.only(left: 15.0)),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            new Padding(padding: EdgeInsets.only(left: 15.0)),
-            time1Button(),
-            new Padding(padding: EdgeInsets.only(left: 15.0)),
-            time2Button(),
-            new Padding(padding: EdgeInsets.only(left: 15.0)),
-            time3Button(),
-            new Padding(padding: EdgeInsets.only(left: 15.0)),
-          ],
-        ),
         save(),
       ],
     ));
@@ -185,19 +185,21 @@ class _FilterState extends State<Filter> {
           Flexible(
             child: Text(
               widget.myTags[index],
-              style: TextStyle(
-                  fontFamily: 'Raleway', color: Colors.black, fontSize: 13),
+              style: TextStyle(color: Colors.black, fontSize: 13),
             ),
           ),
-          Expanded(
-            child: FlatButton(
-              child: Icon(Icons.cancel, size: 20),
-              onPressed: () {
-                setState(() {
-                  widget.myTags.remove(widget.myTags[index]);
-                });
-              },
+          IconButton(
+            icon: Icon(
+              Icons.cancel,
+              size: 20,
+              color: Colors.black,
             ),
+            onPressed: () {
+              setState(() {
+                tagList.add(widget.myTags[index]);
+                widget.myTags.remove(widget.myTags[index]);
+              });
+            },
           ),
         ],
       ),
@@ -261,7 +263,7 @@ class _FilterState extends State<Filter> {
             setState(() {
               widget.levelList.remove(1);
               widget.easyButtom = 'easy';
-              widget.easyButtomColor = Colors.green[50];
+              widget.easyButtomColor = Colors.green[100];
             });
             unPushEasy();
           }
@@ -289,7 +291,7 @@ class _FilterState extends State<Filter> {
             setState(() {
               widget.levelList.remove(2);
               widget.midButtom = 'medium';
-              widget.midButtomColor = Colors.yellow[50];
+              widget.midButtomColor = Colors.yellow[100];
             });
             unPushEasy();
           }
@@ -313,14 +315,14 @@ class _FilterState extends State<Filter> {
             setState(() {
               widget.levelList.add(3);
               widget.hardButtom = '-hard';
-              widget.hardButtomColor = Colors.blue[400];
+              widget.hardButtomColor = Colors.red[400];
             });
             pushEasy();
           } else {
             setState(() {
               widget.levelList.remove(3);
               widget.hardButtom = 'hard';
-              widget.hardButtomColor = Colors.blue[50];
+              widget.hardButtomColor = Colors.red[100];
             });
             unPushEasy();
           }
@@ -351,7 +353,7 @@ class _FilterState extends State<Filter> {
             setState(() {
               widget.timeList.remove(1);
               widget.time1Buttom = 'Until half-hour';
-              widget.time1ButtomColor = Colors.green[50];
+              widget.time1ButtomColor = Colors.green[100];
             });
             unPushEasy();
           }
@@ -375,14 +377,14 @@ class _FilterState extends State<Filter> {
             setState(() {
               widget.timeList.add(2);
               widget.time2Buttom = '-Until hour';
-              widget.time2ButtomColor = Colors.green[400];
+              widget.time2ButtomColor = Colors.yellow[400];
             });
             pushEasy();
           } else {
             setState(() {
               widget.timeList.remove(2);
               widget.time2Buttom = 'Until hour';
-              widget.time2ButtomColor = Colors.green[50];
+              widget.time2ButtomColor = Colors.yellow[100];
             });
             unPushEasy();
           }
@@ -406,14 +408,14 @@ class _FilterState extends State<Filter> {
             setState(() {
               widget.timeList.add(3);
               widget.time3Buttom = '-Over an hour';
-              widget.time3ButtomColor = Colors.green[400];
+              widget.time3ButtomColor = Colors.red[400];
             });
             pushEasy();
           } else {
             setState(() {
               widget.timeList.remove(3);
               widget.time3Buttom = 'Over an hour';
-              widget.time3ButtomColor = Colors.green[50];
+              widget.time3ButtomColor = Colors.red[100];
             });
             unPushEasy();
           }

@@ -346,7 +346,7 @@ class _RecipeListState extends State<RecipeList> {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.blueGrey[50],
         builder: (context) => Container(
             height: MediaQuery.of(context).size.height * 0.75,
             decoration: new BoxDecoration(
