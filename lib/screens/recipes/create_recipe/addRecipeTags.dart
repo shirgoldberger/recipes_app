@@ -14,6 +14,7 @@ class AddRecipeTags extends StatefulWidget {
   String name;
   String description;
   String imagePath;
+  String error = '';
   List<IngredientsModel> ingredients;
   List<Stages> stages;
   AddRecipeTags(
@@ -49,6 +50,11 @@ class _AddRecipeTagsState extends State<AddRecipeTags> {
       title(),
       box,
       box,
+      Text(
+        widget.error,
+        style: TextStyle(
+            color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+      ),
       // tags
       tags.length <= 0
           ? Text(
@@ -174,7 +180,13 @@ class _AddRecipeTagsState extends State<AddRecipeTags> {
       heroTag: null,
       backgroundColor: this.tags.length != 0 ? Colors.green : Colors.grey,
       onPressed: () {
-        if (this.tags.length != 0) {
+        bool check = false;
+        for (int i = 0; i < tags.length; i++) {
+          if (tags[i] == 'choose recipe tag') {
+            check = true;
+          }
+        }
+        if ((this.tags.length != 0) && (!check)) {
           Navigator.push(
               context,
               PageRouteBuilder(
@@ -189,6 +201,12 @@ class _AddRecipeTagsState extends State<AddRecipeTags> {
                           widget.ingredients,
                           widget.stages,
                           tags)));
+        } else {
+          if (check) {
+            setState(() {
+              widget.error = "choose recipe tag!!";
+            });
+          }
         }
       },
       tooltip: 'next',

@@ -107,7 +107,7 @@ class _EditRecipeIngredientsState extends State<EditRecipeIngredients> {
       validator: (val) =>
           val.length < 6 ? 'Enter a description eith 6 letter at least' : null,
       onChanged: (val) {
-        setState(() => widget.ingredients[i].count = int.parse(val));
+        setState(() => widget.ingredients[i].count = double.parse(val));
       },
     );
   }

@@ -14,6 +14,7 @@ class AddRecipeStages extends StatefulWidget {
   String name;
   String description;
   String imagePath;
+  String error = "";
   List<IngredientsModel> ingredients;
   AddRecipeStages(
       String _username,
@@ -35,7 +36,7 @@ class AddRecipeStages extends StatefulWidget {
 
 class _AddRecipeStagesState extends State<AddRecipeStages> {
   List<Stages> stages = [];
-  String error = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +50,11 @@ class _AddRecipeStagesState extends State<AddRecipeStages> {
           // stages
           Container(
               child: Column(children: [
-            Text(error),
+            Text(
+              widget.error,
+              style: TextStyle(
+                  color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+            ),
             stages.length <= 0
                 ? Text(
                     'There is no stages in this recipe yet',
@@ -187,7 +192,13 @@ class _AddRecipeStagesState extends State<AddRecipeStages> {
       heroTag: null,
       backgroundColor: this.stages.length != 0 ? Colors.green : Colors.grey,
       onPressed: () {
-        if (this.stages.length != 0) {
+        bool checkNull = false;
+        for (int i = 0; i < stages.length; i++) {
+          if ((stages[i].s == "") || (stages[i].s == null)) {
+            checkNull = true;
+          }
+        }
+        if ((this.stages.length != 0) && (!checkNull)) {
           Navigator.push(
               context,
               PageRouteBuilder(
@@ -201,6 +212,12 @@ class _AddRecipeStagesState extends State<AddRecipeStages> {
                           widget.imagePath,
                           widget.ingredients,
                           stages)));
+        } else {
+          if (checkNull) {
+            setState(() {
+              widget.error = "no stage shoud be empty";
+            });
+          }
         }
       },
       tooltip: 'next',

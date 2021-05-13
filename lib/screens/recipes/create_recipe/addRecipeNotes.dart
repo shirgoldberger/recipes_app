@@ -11,6 +11,7 @@ import '../../../config.dart';
 // ignore: must_be_immutable
 class AddRecipeNotes extends StatefulWidget {
   String username;
+  String error = '';
   String uid;
   String name;
   String description;
@@ -54,7 +55,13 @@ class _AddRecipeNotesState extends State<AddRecipeNotes> {
       body: ListView(children: [
         box, box,
         title(), box, box,
+        Text(
+          widget.error,
+          style: TextStyle(
+              color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+        ),
         //notes
+
         notes.length <= 0
             ? Text(
                 'There is no notes in this recipe yet',
@@ -155,23 +162,37 @@ class _AddRecipeNotesState extends State<AddRecipeNotes> {
       heroTag: null,
       backgroundColor: Colors.green,
       onPressed: () {
-        Navigator.push(
-            context,
-            PageRouteBuilder(
-                transitionDuration: Duration(seconds: 0),
-                pageBuilder: (context, animation1, animation2) =>
-                    FinishCreateRecipe(
-                        widget.username,
-                        widget.uid,
-                        widget.name,
-                        widget.description,
-                        widget.imagePath,
-                        widget.ingredients,
-                        widget.stages,
-                        widget.tags,
-                        widget.level,
-                        widget.time,
-                        notes)));
+        bool check = false;
+        for (int i = 0; i < notes.length; i++) {
+          print(notes[i]);
+          if ((notes[i] == null) || (notes[i] == ' ')) {
+            print("aa");
+            check = true;
+          }
+        }
+        if (!check) {
+          Navigator.push(
+              context,
+              PageRouteBuilder(
+                  transitionDuration: Duration(seconds: 0),
+                  pageBuilder: (context, animation1, animation2) =>
+                      FinishCreateRecipe(
+                          widget.username,
+                          widget.uid,
+                          widget.name,
+                          widget.description,
+                          widget.imagePath,
+                          widget.ingredients,
+                          widget.stages,
+                          widget.tags,
+                          widget.level,
+                          widget.time,
+                          notes)));
+        } else {
+          setState(() {
+            widget.error = "note cant be null";
+          });
+        }
       },
       tooltip: 'next',
       child: Icon(Icons.navigate_next),

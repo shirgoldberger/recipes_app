@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/services/database.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:recipes_app/services/userFromDB.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -100,5 +101,9 @@ class AuthService {
     if (user != null) {
       await user.delete();
     }
+  }
+
+  Future sendPasswordResetEmail(String email) async {
+    return _auth.sendPasswordResetEmail(email: email);
   }
 }

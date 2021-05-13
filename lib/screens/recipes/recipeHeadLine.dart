@@ -26,19 +26,19 @@ class RecipeHeadLine extends StatefulWidget {
     switch (recipe.level) {
       case 1:
         circleColor = Colors.green[400];
-        level = 'easy';
+        level = 'Easy';
         break;
       case 2:
         circleColor = Colors.yellow[400];
-        level = 'medium';
+        level = 'Medium';
         break;
       case 3:
         circleColor = Colors.pink[400];
-        level = 'hard';
+        level = 'Hard';
         break;
       case 0:
         circleColor = Colors.grey[400];
-        level = 'easy';
+        level = 'Easy';
         break;
     }
   }
@@ -74,7 +74,7 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
       padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
       child: InkWell(
         customBorder: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(5),
         ),
         borderRadius: BorderRadius.circular(5),
         highlightColor: Colors.blueGrey[100],
@@ -141,7 +141,6 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
     return Text(
       widget.recipe.name == "" ? "This recipe has no name" : widget.recipe.name,
       style: TextStyle(
-        color: widget.colorName,
         fontSize: 15.0,
         fontWeight: FontWeight.bold,
       ),

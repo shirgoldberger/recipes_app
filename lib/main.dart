@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +14,7 @@ import 'package:recipes_app/services/fireStorageService.dart';
 import 'config.dart';
 import 'models/user.dart';
 import 'package:provider/provider.dart';
+import 'package:connectivity/connectivity.dart';
 
 void main() {
   runApp(Phoenix(child: MyApp()));
@@ -31,6 +35,7 @@ class MyApp extends StatelessWidget {
 
 /// This is the stateful widget that the main application instantiates.
 class MyStatefulWidget extends StatefulWidget {
+  bool internetConnection = false;
   MyStatefulWidget({Key key}) : super(key: key);
 
   @override
@@ -43,16 +48,66 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   List<Widget> pageList = [];
   NetworkImage image;
   String personLabel = 'Personal';
+  Map _source = {ConnectivityResult.none: false};
+  MyConnectivity _connectivity = MyConnectivity.instance;
 
   @override
   void initState() {
+    super.initState();
     pageList.add(Search());
     pageList.add(Home());
     pageList.add(Personal());
     pageList.add(Book());
     getProfileImage();
-    super.initState();
+    _connectivity.initialise();
+    _connectivity.myStream.listen((source) {
+      setState(() => _source = source);
+    });
+
+    // print("checkk");
+
+    // check();
   }
+
+  void checkConnection() {
+    String string;
+    switch (_source.keys.toList()[0]) {
+      case ConnectivityResult.none:
+        string = "Offline";
+        break;
+      case ConnectivityResult.mobile:
+        string = "Mobile: Online";
+        break;
+      case ConnectivityResult.wifi:
+        string = "WiFi: Online";
+    }
+    if (string == 'Offline') {
+      Future.delayed(Duration.zero, () async {
+        _showAlertDialog();
+      });
+    }
+    print(string);
+  }
+
+  // Future<bool> check() async {
+  //   var connectivityResult = await (Connectivity().checkConnectivity());
+  //   if (connectivityResult == ConnectivityResult.mobile) {
+  //     // print("truuuuee");
+
+  //     setState(() {
+  //       widget.internetConnection = true;
+  //     });
+  //   } else if (connectivityResult == ConnectivityResult.wifi) {
+  //     // print("falllsseeee");
+  //     setState(() {
+  //       widget.internetConnection = true;
+  //     });
+  //   }
+  //   print("falllslse");
+  //   setState(() {
+  //     widget.internetConnection = false;
+  //   });
+  // }
 
   void getProfileImage() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
@@ -79,8 +134,40 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     });
   }
 
+  _showAlertDialog() {
+    // set up the buttons
+    // ignore: deprecated_member_use
+    Widget cancelButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () async {
+        Phoenix.rebirth(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Ooops..."),
+      content: Text(
+          "You do not seem to have internet connection - please try again"),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 5), () async {
+      checkConnection();
+    });
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
@@ -134,6 +221,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.cyan,
         onTap: _onItemTapped,
+        //  onTap: _showAlertDialog(),
       ),
     );
   }
@@ -198,4 +286,42 @@ class A extends StatelessWidget {
       return RecipesBookPage(user.uid);
     }
   }
+}
+
+class MyConnectivity {
+  MyConnectivity._internal();
+
+  static final MyConnectivity _instance = MyConnectivity._internal();
+
+  static MyConnectivity get instance => _instance;
+
+  Connectivity connectivity = Connectivity();
+
+  StreamController controller = StreamController.broadcast();
+
+  Stream get myStream => controller.stream;
+
+  void initialise() async {
+    ConnectivityResult result = await connectivity.checkConnectivity();
+    _checkStatus(result);
+    connectivity.onConnectivityChanged.listen((result) {
+      _checkStatus(result);
+    });
+  }
+
+  void _checkStatus(ConnectivityResult result) async {
+    bool isOnline = false;
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        isOnline = true;
+      } else
+        isOnline = false;
+    } on SocketException catch (_) {
+      isOnline = false;
+    }
+    controller.sink.add({result: isOnline});
+  }
+
+  void disposeStream() => controller.close();
 }

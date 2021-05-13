@@ -30,6 +30,8 @@ class WatchRecipe extends StatefulWidget {
   String tags = '';
   Color levelColor;
   String levelString = '';
+  Color timeColor;
+  String timeString = '';
   var uid;
 
   @override
@@ -82,15 +84,30 @@ class _WatchRecipeState extends State<WatchRecipe> {
   setLevels() {
     if (widget.current.level == 1) {
       widget.levelColor = Colors.green[900];
-      widget.levelString = "easy";
+      widget.levelString = "Easy";
     }
     if (widget.current.level == 2) {
       widget.levelColor = Colors.red[900];
-      widget.levelString = "nedium";
+      widget.levelString = "Medium";
     }
     if (widget.current.level == 3) {
       widget.levelColor = Colors.blue[900];
-      widget.levelString = "hard";
+      widget.levelString = "Hard";
+    }
+  }
+
+  setTimes() {
+    switch (widget.current.time) {
+      case 1:
+        widget.timeString = 'Until half-hour';
+        // widget.timeColor = Colors.
+        break;
+      case 2:
+        widget.timeString = 'Until hour';
+        break;
+      case 3:
+        widget.timeString = 'Over an hour';
+        break;
     }
   }
 
@@ -109,7 +126,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
           setState(() {
             widget.ing.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
-                element.data['count'] ?? 0,
+                element.data['count'] ?? 0.0,
                 element.data['unit'] ?? '',
                 element.data['index'] ?? 0));
           });
@@ -137,7 +154,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
           setState(() {
             widget.ing.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
-                element.data['count'] ?? 0,
+                element.data['count'] ?? 0.0,
                 element.data['unit'] ?? '',
                 element.data['index'] ?? 0));
           });

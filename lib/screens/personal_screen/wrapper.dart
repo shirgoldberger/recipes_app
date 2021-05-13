@@ -14,7 +14,7 @@ class Wrapper extends StatelessWidget {
     // if the user is null - no user us cinnect
     if (user == null) {
       return Authentication(
-        showSignIn: false,
+        showSignIn: true,
       );
     } else if (user.verified) {
       return HomeLogIn(user.uid);

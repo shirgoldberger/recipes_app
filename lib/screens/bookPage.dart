@@ -62,7 +62,7 @@ class RecipesBookPage extends StatelessWidget {
               backgroundColor: Colors.blueGrey[50],
               appBar: AppBar(
                 title: Text(
-                  'cook book',
+                  'My Book',
                   style: TextStyle(
                     fontFamily: 'Raleway',
                   ),

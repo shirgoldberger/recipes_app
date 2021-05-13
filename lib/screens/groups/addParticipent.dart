@@ -89,8 +89,6 @@ class _AddParticipentState extends State<AddParticipent> {
 
       if (mailCheck == email) {
         if (!usersID.contains(element.documentID)) {
-          print("contains");
-
           findUser = true;
 
           usersID.add(element.documentID);

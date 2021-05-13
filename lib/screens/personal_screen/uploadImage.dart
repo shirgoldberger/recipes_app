@@ -40,10 +40,8 @@ class _UploadingImageToFirebaseStorageState
         FirebaseStorage.instance.ref().child('uploads/$fileName');
     StorageUploadTask uploadTask = firebaseStorageRef.putFile(_imageFile);
     StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
-    taskSnapshot.ref.getDownloadURL().then(
-          (value) => print("Done: $value"),
-        );
-    Navigator.pop(context, {"file": _imageFile, "path": _imageFile.path});
+    taskSnapshot.ref.getDownloadURL();
+    Navigator.pop(context, fileName);
   }
 
   @override

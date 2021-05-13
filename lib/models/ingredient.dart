@@ -1,6 +1,6 @@
 class IngredientsModel {
   String name;
-  int count;
+  double count;
   String unit;
   int index;
 
@@ -8,9 +8,9 @@ class IngredientsModel {
     this.index = i;
   }
 
-  IngredientsModel({this.count = 0, this.name = '', this.unit = ''});
+  IngredientsModel({this.count = 0, this.name = '', this.unit = 'Unit'});
   IngredientsModel.antherConstactor(
-      String _name, int _count, String _unit, int i) {
+      String _name, double _count, String _unit, int i) {
     this.name = _name;
     this.count = _count;
     this.unit = _unit;

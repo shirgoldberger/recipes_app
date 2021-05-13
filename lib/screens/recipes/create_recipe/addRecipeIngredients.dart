@@ -141,7 +141,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
           setState(() {
             widget.errorIng[i] = '';
           });
-          setState(() => ingredients[i].count = int.parse(val));
+          setState(() => ingredients[i].count = double.parse(val));
         }
       },
     );
@@ -155,7 +155,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
       "Kilogram",
       "Milliliter",
       "Liter",
-      "Cup"
+      "Cup",
     ];
 
     return DropdownButton(
@@ -163,6 +163,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
       icon: Icon(Icons.arrow_drop_down),
       iconSize: 36,
       isExpanded: true,
+      value: ingredients[i].unit,
       onChanged: (newValue) {
         setState(() {
           ingredients[i].unit = newValue;
@@ -256,14 +257,22 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
           this.ingredients.length != 0 ? Colors.green : Colors.grey,
       onPressed: () {
         List<IngredientsModel> notEmptyIngredients = [];
+        bool checkNullIng = false;
         for (IngredientsModel ingredient in this.ingredients) {
-          if (ingredient.count != 0 ||
-              ingredient.name == "" ||
-              ingredient.unit == "") {
+          if (ingredient.count != 0 &&
+              ingredient.name != "" &&
+              ingredient.unit != "") {
+            // print("add");
             notEmptyIngredients.add(ingredient);
+          } else {
+            print(ingredient);
+            print(ingredient.name);
+            print(ingredient.count);
+            print(ingredient.unit);
+            checkNullIng = true;
           }
         }
-        if (notEmptyIngredients.length != 0) {
+        if ((notEmptyIngredients.length != 0) && (!checkNullIng)) {
           Navigator.push(
               context,
               PageRouteBuilder(
@@ -272,9 +281,15 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
                       AddRecipeStages(widget.username, widget.uid, widget.name,
                           widget.description, widget.imagePath, ingredients)));
         } else {
-          setState(() {
-            error = "Add some ingredients to your recipe";
-          });
+          if (checkNullIng) {
+            setState(() {
+              error = "AAll ingredients details should be complete";
+            });
+          } else {
+            setState(() {
+              error = "Add some ingredients to your recipe";
+            });
+          }
         }
       },
       tooltip: 'next',

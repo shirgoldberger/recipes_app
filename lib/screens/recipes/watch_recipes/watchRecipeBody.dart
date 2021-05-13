@@ -16,14 +16,18 @@ class WatchRecipeBody extends StatefulWidget {
   List<Stages> stages = [];
   Color levelColor;
   String levelString = '';
+  Color timeColor;
+  String timeString = '';
   String imagePath = "";
-  NetworkImage image;
+  NetworkImage userImage;
+  NetworkImage recipeImage;
   List<bool> _isChecked = [];
   bool doneLoadLikeList = false;
   Map<String, String> usersLikes = {};
   bool isLikeRecipe = false;
   String uid;
   String publishRecipeId;
+  String timeText = '';
 
   WatchRecipeBody(
       Recipe _current,
@@ -52,6 +56,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     getUserImage();
     sortStages();
     sortIngredients();
+    setTimeText();
     // its publish recipe
     if (widget.current.publish != '') {
       if (widget.uid != null) {
@@ -65,14 +70,37 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     }
   }
 
+  setTimeText() {
+    switch (widget.current.time) {
+      case 1:
+        setState(() {
+          widget.timeText = 'Until half-hour';
+        });
+
+        break;
+      case 2:
+        setState(() {
+          widget.timeText = 'Until hour';
+        });
+
+        break;
+      case 3:
+        setState(() {
+          widget.timeText = 'Over an hour';
+        });
+
+        break;
+    }
+  }
+
   void getImage(BuildContext context) async {
-    if (widget.image != null || widget.imagePath == "") {
+    if (widget.userImage != null || widget.imagePath == "") {
       return;
     }
     String downloadUrl = await FireStorageService.loadFromStorage(
         context, "uploads/" + widget.imagePath);
     setState(() {
-      widget.image = NetworkImage(downloadUrl);
+      widget.userImage = NetworkImage(downloadUrl);
     });
   }
 
@@ -125,12 +153,15 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
 
   @override
   Widget build(BuildContext context) {
+    getImage(context);
+    getRecipeImage(context);
     return new Container(
         child: ListView(children: [
       Container(
           child: new Column(children: [
-        name(),
+        Row(children: [widthBox(20), name(), widthBox(30), recipePicture()]),
         padding,
+        description(),
         if (widget.current.publish != '')
           Row(
             children: [
@@ -138,13 +169,22 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
               likeIcon(),
             ],
           ),
-        if (widget.levelString != '') level(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (widget.levelString != '') level(),
+            SizedBox(
+              height: 20.0,
+              width: 20,
+            ),
+            time(),
+          ],
+        ),
         Divider(
           height: 40,
           thickness: 8,
         ),
         padding,
-        description(),
         padding,
         Row(children: [
           picture(),
@@ -165,6 +205,17 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
         ),
       ]))
     ]));
+  }
+
+  void getRecipeImage(BuildContext context) async {
+    if (widget.recipeImage != null || widget.current.imagePath == "") {
+      return;
+    }
+    String downloadUrl = await FireStorageService.loadFromStorage(
+        context, "uploads/" + widget.current.imagePath);
+    setState(() {
+      widget.recipeImage = NetworkImage(downloadUrl);
+    });
   }
 
   String makeTags() {
@@ -188,7 +239,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
           radius: 40,
           backgroundImage: ExactAssetImage(noImagePath));
     } else {
-      if (widget.image != null) {
+      if (widget.userImage != null) {
         return CircleAvatar(
             child: TextButton(
                 onPressed: () => Navigator.push(
@@ -197,7 +248,27 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                         builder: (context) => UserRecipeList(widget.uid)))),
             backgroundColor: backgroundColor,
             radius: 30,
-            backgroundImage: widget.image);
+            backgroundImage: widget.userImage);
+      } else {
+        return Container(
+            height: 20, width: 20, child: CircularProgressIndicator());
+      }
+    }
+  }
+
+  Widget recipePicture() {
+    // there is no image yet
+    if (widget.current.imagePath == "") {
+      return CircleAvatar(
+          backgroundColor: backgroundColor,
+          radius: 40,
+          backgroundImage: ExactAssetImage(noImagePath));
+    } else {
+      if (widget.recipeImage != null) {
+        return CircleAvatar(
+            backgroundColor: backgroundColor,
+            radius: 40,
+            backgroundImage: widget.recipeImage);
       } else {
         return Container(
             height: 20, width: 20, child: CircularProgressIndicator());
@@ -208,8 +279,12 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   Widget description() {
     return Text(
       widget.current.description,
-      style:
-          TextStyle(color: Colors.black, fontFamily: 'Raleway', fontSize: 20),
+      textAlign: TextAlign.left,
+      style: TextStyle(
+        color: Colors.black,
+        fontFamily: 'DescriptionFont',
+        fontSize: 20,
+      ),
     );
   }
 
@@ -222,6 +297,16 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
           style: TextStyle(color: Colors.white),
         ),
         onPressed: null);
+  }
+
+  Widget time() {
+    return Text(widget.timeText,
+        style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w900,
+            // fontStyle: FontStyle.italic,
+            fontFamily: 'Raleway',
+            fontSize: 15));
   }
 
   Widget writer() {
@@ -256,11 +341,11 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
           children: <Widget>[
             Padding(padding: EdgeInsets.only(top: 20.0)),
             Text(
-              'ingredients for the recipe:',
+              '  Ingredients:',
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.w900,
-                  fontStyle: FontStyle.italic,
+                  // fontStyle: FontStyle.italic,
                   fontFamily: 'Raleway',
                   fontSize: 27),
             ),
@@ -440,9 +525,8 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
         style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w900,
-            fontStyle: FontStyle.italic,
-            fontFamily: 'Raleway',
-            fontSize: 60),
+            fontFamily: 'AcmeFont',
+            fontSize: 40),
       ),
     );
   }

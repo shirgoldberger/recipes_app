@@ -16,6 +16,7 @@ class UserHeadLine extends StatefulWidget {
   String lastName = '';
   NetworkImage image;
   String imagePath = '';
+  String mail = '';
   @override
   _UserHeadLineState createState() => _UserHeadLineState();
 }
@@ -32,6 +33,7 @@ class _UserHeadLineState extends State<UserHeadLine> {
     setState(() {
       widget.firstName = snap.data['firstName'] ?? '';
       widget.lastName = snap.data['lastName'] ?? '';
+      widget.mail = snap.data['Email'] ?? '';
       widget.imagePath = snap.data['imagePath'] ?? '';
     });
   }
@@ -78,18 +80,18 @@ class _UserHeadLineState extends State<UserHeadLine> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            widget.firstName,
+                            widget.firstName + " " + widget.lastName,
                             style: TextStyle(
                                 fontFamily: 'Raleway',
                                 color: Colors.black,
                                 fontSize: 20),
                           ),
                           Text(
-                            widget.lastName,
+                            widget.mail,
                             style: TextStyle(
                                 fontFamily: 'Raleway',
-                                color: Colors.black,
-                                fontSize: 20),
+                                color: Colors.grey[700],
+                                fontSize: 15),
                           )
                         ])
                   ])

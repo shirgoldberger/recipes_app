@@ -136,23 +136,22 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
               style: TextStyle(fontFamily: 'Raleway', fontSize: 20),
             ),
             box,
-            Image.file(imageFile),
-            // FutureBuilder(
-            //     future: _getImage(context, imagePath),
-            //     builder: (context, snapshot) {
-            //       if (snapshot.connectionState == ConnectionState.done)
-            //         return CircleAvatar(
-            //           backgroundColor: backgroundColor,
-            //           backgroundImage: snapshot.data,
-            //           radius: 150,
-            //         );
-            //       // if (snapshot.connectionState == ConnectionState.waiting)
-            //       else
-            //         return Container(
-            //             height: MediaQuery.of(context).size.height / 10,
-            //             width: MediaQuery.of(context).size.width / 10,
-            //             child: CircularProgressIndicator());
-            //     }),
+            FutureBuilder(
+                future: _getImage(context, imagePath),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done)
+                    return CircleAvatar(
+                      backgroundColor: backgroundColor,
+                      backgroundImage: snapshot.data,
+                      radius: 150,
+                    );
+                  // if (snapshot.connectionState == ConnectionState.waiting)
+                  else
+                    return Container(
+                        height: MediaQuery.of(context).size.height / 10,
+                        width: MediaQuery.of(context).size.width / 10,
+                        child: CircularProgressIndicator());
+                }),
             TextButton(
                 onPressed: uploadImagePressed,
                 child: Text(
@@ -187,8 +186,7 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
                 builder: (context) => UploadingImageToFirebaseStorage()))
         .then((value) => {
               setState(() {
-                imageFile = value["file"];
-                imagePath = value["path"];
+                imagePath = value;
               })
             });
   }

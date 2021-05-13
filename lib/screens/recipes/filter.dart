@@ -81,7 +81,7 @@ class _FilterState extends State<Filter> {
     if (widget.levelList.contains(3)) {
       setState(() {
         widget.hardButtom = '-hard';
-        widget.hardButtomColor = Colors.blue[400];
+        widget.hardButtomColor = Colors.red[400];
       });
     }
 
@@ -100,7 +100,7 @@ class _FilterState extends State<Filter> {
     if (widget.timeList.contains(3)) {
       setState(() {
         widget.time3Buttom = '-Over an hour';
-        widget.time3ButtomColor = Colors.blue[400];
+        widget.time3ButtomColor = Colors.red[400];
       });
     }
     String selectedSubject;
@@ -122,7 +122,7 @@ class _FilterState extends State<Filter> {
             time2Button(),
             time3Button()
           ]),
-          widthBox(80),
+          widthBox(30),
           Column(children: [
             Text(
               "Choose time:",

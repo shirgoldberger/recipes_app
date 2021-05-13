@@ -21,6 +21,13 @@ class UserFromDB {
     return user.data['Email'] ?? "";
   }
 
+  static Future<String> setUserEmail(String uid, String email) async {
+    await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .updateData({'Email': email});
+  }
+
   static getUserImage(String uid) async {
     DocumentSnapshot user =
         await Firestore.instance.collection('users').document(uid).get();

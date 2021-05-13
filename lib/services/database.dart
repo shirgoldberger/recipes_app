@@ -111,7 +111,7 @@ class DataBaseService {
         }
       }
       // notes
-      var note = doc.data['tags'];
+      var note = doc.data['notes'];
       String noteString = note.toString();
       List<String> nList = [];
       if (noteString != "[]") {

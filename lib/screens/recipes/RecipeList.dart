@@ -25,7 +25,7 @@ class RecipeList extends StatefulWidget {
   String midButtom = 'medium';
   Color midButtomColor = Colors.yellow[100];
   String hardButtom = 'hard';
-  Color hardButtomColor = Colors.blue[100];
+  Color hardButtomColor = Colors.red[100];
   List<int> levelList = [];
   List<int> timeList = [];
 
@@ -120,8 +120,6 @@ class _RecipeListState extends State<RecipeList> {
               padding: EdgeInsets.only(top: 1, bottom: 1, left: 5, right: 5),
               itemCount: widget.listForWatch.length,
               itemBuilder: (context, index) {
-                // print('recipeList');
-                // print(widget.list[index]);
                 return Padding(
                     padding: EdgeInsets.all(8),
                     child: Container(
@@ -147,93 +145,6 @@ class _RecipeListState extends State<RecipeList> {
         ]));
   }
 
-  // Widget easyButton() {
-  //   return FlatButton.icon(
-  //       color: widget.easyButtomColor,
-  //       icon: Icon(
-  //         Icons.label,
-  //         color: Colors.black,
-  //       ),
-  //       label: Text(
-  //         widget.easyButtom,
-  //         style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
-  //       ),
-  //       onPressed: () {
-  //         if (widget.easyButtom == 'easy') {
-  //           setState(() {
-  //             widget.levelList.add(1);
-  //             widget.easyButtom = '-easy';
-  //             widget.easyButtomColor = Colors.green[400];
-  //           });
-  //           pushEasy();
-  //         } else {
-  //           setState(() {
-  //             widget.levelList.remove(1);
-  //             widget.easyButtom = 'easy';
-  //             widget.easyButtomColor = Colors.green[100];
-  //           });
-  //           unPushEasy();
-  //         }
-  //       });
-  // }
-
-  // Widget midButton() {
-  //   return FlatButton.icon(
-  //       color: widget.midButtomColor,
-  //       icon: Icon(Icons.label, color: Colors.black),
-  //       label: Text(
-  //         widget.midButtom,
-  //         style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
-  //       ),
-  //       onPressed: () {
-  //         if (widget.midButtom == 'medium') {
-  //           setState(() {
-  //             widget.levelList.add(2);
-  //             widget.midButtom = '-medium';
-  //             widget.midButtomColor = Colors.yellow[400];
-  //           });
-  //           pushEasy();
-  //         } else {
-  //           setState(() {
-  //             widget.levelList.remove(2);
-  //             widget.midButtom = 'medium';
-  //             widget.midButtomColor = Colors.yellow[100];
-  //           });
-  //           unPushEasy();
-  //         }
-  //       });
-  // }
-
-  // Widget hardButton() {
-  //   return FlatButton.icon(
-  //       color: widget.hardButtomColor,
-  //       icon: Icon(
-  //         Icons.label,
-  //         color: Colors.black,
-  //       ),
-  //       label: Text(
-  //         widget.hardButtom,
-  //         style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
-  //       ),
-  //       onPressed: () {
-  //         if (widget.hardButtom == 'hard') {
-  //           setState(() {
-  //             widget.levelList.add(3);
-  //             widget.hardButtom = '-hard';
-  //             widget.hardButtomColor = Colors.blue[400];
-  //           });
-  //           pushEasy();
-  //         } else {
-  //           setState(() {
-  //             widget.levelList.remove(3);
-  //             widget.hardButtom = 'hard';
-  //             widget.hardButtomColor = Colors.blue[100];
-  //           });
-  //           unPushEasy();
-  //         }
-  //       });
-  // }
-
   void addtag(String value) {
     List valueList = widget.map[value];
     if (valueList != null) {
@@ -244,16 +155,12 @@ class _RecipeListState extends State<RecipeList> {
             widget.list.add(recipe);
             widget.listForWatch.add(recipe);
           });
-          //  widget.list.add(recipe);
         }
       }
     }
   }
 
   void deleteTag(String value) {
-    //  print(value);
-    //  print("my tags");
-    //  print(widget.myTags);
     setState(() {
       widget.myTags.remove(value);
     });
@@ -266,10 +173,7 @@ class _RecipeListState extends State<RecipeList> {
       bool findTag = false;
       Recipe recipe = valueList[i];
       for (int j = 0; j < recipe.tags.length; j++) {
-        //  print(recipe.myTag);
-        // print(widget.myTags);
         if (widget.myTags.contains(recipe.tags[j])) {
-          //  print("fibd");
           findTag = true;
         }
       }
@@ -281,36 +185,6 @@ class _RecipeListState extends State<RecipeList> {
       }
     }
   }
-
-  // void pushEasy() {
-  //   print("push easy");
-  //   print(widget.list);
-  //   print(widget.listForWatch);
-  //   setState(() {
-  //     widget.listForWatch.clear();
-  //   });
-  //   print(widget.list);
-  //   print(widget.listForWatch);
-  //   for (int i = 0; i < widget.list.length; i++) {
-  //     print(widget.list[i].level);
-  //     if (widget.levelList.contains(widget.list[i].level)) {
-  //       setState(() {
-  //         widget.listForWatch.add(widget.list[i]);
-  //       });
-  //     }
-  //   }
-  // }
-
-  // void unPushEasy() {
-  //   if (widget.levelList.isEmpty) {
-  //     setState(() {
-  //       widget.listForWatch.clear();
-  //       widget.listForWatch.addAll(widget.list);
-  //     });
-  //   } else {
-  //     pushEasy();
-  //   }
-  // }
 
   void init() {
     for (int i = 0; i < widget.map[widget.head].length; i++) {
@@ -366,7 +240,6 @@ class _RecipeListState extends State<RecipeList> {
 
   cameBack(value) {
     List myTagCameBack = value['c'];
-    // print(myTagCameBack);
     for (int i = 0; i < myTagCameBack.length; i++) {
       addtag(myTagCameBack[i]);
     }

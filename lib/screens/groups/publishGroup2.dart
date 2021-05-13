@@ -200,9 +200,7 @@ class _PublishGroup2State extends State<PublishGroup2> {
                   widget.donePublish = false;
                   publishRecipe();
                 });
-                // publishRecipe();
               } else {
-                //print("else");
                 setState(() {
                   widget.donePublish = false;
                   unPublishRecipe();

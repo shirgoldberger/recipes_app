@@ -51,7 +51,7 @@ class _IngredientsState extends State<Ingredients> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     initialValue: widget.ing.name,
-                    onSaved: (val) => widget.ing.count = int.parse(val),
+                    onSaved: (val) => widget.ing.count = double.parse(val),
                     validator: (val) =>
                         val.length > 3 ? null : 'full name is valid',
                     decoration: InputDecoration(

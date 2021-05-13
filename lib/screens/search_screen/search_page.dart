@@ -113,6 +113,7 @@ class _SearchPage extends State<SearchPage> {
                   child: SingleChildScrollView(
                       child: Container(
                           child: Column(children: <Widget>[
+                box,
                 searchWidget(),
                 box,
                 Center(
@@ -531,8 +532,8 @@ class _SearchPage extends State<SearchPage> {
 
   Widget searchWidget() {
     return Container(
-      width: 180,
-      height: 30,
+      width: 250,
+      height: 60,
       child: TextFormField(
         decoration: InputDecoration(
           filled: true,
@@ -664,9 +665,15 @@ class _SearchPage extends State<SearchPage> {
         }
       }
     }
+    bool check = false;
     Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
         true, id, publish, path);
-    if (!widget.recipesSearch.contains(r)) {
+    for (int i = 0; i < widget.recipesSearch.length; i++) {
+      if (widget.recipesSearch[i].id == r.id) {
+        check = true;
+      }
+    }
+    if (!check) {
       setState(() {
         widget.recipesSearch.add(r);
       });

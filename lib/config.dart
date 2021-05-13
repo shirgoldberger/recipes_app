@@ -79,3 +79,5 @@ String errorEmailAlreadyInUse =
     'PlatformException(ERROR_EMAIL_ALREADY_IN_USE, The email address is already in use by another account., null, null)';
 String errorNetworkRequestFaild =
     'PlatformException(ERROR_NETWORK_REQUEST_FAILED, A network error (such as timeout, interrupted connection or unreachable host) has occurred., null, null)';
+String errorHasNoUser =
+    'PlatformException(ERROR_USER_NOT_FOUND, There is no user record corresponding to this identifier. The user may have been deleted., null, null)';

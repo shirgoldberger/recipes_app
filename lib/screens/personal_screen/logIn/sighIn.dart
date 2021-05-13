@@ -4,6 +4,8 @@ import 'package:recipes_app/screens/personal_screen/homeLogIn.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../../config.dart';
+import '../forgetPassword.dart';
+import 'package:email_validator/email_validator.dart';
 
 class SignIn extends StatefulWidget {
   final Function toggleView;
@@ -16,6 +18,7 @@ class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
+  bool _isHidden = true;
 
   // text field state
   String email = '';
@@ -28,6 +31,13 @@ class _SignInState extends State<SignIn> {
   void pressedLogIn() async {
     // if passwors and email are null its enter to 'if'
     if (_formKey.currentState.validate()) {
+      if (!EmailValidator.validate(email)) {
+        setState(() {
+          loading = false;
+          error = "Email is not valid";
+        });
+        return;
+      }
       setState(() {
         loading = true;
       });
@@ -38,6 +48,13 @@ class _SignInState extends State<SignIn> {
           loading = false;
           error =
               'Network connection failed. Please connect to the internet and try again';
+        });
+        return;
+      }
+      if (result == errorHasNoUser) {
+        setState(() {
+          loading = false;
+          error = "No user with this account";
         });
         return;
       }
@@ -84,7 +101,9 @@ class _SignInState extends State<SignIn> {
                       logInButton(),
                       box,
                       errorText(),
-                      signInWithGoogleButton(),
+                      box,
+                      forgetPassword(),
+                      // signInWithGoogleButton(),
                       box,
                       registerButton(),
                       box,
@@ -133,19 +152,31 @@ class _SignInState extends State<SignIn> {
   Widget passwordField() {
     return TextFormField(
       decoration: InputDecoration(
+        suffix: InkWell(
+          onTap: _togglePasswordView,
+          child: Icon(
+            _isHidden ? Icons.visibility : Icons.visibility_off,
+          ),
+        ),
         hintText: 'enter password...',
         enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: borderColor, width: 2.0)),
         focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: borderColor, width: 2.0)),
       ),
+      obscureText: _isHidden,
       validator: (val) =>
           val.length < 6 ? 'Enter a password with 6+ characters' : null,
-      obscureText: true,
       onChanged: (val) {
         setState(() => password = val);
       },
     );
+  }
+
+  void _togglePasswordView() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
   }
 
   Widget logInButton() {
@@ -219,6 +250,19 @@ class _SignInState extends State<SignIn> {
       title: Text(appName, style: TextStyle(fontFamily: logoFont)),
       backgroundColor: appBarBackgroundColor,
       elevation: 0.0,
+    );
+  }
+
+  Widget forgetPassword() {
+    return FlatButton(
+      onPressed: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => ForgetPassword(_auth)));
+      },
+      child: Text(
+        'Forgot Password?',
+        style: TextStyle(color: Colors.grey, fontSize: 12),
+      ),
     );
   }
 }

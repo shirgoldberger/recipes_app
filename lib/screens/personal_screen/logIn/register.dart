@@ -1,7 +1,9 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../../config.dart';
+import "package:password_validator/password_validator.dart";
 
 class Register extends StatefulWidget {
   final Function toggleView;
@@ -15,7 +17,8 @@ class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
   bool _isHidden = true;
-
+  PasswordValidator passwordValidator =
+      new PasswordValidator(min: 6, digits: 1, uppercase: 1);
   // text field state
   String email = '';
   String password = '';
@@ -31,6 +34,20 @@ class _RegisterState extends State<Register> {
       setState(() {
         loading = true;
       });
+      if (!EmailValidator.validate(email)) {
+        setState(() {
+          loading = false;
+          error = "Please supply a valid email";
+        });
+        return;
+      }
+      if (!passwordValidator.validate(password)) {
+        setState(() {
+          loading = false;
+          error = "Please supply a valid password";
+        });
+        return;
+      }
       // create new user
       dynamic result =
           await _auth.registerWithEmailAndPass(email, password, name);

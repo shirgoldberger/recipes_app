@@ -17,7 +17,6 @@ class SettingForm extends StatefulWidget {
   String uid;
   String imagePath = "";
   NetworkImage m;
-  File imageFile;
 
   SettingForm(String _uid, NetworkImage _m) {
     uid = _uid;
@@ -35,6 +34,7 @@ class _SettingFormState extends State<SettingForm> {
   String _currentPhone;
   String _currentEmail;
   int _currentAge;
+  String _warning;
 
   @override
   void initState() {
@@ -57,7 +57,7 @@ class _SettingFormState extends State<SettingForm> {
                   appBar: appBar(),
                   body: ListView(
                     padding:
-                        EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0),
+                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
                     children: <Widget>[
                       Row(children: [title(), widthBox(20), imageBox()]),
                       firstNameField(userData.firstName),
@@ -97,9 +97,8 @@ class _SettingFormState extends State<SettingForm> {
       child: CircleAvatar(
           backgroundColor: backgroundColor,
           radius: 40,
-          backgroundImage: (widget.imageFile == null)
-              ? ExactAssetImage(noImagePath)
-              : widget.imageFile),
+          backgroundImage:
+              (widget.m == null) ? ExactAssetImage(noImagePath) : widget.m),
       onPressed: uploadImagePressed,
     );
   }
@@ -109,16 +108,17 @@ class _SettingFormState extends State<SettingForm> {
             context,
             MaterialPageRoute(
                 builder: (context) => UploadingImageToFirebaseStorage()))
-        .then((value) => {
-              FireStorageService.loadFromStorage(context, "uploads/" + value)
-                  .then((downloadUrl) {
-                setState(() {
-                  widget.imageFile = value["file"];
-                  UserFromDB.setUserImage(widget.uid, value["path"]);
-                  // widget.m = NetworkImage(downloadUrl);
-                });
-              })
-            });
+        .then((value) async {
+      setState(() {
+        widget.imagePath = value;
+      });
+
+      String downloadUrl = await FireStorageService.loadFromStorage(
+          context, "uploads/" + widget.imagePath);
+      setState(() {
+        widget.m = NetworkImage(downloadUrl);
+      });
+    });
   }
 
   Widget title() {
@@ -149,10 +149,11 @@ class _SettingFormState extends State<SettingForm> {
 
   Widget emailField(String email) {
     return TextFormField(
+      readOnly: true,
       initialValue: email,
       decoration: InputDecoration(labelText: 'Email'),
       validator: (val) => val.isEmpty ? 'Please enter an email' : null,
-      onChanged: (val) => setState(() => _currentEmail = val),
+      onChanged: null,
     );
   }
 
@@ -194,6 +195,7 @@ class _SettingFormState extends State<SettingForm> {
                 userData.lastName != _currentLastName) {
               changeNameInRecipes(userData);
             }
+
             Navigator.pop(context, widget.imagePath);
           }
         });

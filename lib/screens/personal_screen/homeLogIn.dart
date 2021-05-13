@@ -62,23 +62,66 @@ class _HomeLogInState extends State<HomeLogIn> {
   Widget build(BuildContext context) {
     getProfileImage(context);
     return Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: appBar(),
-        drawer: leftMenu(),
-        drawerEdgeDragWidth: 30.0,
-        body: Container(
-            padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-            child: ListView(children: <Widget>[
+      backgroundColor: backgroundColor,
+      appBar: appBar(),
+      drawer: leftMenu(),
+      drawerEdgeDragWidth: 30.0,
+      body: Container(
+          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+          child: ListView(children: <Widget>[
+            box,
+            title(),
+            box,
+            newRecipeButtom(),
+            box,
+            box,
+            Column(children: [
+              newGroupButtom2(),
               box,
-              title(),
-              box,
-              Row(children: [
-                newGroupButton(),
-                widthBox(70),
-                watchGroupButton(),
-              ]),
-            ])),
-        floatingActionButton: addNewRecipe());
+              widthBox(70),
+              watchGroupButtom2(),
+            ]),
+          ])),
+    );
+    // floatingActionButton: addNewRecipe());
+  }
+
+  Widget newRecipeButtom() {
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                  offset: const Offset(3.0, 3.0),
+                  blurRadius: 5.0,
+                  color: Colors.grey[600],
+                  spreadRadius: 2.0)
+            ]),
+        child: Material(
+          elevation: 4.0,
+          shape: CircleBorder(),
+          clipBehavior: Clip.hardEdge,
+          color: Colors.transparent,
+          child: Ink.image(
+            image: AssetImage('lib/images/new recipe.jpg'),
+            fit: BoxFit.cover,
+            width: 260.0,
+            height: 260.0,
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            MainCreateRecipe(name, widget.uid)));
+              },
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget appBar() {
@@ -184,12 +227,15 @@ class _HomeLogInState extends State<HomeLogIn> {
 
   Widget title() {
     return Text(
-      // add the name of the user
-      "Hello " + name + "!",
-      style:
-          TextStyle(fontFamily: ralewayFont, fontSize: 20, color: titleColor),
-      textAlign: TextAlign.center,
-    );
+        // add the name of the user
+        "Hello " + name + "!",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w900,
+            //fontStyle: FontStyle.italic,
+            fontFamily: 'Raleway',
+            fontSize: 40));
   }
 
   Widget addNewRecipe() {
@@ -204,6 +250,99 @@ class _HomeLogInState extends State<HomeLogIn> {
       tooltip: 'Add New Recipe',
       child: Icon(Icons.add),
     );
+  }
+
+  Widget newGroupButtom2() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: InkWell(
+        child: TextButton(
+          style: ButtonStyle(
+            backgroundColor:
+                MaterialStateProperty.all(Colors.grey), //Background Color
+            elevation: MaterialStateProperty.all(8), //Defines Elevation
+            shadowColor:
+                MaterialStateProperty.all(Colors.grey), //Defines shadowColor
+          ),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => NewGroup(widget.uid)));
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Text('   Create Group     ',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontStyle: FontStyle.italic,
+                    fontFamily: 'Raleway',
+                    fontSize: 27)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget watchGroupButtom2() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: InkWell(
+        child: TextButton(
+          style: ButtonStyle(
+            backgroundColor:
+                MaterialStateProperty.all(Colors.grey), //Background Color
+            elevation: MaterialStateProperty.all(8), //Defines Elevation
+            shadowColor:
+                MaterialStateProperty.all(Colors.grey), //Defines shadowColor
+          ),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => GroupList(widget.uid)));
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Text('Watch your Group',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontStyle: FontStyle.italic,
+                    fontFamily: 'Raleway',
+                    fontSize: 27)),
+          ),
+        ),
+      ),
+    );
+
+    // return Padding(
+    //     padding: const EdgeInsets.all(0),
+    //     // ignore: deprecated_member_use
+    //     child: RaisedButton(
+    //         shape: RoundedRectangleBorder(
+    //             borderRadius: BorderRadius.circular(18.0),
+    //             side: BorderSide(color: subButtonColor)),
+    //         onPressed: () {
+    //           Navigator.push(
+    //               context,
+    //               MaterialPageRoute(
+    //                   builder: (context) => GroupList(widget.uid)));
+    //         },
+    //         padding: EdgeInsets.all(20.0),
+    //         color: Colors.grey,
+    //         textColor: Colors.white,
+    //         child: Center(
+    //           child: Text(
+    //             'Watch ypur Group',
+    //             textAlign: TextAlign.center,
+    //             style: TextStyle(
+    //                 color: Colors.white,
+    //                 fontWeight: FontWeight.w900,
+    //                 fontStyle: FontStyle.italic,
+    //                 fontFamily: 'Raleway',
+    //                 fontSize: 27),
+    //           ),
+    //         )));
   }
 
   Widget newGroupButton() {

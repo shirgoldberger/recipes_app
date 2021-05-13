@@ -8,18 +8,6 @@ import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   final db = Firestore.instance;
-  //final AuthService _auth = AuthService();
-  //var user;
-
-  // final FirebaseAuth auth = FirebaseAuth.instance;
-
-  // void inputData() async {
-  //   final FirebaseUser user = await auth.currentUser();
-  //   final uid = user.uid;
-  //   print("///////////////////////////");
-  //   print(uid);
-  //   // here you write the codes to input the data into firestore
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +18,8 @@ class HomePage extends StatelessWidget {
             backgroundColor: backgroundColor,
             appBar: AppBar(
               title: Text(
-                'cook book',
-                style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+                'Cook Book',
+                style: TextStyle(fontFamily: logoFont, color: Colors.white),
               ),
               backgroundColor: appBarBackgroundColor,
               elevation: 0.0,

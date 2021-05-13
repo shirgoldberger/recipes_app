@@ -31,6 +31,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
     super.didUpdateWidget(oldWidget);
   }
 
+  List<Recipe> recipeList = [];
   @override
   void initState() {
     changeState();
@@ -38,10 +39,14 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
   }
 
   Future<void> changeState() async {
-    widget.publishRecipe = [];
-    widget.savedRecipe = [];
-    widget.doneLoadPublishRecipe = false;
-    widget.doneLoadSavedRecipe = false;
+    setState(() {
+      recipeList = [];
+      mapCat = {};
+      widget.publishRecipe = [];
+      widget.savedRecipe = [];
+      widget.doneLoadPublishRecipe = false;
+      widget.doneLoadSavedRecipe = false;
+    });
     if ((!widget.doneLoadPublishRecipe) && (!widget.doneLoadSavedRecipe)) {
       if (!widget.home) {
         widget.doneLoadPublishRecipe = true;
@@ -68,7 +73,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
 
   @override
   Widget build(BuildContext context) {
-    var recipeList = Provider.of<List<Recipe>>(context) ?? [];
+    recipeList = Provider.of<List<Recipe>>(context) ?? [];
     if (!widget.doneLoadPublishRecipe) {
       return Loading();
     } else {
@@ -82,21 +87,27 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
       makeCategories(recipeList);
 
       if (mapCat.length == 0) {
-        return Column(
-          children: [
-            Text(
-              "you dont have any recipe :(",
-              style: TextStyle(
-                  fontFamily: 'Raleway', color: Colors.black, fontSize: 30),
-            ),
-            TextButton(
-                child: Text(
-                  'Refresh',
-                  style: TextStyle(
-                      fontFamily: 'Raleway', color: Colors.blue, fontSize: 25),
-                ),
-                onPressed: refresh)
-          ],
+        return RefreshIndicator(
+          color: Colors.blue,
+          onRefresh: refresh,
+          child: Column(
+            children: [
+              Text(
+                "you dont have any recipe :(",
+                style: TextStyle(
+                    fontFamily: 'Raleway', color: Colors.black, fontSize: 30),
+              ),
+              TextButton(
+                  child: Text(
+                    'Refresh',
+                    style: TextStyle(
+                        fontFamily: 'Raleway',
+                        color: Colors.blue,
+                        fontSize: 25),
+                  ),
+                  onPressed: refresh2)
+            ],
+          ),
         );
       } else {
         return ListView(shrinkWrap: true, primary: false, children: <Widget>[
@@ -107,13 +118,13 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
             color: Colors.blue,
             onRefresh: refresh,
             child: Container(
-              height: 500,
+              height: MediaQuery.of(context).size.height,
               child: GridView.count(
-                crossAxisCount: 3,
+                crossAxisCount: 2,
                 children: List.generate(mapCat.length, (index) {
                   return Container(
-                      height: 500,
-                      width: 500,
+                      height: 900,
+                      width: 900,
                       child: Card(
                           shape: RoundedRectangleBorder(side: BorderSide.none),
                           child: categoryButtom(mapCat.keys.elementAt(index),
@@ -128,9 +139,16 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
   }
 
   Future<bool> refresh() async {
-    await Future.delayed(Duration(seconds: 3));
-    changeState();
-    setState(() {});
+    await Future.delayed(Duration(seconds: 1), changeState);
+    return true;
+  }
+
+  Future<bool> refresh2() async {
+    setState(() {
+      widget.doneLoadPublishRecipe = false;
+    });
+    await Future.delayed(Duration(seconds: 1), changeState);
+    // changeState();
     return true;
   }
 
@@ -492,7 +510,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
           }
         }
         //notes
-        var note = doc.data['tags'];
+        var note = doc.data['notes'];
         String noteString = note.toString();
         List<String> nList = [];
         if (noteString != "[]") {

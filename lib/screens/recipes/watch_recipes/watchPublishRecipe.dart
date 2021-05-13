@@ -342,7 +342,7 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
           setState(() {
             widget.ingredients.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
-                element.data['count'] ?? 0,
+                element.data['count'] ?? 0.0,
                 element.data['unit'] ?? '',
                 element.data['index'] ?? 0));
           });
@@ -371,7 +371,7 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
           setState(() {
             widget.ingredients.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
-                element.data['count'] ?? 0,
+                element.data['count'] ?? 0.0,
                 element.data['unit'] ?? '',
                 element.data['index'] ?? 0));
           });
