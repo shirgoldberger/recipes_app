@@ -28,18 +28,17 @@ class _SetRecipeDetailsState extends State<SetRecipeDetails> {
       child: Scaffold(
         backgroundColor: backgroundColor,
         body: ListView(
+          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
           children: <Widget>[
-            box,
-            box,
-            box,
+            heightBox(70),
             Text(
-              'Set name & description\nof your recipe',
+              'Set name & description',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 25, fontFamily: 'Raleway'),
             ),
             box,
             Container(
-                height: 360,
+                height: 520,
                 child: ListView(children: [
                   recipeNameField(),
                   box,
@@ -48,14 +47,14 @@ class _SetRecipeDetailsState extends State<SetRecipeDetails> {
                 ])),
             Row(children: [
               SizedBox(
-                width: 20,
+                width: 10,
               ),
               previousLevelButton(),
               SizedBox(
                 width: 10,
               ),
               LinearPercentIndicator(
-                width: 250,
+                width: 240,
                 animation: true,
                 lineHeight: 18.0,
                 animationDuration: 1000,

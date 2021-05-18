@@ -44,7 +44,7 @@ class MyStatefulWidget extends StatefulWidget {
 
 /// This is the private State class that goes with MyStatefulWidget.
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  int _selectedIndex = 2;
+  int _selectedIndex = 3;
   List<Widget> pageList = [];
   NetworkImage image;
   String personLabel = 'Personal';
@@ -54,19 +54,16 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    pageList.add(Search());
     pageList.add(Home());
-    pageList.add(Personal());
+    pageList.add(Search());
     pageList.add(Book());
+    pageList.add(Personal());
+
     getProfileImage();
     _connectivity.initialise();
     _connectivity.myStream.listen((source) {
       setState(() => _source = source);
     });
-
-    // print("checkk");
-
-    // check();
   }
 
   void checkConnection() {
@@ -88,26 +85,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     }
     print(string);
   }
-
-  // Future<bool> check() async {
-  //   var connectivityResult = await (Connectivity().checkConnectivity());
-  //   if (connectivityResult == ConnectivityResult.mobile) {
-  //     // print("truuuuee");
-
-  //     setState(() {
-  //       widget.internetConnection = true;
-  //     });
-  //   } else if (connectivityResult == ConnectivityResult.wifi) {
-  //     // print("falllsseeee");
-  //     setState(() {
-  //       widget.internetConnection = true;
-  //     });
-  //   }
-  //   print("falllslse");
-  //   setState(() {
-  //     widget.internetConnection = false;
-  //   });
-  // }
 
   void getProfileImage() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
@@ -176,18 +153,25 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: Icon(Icons.search, color: Colors.grey),
-              label: 'Search',
-              activeIcon: Icon(
-                Icons.search,
-                color: Colors.cyan,
-              )),
-          BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined, color: Colors.grey),
               label: 'Home',
               activeIcon: Icon(
                 Icons.home,
-                color: Colors.cyan,
+                color: appBarBackgroundColor,
+              )),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.search, color: Colors.grey),
+              label: 'Search',
+              activeIcon: Icon(
+                Icons.search,
+                color: appBarBackgroundColor,
+              )),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.book_outlined, color: Colors.grey),
+              label: 'Book',
+              activeIcon: Icon(
+                Icons.book,
+                color: appBarBackgroundColor,
               )),
           BottomNavigationBarItem(
             icon: image == null
@@ -200,28 +184,20 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             activeIcon: image == null
                 ? Icon(
                     Icons.account_circle_rounded,
-                    color: Colors.cyan,
+                    color: appBarBackgroundColor,
                   )
                 : CircleAvatar(
                     radius: 14,
-                    backgroundColor: Colors.cyan,
+                    backgroundColor: appBarBackgroundColor,
                     child: CircleAvatar(
                         backgroundColor: backgroundColor,
                         radius: 12,
                         backgroundImage: image)),
           ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.book_outlined, color: Colors.grey),
-              label: 'Book',
-              activeIcon: Icon(
-                Icons.book,
-                color: Colors.cyan,
-              )),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.cyan,
+        selectedItemColor: appBarBackgroundColor,
         onTap: _onItemTapped,
-        //  onTap: _showAlertDialog(),
       ),
     );
   }

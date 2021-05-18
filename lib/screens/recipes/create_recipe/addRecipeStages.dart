@@ -55,51 +55,13 @@ class _AddRecipeStagesState extends State<AddRecipeStages> {
               style: TextStyle(
                   color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
             ),
-            stages.length <= 0
-                ? Text(
-                    'There is no stages in this recipe yet',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                  )
-                : Container(
-                    height: min(50 * stages.length.toDouble(), 300),
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        addAutomaticKeepAlives: true,
-                        itemCount: stages.length,
-                        itemBuilder: (_, i) => Row(children: <Widget>[
-                              SizedBox(
-                                width: 20,
-                              ),
-                              stageIndex(i),
-                              Expanded(
-                                  child: SizedBox(
-                                      height: 37.0,
-                                      child: TextFormField(
-                                        decoration: InputDecoration(
-                                          hintText: 'write stage...',
-                                        ),
-                                        validator: (val) => val.length < 2
-                                            ? 'Enter a description eith 2 letter at least'
-                                            : null,
-                                        onChanged: (val) {
-                                          setState(() => stages[i].s = val);
-                                        },
-                                      ))),
-                              deleteButton(i),
-                            ])),
-                  ),
-            box,
-            addButton(),
-            SizedBox(
-              height: (min(50 * stages.length.toDouble(), 300) ==
-                      50 * stages.length.toDouble())
-                  ? 300 - 50 * stages.length.toDouble()
-                  : 0,
-            ),
+            Container(
+                height: 498,
+                child: Column(children: [
+                  stages.length <= 0 ? noStagesText() : stagesContainer(),
+                  box,
+                  addButton(),
+                ])),
             Row(
               children: [
                 SizedBox(
@@ -110,7 +72,7 @@ class _AddRecipeStagesState extends State<AddRecipeStages> {
                   width: 10,
                 ),
                 LinearPercentIndicator(
-                  width: 250,
+                  width: 240,
                   animation: true,
                   lineHeight: 18.0,
                   animationDuration: 500,
@@ -132,6 +94,44 @@ class _AddRecipeStagesState extends State<AddRecipeStages> {
           ])),
         ],
       ),
+      resizeToAvoidBottomInset: false,
+    );
+  }
+
+  Widget noStagesText() {
+    return Text(
+      'There is no stages in this recipe yet',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+          color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget stagesContainer() {
+    return Container(
+      height: min(80 * stages.length.toDouble(), 400),
+      child: ListView.builder(
+          shrinkWrap: true,
+          addAutomaticKeepAlives: true,
+          itemCount: stages.length,
+          itemBuilder: (_, i) => Row(children: <Widget>[
+                SizedBox(
+                  width: 20,
+                ),
+                stageIndex(i),
+                Expanded(
+                    child: SizedBox(
+                        height: 37.0,
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            hintText: 'write stage...',
+                          ),
+                          onChanged: (val) {
+                            setState(() => stages[i].s = val);
+                          },
+                        ))),
+                deleteButton(i),
+              ])),
     );
   }
 
@@ -175,7 +175,7 @@ class _AddRecipeStagesState extends State<AddRecipeStages> {
   }
 
   Widget title() {
-    return Text('Add Stages to your recipe',
+    return Text('Add Stages:',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 20, fontFamily: 'Raleway'));
   }
@@ -215,7 +215,7 @@ class _AddRecipeStagesState extends State<AddRecipeStages> {
         } else {
           if (checkNull) {
             setState(() {
-              widget.error = "no stage shoud be empty";
+              widget.error = "Stages should not be empty";
             });
           }
         }

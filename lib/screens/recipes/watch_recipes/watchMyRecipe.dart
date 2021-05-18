@@ -56,20 +56,18 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
       return Scaffold(
           backgroundColor: backgroundColor,
           appBar: AppBar(
-              backgroundColor: appBarBackgroundColor,
-              elevation: 0.0,
-              title: Text(
-                'Watch Recipe',
-                style: TextStyle(fontFamily: 'Raleway'),
-              ),
-              actions: <Widget>[
-                // publish icon
-                publishIcon(),
-                // edit icon
-                editIcon(),
-                // delete icon
-                deleteIcon()
-              ]),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
+            backgroundColor: appBarBackgroundColor,
+            elevation: 0.0,
+            title: Text(
+              'Watch Recipe',
+              style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+            ),
+          ),
+          endDrawer: leftMenu(),
           body: WatchRecipeBody(
               widget.currentRecipe,
               widget.ingredients,
@@ -78,6 +76,35 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
               widget.levelString,
               widget.uid));
     }
+  }
+
+  Widget leftMenu() {
+    return Container(
+      color: backgroundColor,
+      width: MediaQuery.of(context).size.width * 0.5,
+      child: ListView(
+        children: <Widget>[
+          drawerTitle(),
+          Column(children: [
+            publishIcon(),
+            // edit icon
+            editIcon(),
+            // delete icon
+            deleteIcon()
+          ]),
+        ],
+      ),
+    );
+  }
+
+  Widget drawerTitle() {
+    return UserAccountsDrawerHeader(
+      decoration: BoxDecoration(
+        color: appBarBackgroundColor,
+      ),
+      arrowColor: appBarBackgroundColor,
+      accountName: Text('Options:'),
+    );
   }
 
   Future<void> _showPublishPanel() async {
@@ -182,11 +209,11 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
     return FlatButton.icon(
         icon: Icon(
           Icons.share,
-          color: Colors.white,
+          color: Colors.black,
         ),
         label: Text(
           'Publish',
-          style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+          style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
         ),
         onPressed: () {
           _showPublishPanel();
@@ -198,11 +225,11 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
     return FlatButton.icon(
         icon: Icon(
           Icons.edit,
-          color: Colors.white,
+          color: Colors.black,
         ),
         label: Text(
           'Edit',
-          style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+          style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
         ),
         onPressed: () {
           Navigator.push(
@@ -233,12 +260,10 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
     return FlatButton.icon(
         icon: Icon(
           Icons.delete,
-          color: Colors.white,
+          color: Colors.black,
         ),
-        label: Text(
-          'Delete',
-          style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
-        ),
+        label: Text('Delete',
+            style: TextStyle(fontFamily: 'Raleway', color: Colors.black)),
         onPressed: () {
           delete();
           Navigator.push(context,
@@ -262,10 +287,11 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
             .collection('ingredients')
             .getDocuments();
         snap.documents.forEach((element) {
+          var count = element.data['count'] ?? 0;
           setState(() {
             widget.ingredients.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
-                element.data['count'] ?? 0,
+                count.toDouble(),
                 element.data['unit'] ?? '',
                 element.data['index'] ?? 0));
           });
@@ -291,10 +317,11 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
             .collection('ingredients')
             .getDocuments();
         snap.documents.forEach((element) {
+          var count = element.data['count'] ?? 0;
           setState(() {
             widget.ingredients.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
-                element.data['count'] ?? 0,
+                count.toDouble(),
                 element.data['unit'] ?? '',
                 element.data['index'] ?? 0));
           });

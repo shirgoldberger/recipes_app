@@ -32,41 +32,43 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: backgroundColor,
-        body: ListView(children: [
-          Container(
-            height: 500,
-            child: imageBox(),
-          ),
-          Row(
+        body: ListView(
+            padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
             children: [
-              SizedBox(
-                width: 20,
+              Container(
+                height: 650,
+                child: imageBox(),
               ),
-              previousLevelButton(),
-              SizedBox(
-                width: 10,
-              ),
-              LinearPercentIndicator(
-                width: 250,
-                animation: true,
-                lineHeight: 18.0,
-                animationDuration: 500,
-                percent: 0.125,
-                center: Text(
-                  "12.5%",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-                linearStrokeCap: LinearStrokeCap.roundAll,
-                progressColor: Colors.grey[600],
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              nextLevelButton()
-            ],
-          )
-        ]));
+              Row(
+                children: [
+                  SizedBox(
+                    width: 10,
+                  ),
+                  previousLevelButton(),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  LinearPercentIndicator(
+                    width: 240,
+                    animation: true,
+                    lineHeight: 18.0,
+                    animationDuration: 500,
+                    percent: 0.125,
+                    center: Text(
+                      "12.5%",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                    linearStrokeCap: LinearStrokeCap.roundAll,
+                    progressColor: Colors.grey[600],
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  nextLevelButton()
+                ],
+              )
+            ]));
   }
 
   Widget nextLevelButton() {
@@ -129,7 +131,7 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
       return Container(
           height: 450,
           child: Column(children: [
-            box,
+            heightBox(70),
             Text(
               'Your image upload successfully!',
               textAlign: TextAlign.center,
@@ -145,17 +147,18 @@ class _UploadRecipeImageState extends State<UploadRecipeImage> {
                       backgroundImage: snapshot.data,
                       radius: 150,
                     );
-                  // if (snapshot.connectionState == ConnectionState.waiting)
                   else
                     return Container(
-                        height: MediaQuery.of(context).size.height / 10,
-                        width: MediaQuery.of(context).size.width / 10,
+                        height: 30,
+                        width: 30,
                         child: CircularProgressIndicator());
                 }),
+            box,
             TextButton(
                 onPressed: uploadImagePressed,
                 child: Text(
-                    'If You want to change the recipe image, please tap here',
+                    'If You want to change the recipe image\nplease tap here',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.redAccent,
                         fontWeight: FontWeight.bold,

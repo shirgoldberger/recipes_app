@@ -19,19 +19,19 @@ class RecipeHeadLineSearch extends StatefulWidget {
     switch (r.time) {
       case 1:
         circleColor = Colors.green[400];
-        level = 'easy';
+        level = 'Easy';
         break;
       case 2:
         circleColor = Colors.yellow[400];
-        level = 'medium';
+        level = 'Medium';
         break;
       case 3:
-        circleColor = Colors.pink[400];
-        level = 'hard';
+        circleColor = Colors.red[400];
+        level = 'Hard';
         break;
       case 0:
         circleColor = Colors.grey[400];
-        level = 'easy';
+        level = 'Easy';
         break;
     }
   }

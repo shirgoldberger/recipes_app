@@ -14,6 +14,7 @@ class AddRecipeIngredients extends StatefulWidget {
   String description;
   String imagePath;
   List<String> errorIng = [];
+
   AddRecipeIngredients(String _username, String _uid, String _name,
       String _description, String _imagePath) {
     username = _username;
@@ -29,57 +30,58 @@ class AddRecipeIngredients extends StatefulWidget {
 class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
   List<IngredientsModel> ingredients = [];
   String error = "";
+  bool _showError = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ListView(children: [
-      heightBox(40),
-      title(),
-      heightBox(40),
-      Container(
-          child: Column(
-        children: [
-          Text(error,
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-          ingredients.length <= 0
-              ? noIngredientsText()
-              : ingredientsContainer(),
-          box,
-          addButton(),
-          SizedBox(
-            height: (min(50 * ingredients.length.toDouble(), 300) ==
-                    50 * ingredients.length.toDouble())
-                ? 300 - 50 * ingredients.length.toDouble()
-                : 0,
-          ),
-          Row(
+        body: ListView(
+            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
             children: [
-              widthBox(20),
-              previousLevelButton(),
-              widthBox(10),
-              progressBar(),
-              widthBox(10),
-              nextLevelButton()
-            ],
-          )
-        ],
-      ))
-    ]));
+              heightBox(70),
+              title(),
+              heightBox(20),
+              Container(
+                  height: 540,
+                  child: Column(children: [
+                    Text(error,
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold)),
+                    ingredients.length <= 0
+                        ? noIngredientsText()
+                        : ingredientsContainer(),
+                    box,
+                    addButton(),
+                  ])),
+              Row(
+                children: [
+                  widthBox(10),
+                  previousLevelButton(),
+                  widthBox(10),
+                  progressBar(),
+                  widthBox(10),
+                  nextLevelButton()
+                ],
+              )
+            ]),
+        resizeToAvoidBottomInset: false);
   }
 
   Widget noIngredientsText() {
-    return Text(
-      'There is no ingredients in this recipe yet',
-      textAlign: TextAlign.center,
-      style: TextStyle(
-          color: errorColor, fontSize: 15, fontWeight: FontWeight.bold),
+    return Visibility(
+      visible: _showError,
+      child: Text(
+        'There is no ingredients in this recipe yet',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: errorColor, fontSize: 15, fontWeight: FontWeight.bold),
+      ),
     );
   }
 
   Widget ingredientsContainer() {
     return Container(
-        height: min(50 * ingredients.length.toDouble(), 300),
+        height: min(80 * ingredients.length.toDouble(), 400),
         child: ListView.builder(
           shrinkWrap: true,
           itemCount: ingredients.length,
@@ -101,6 +103,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
         Expanded(child: SizedBox(height: 37.0, child: ingredientName(i))),
         Expanded(child: SizedBox(height: 37.0, child: ingredientAmount(i))),
         Expanded(child: SizedBox(height: 37.0, child: ingredientUnit(i))),
+        widthBox(10),
         deleteButton(i)
       ],
     );
@@ -125,10 +128,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
       decoration: InputDecoration(
         hintText: 'Amount',
       ),
-      validator: (val) =>
-          val.length < 6 ? 'Enter a description eith 6 letter at least' : null,
       onChanged: (val) {
-        print(val);
         if (val.toString() == '0') {
           setState(() {
             widget.errorIng[i] = 'The amount should be greater than 0';
@@ -156,6 +156,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
       "Milliliter",
       "Liter",
       "Cup",
+      "Box"
     ];
 
     return DropdownButton(
@@ -180,7 +181,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
 
   Widget progressBar() {
     return LinearPercentIndicator(
-      width: 250,
+      width: 240,
       animation: true,
       lineHeight: 18.0,
       animationDuration: 500,
@@ -238,7 +239,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
   }
 
   Widget title() {
-    return Text('Add Ingredients to your recipe',
+    return Text('Add Ingredients',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 20, fontFamily: ralewayFont));
   }
@@ -259,16 +260,11 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
         List<IngredientsModel> notEmptyIngredients = [];
         bool checkNullIng = false;
         for (IngredientsModel ingredient in this.ingredients) {
-          if (ingredient.count != 0 &&
+          if (ingredient.count != 0.0 &&
               ingredient.name != "" &&
               ingredient.unit != "") {
-            // print("add");
             notEmptyIngredients.add(ingredient);
           } else {
-            print(ingredient);
-            print(ingredient.name);
-            print(ingredient.count);
-            print(ingredient.unit);
             checkNullIng = true;
           }
         }
@@ -283,10 +279,12 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
         } else {
           if (checkNullIng) {
             setState(() {
-              error = "AAll ingredients details should be complete";
+              _showError = false;
+              error = "All ingredients details should be complete";
             });
           } else {
             setState(() {
+              _showError = false;
               error = "Add some ingredients to your recipe";
             });
           }

@@ -138,10 +138,11 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
             .collection('ingredients')
             .getDocuments();
         snap.documents.forEach((element) {
+          var count = element.data['count'] ?? 0;
           setState(() {
             widget.ing.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
-                element.data['count'] ?? 0,
+                count.toDouble(),
                 element.data['unit'] ?? '',
                 element.data['index'] ?? 0));
           });
@@ -166,10 +167,11 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
             .collection('ingredients')
             .getDocuments();
         snap.documents.forEach((element) {
+          var count = element.data['count'] ?? 0;
           setState(() {
             widget.ing.add(IngredientsModel.antherConstactor(
                 element.data['name'] ?? '',
-                element.data['count'] ?? 0,
+                count.toDouble(),
                 element.data['unit'] ?? '',
                 element.data['index'] ?? 0));
           });

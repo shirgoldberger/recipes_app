@@ -149,6 +149,13 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     setState(() {
       widget.ing.sort((a, b) => a.index.compareTo(b.index));
     });
+    // for(int i=0; i<widget.ing.length; i++){
+    //   if(widget.ing[i].count.toString().contains(".0")){
+    //     setState(() {
+    //       widget.ing[i].count=widget.ing[i].count.toInt().
+    //     });
+    //   }
+    // }
   }
 
   @override
@@ -369,7 +376,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                     textAlign: TextAlign.left,
                     style: TextStyle(
                         color: Colors.black,
-                        fontFamily: 'Raleway',
+                        fontFamily: 'DescriptionFont',
                         fontSize: 20),
                   ),
                 ],
@@ -414,7 +421,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                     index.toString() + ". " + widget.stages[index].s,
                     style: TextStyle(
                         color: Colors.black,
-                        fontFamily: 'Raleway',
+                        fontFamily: 'DescriptionFont',
                         fontSize: 20),
                   ),
                 );
@@ -457,7 +464,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                     index.toString() + ". " + widget.current.notes[index],
                     style: TextStyle(
                         color: Colors.black,
-                        fontFamily: 'Raleway',
+                        fontFamily: 'DescriptionFont',
                         fontSize: 20),
                   ),
                 );

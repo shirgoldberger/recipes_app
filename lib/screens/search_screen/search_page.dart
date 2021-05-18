@@ -103,24 +103,25 @@ class _SearchPage extends State<SearchPage> {
     } else {
       return MaterialApp(
           home: Scaffold(
-              backgroundColor: Colors.blueGrey[50],
-              appBar: AppBar(
-                backgroundColor: Colors.blueGrey[700],
-                elevation: 0.0,
-                actions: <Widget>[],
-              ),
-              body: SafeArea(
-                  child: SingleChildScrollView(
-                      child: Container(
-                          child: Column(children: <Widget>[
-                box,
-                searchWidget(),
-                box,
-                Center(
-                  child:
-                      (widget.searchMode) ? searchButtomWidget() : recipeGrid(),
-                ),
-              ]))))));
+        backgroundColor: Colors.blueGrey[50],
+        appBar: AppBar(
+          backgroundColor: Colors.blueGrey[700],
+          elevation: 0.0,
+          actions: <Widget>[],
+        ),
+        body: SafeArea(
+            child: SingleChildScrollView(
+                child: Container(
+                    child: Column(children: <Widget>[
+          box,
+          searchWidget(),
+          box,
+          Center(
+            child: (widget.searchMode) ? searchButtomWidget() : recipeGrid(),
+          ),
+        ])))),
+        resizeToAvoidBottomInset: false,
+      ));
     }
   }
 

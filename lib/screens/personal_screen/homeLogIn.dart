@@ -216,11 +216,50 @@ class _HomeLogInState extends State<HomeLogIn> {
       icon: Icon(Icons.person),
       label: Text('Delete Account'),
       onPressed: () async {
-        await _auth.deleteAccount();
-        await UserFromDB.deleteUser(widget.uid);
-        await RecipeFromDB.deletePublushRecipesOfUser(widget.uid);
-        await GroupFromDB.deleteUserFromAllGroups(widget.uid);
-        Phoenix.rebirth(context);
+        _showAlertDialog();
+        // await _auth.deleteAccount();
+        // await UserFromDB.deleteUser(widget.uid);
+        // await RecipeFromDB.deletePublushRecipesOfUser(widget.uid);
+        // await GroupFromDB.deleteUserFromAllGroups(widget.uid);
+        // Phoenix.rebirth(context);
+      },
+    );
+  }
+
+  Future<void> _showAlertDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'You\'re sure you want to delete your account permanently ?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('yes- delete'),
+              onPressed: () async {
+                await _auth.deleteAccount();
+                await UserFromDB.deleteUser(widget.uid);
+                await RecipeFromDB.deletePublushRecipesOfUser(widget.uid);
+                await GroupFromDB.deleteUserFromAllGroups(widget.uid);
+                Phoenix.rebirth(context);
+              },
+            ),
+            TextButton(
+              child: Text('no- go back'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
       },
     );
   }

@@ -101,12 +101,12 @@ class _UploadingImageToFirebaseStorageState
       child: Stack(
         children: <Widget>[
           Container(
-            width: 190,
+            width: 150,
             height: 50,
             padding:
                 const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),
             margin: const EdgeInsets.only(
-                top: 30, left: 20.0, right: 20.0, bottom: 20.0),
+                top: 30, left: 40.0, right: 20.0, bottom: 20.0),
             decoration: BoxDecoration(
                 color: _imageFile != null ? Colors.blueGrey : Colors.grey,
                 borderRadius: BorderRadius.circular(10.0)),
@@ -114,7 +114,7 @@ class _UploadingImageToFirebaseStorageState
             child: FlatButton(
               onPressed: _imageFile != null ? () => a(context) : null,
               child: Text(
-                "Upload Image",
+                "Upload",
                 style: TextStyle(fontSize: 20),
               ),
             ),
@@ -138,7 +138,7 @@ class _UploadingImageToFirebaseStorageState
             padding:
                 const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),
             margin: const EdgeInsets.only(
-                top: 30, left: 20.0, right: 20.0, bottom: 20.0),
+                top: 30, left: 30.0, right: 20.0, bottom: 20.0),
             decoration: BoxDecoration(
                 color: _imageFile != null
                     ? Colors.blueGrey[200]

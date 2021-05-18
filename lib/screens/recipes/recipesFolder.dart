@@ -118,9 +118,10 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
             color: Colors.blue,
             onRefresh: refresh,
             child: Container(
-              height: MediaQuery.of(context).size.height,
+              height: MediaQuery.of(context).size.height + 500,
               child: GridView.count(
                 crossAxisCount: 2,
+                physics: ScrollPhysics(),
                 children: List.generate(mapCat.length, (index) {
                   return Container(
                       height: 900,
@@ -132,7 +133,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
                 }),
               ),
             ),
-          )
+          ),
         ]);
       }
     }

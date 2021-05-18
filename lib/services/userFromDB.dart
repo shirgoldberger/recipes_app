@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:universal_html/html.dart';
 
 class UserFromDB {
   static final db = Firestore.instance;
@@ -83,6 +84,21 @@ class UserFromDB {
   }
 
   static Future deleteUser(String uid) async {
+    QuerySnapshot saved_recipe = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('saved recipe')
+        .getDocuments();
+    if (saved_recipe.documents.length > 0) {
+      saved_recipe.documents.forEach((element) async {
+        await db
+            .collection('users')
+            .document(uid)
+            .collection('saved recipe')
+            .document(element.documentID)
+            .delete();
+      });
+    }
     await db.collection('users').document(uid).delete();
   }
 }

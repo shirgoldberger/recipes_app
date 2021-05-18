@@ -52,65 +52,64 @@ class _AddRecipeTagsState extends State<AddRecipeTags> {
       box,
       Text(
         widget.error,
+        textAlign: TextAlign.center,
         style: TextStyle(
             color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
       ),
-      // tags
-      tags.length <= 0
-          ? Text(
-              'There is no tags in this recipe yet',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
-            )
-          : Container(
-              height: min(50 * tags.length.toDouble(), 300),
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  addAutomaticKeepAlives: true,
-                  itemCount: tags.length,
-                  itemBuilder: (_, i) => Row(children: <Widget>[
-                        SizedBox(
-                          width: 40,
-                        ),
-                        Expanded(
-                            child: SizedBox(
-                          height: 37.0,
-                          child: DropdownButton(
-                            hint: Text("choose this recipe tag"),
-                            dropdownColor: Colors.grey,
-                            icon: Icon(Icons.arrow_drop_down),
-                            iconSize: 36,
-                            isExpanded: true,
-                            value: tags[i],
-                            onChanged: (newValue) {
-                              setState(() {
-                                tags[i] = newValue;
-                              });
-                            },
-                            items: tagList.map((valueItem) {
-                              return DropdownMenuItem(
-                                value: valueItem,
-                                child: Text(valueItem),
-                              );
-                            }).toList(),
-                          ),
-                        )),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        deleteButton(i)
-                      ])),
-            ),
-
-      box,
-      addButton(),
-      SizedBox(
-        height: (min(50 * tags.length.toDouble(), 300) ==
-                50 * tags.length.toDouble())
-            ? 300 - 50 * tags.length.toDouble()
-            : 0,
-      ),
+      Container(
+          height: 498,
+          child: Column(children: [
+            tags.length <= 0
+                ? Text(
+                    'There is no tags in this recipe yet',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold),
+                  )
+                : Container(
+                    height: min(80 * tags.length.toDouble(), 400),
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        addAutomaticKeepAlives: true,
+                        itemCount: tags.length,
+                        itemBuilder: (_, i) => Row(children: <Widget>[
+                              SizedBox(
+                                width: 40,
+                              ),
+                              Expanded(
+                                  child: SizedBox(
+                                height: 37.0,
+                                child: DropdownButton(
+                                  hint: Text("choose this recipe tag"),
+                                  dropdownColor: Colors.grey,
+                                  icon: Icon(Icons.arrow_drop_down),
+                                  iconSize: 36,
+                                  isExpanded: true,
+                                  value: tags[i],
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      tags[i] = newValue;
+                                    });
+                                  },
+                                  items: tagList.map((valueItem) {
+                                    return DropdownMenuItem(
+                                      value: valueItem,
+                                      child: Text(valueItem),
+                                    );
+                                  }).toList(),
+                                ),
+                              )),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              deleteButton(i)
+                            ])),
+                  ),
+            box,
+            addButton(),
+          ])),
       Row(
         children: [
           SizedBox(
@@ -121,7 +120,7 @@ class _AddRecipeTagsState extends State<AddRecipeTags> {
             width: 10,
           ),
           LinearPercentIndicator(
-            width: 250,
+            width: 240,
             animation: true,
             lineHeight: 18.0,
             animationDuration: 500,
@@ -156,7 +155,7 @@ class _AddRecipeTagsState extends State<AddRecipeTags> {
   }
 
   Widget title() {
-    return Text('Add Tags to your recipe',
+    return Text('Add Tags:',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 20, fontFamily: 'Raleway'));
   }
@@ -204,7 +203,7 @@ class _AddRecipeTagsState extends State<AddRecipeTags> {
         } else {
           if (check) {
             setState(() {
-              widget.error = "choose recipe tag!!";
+              widget.error = "Choose recipe tag!";
             });
           }
         }
