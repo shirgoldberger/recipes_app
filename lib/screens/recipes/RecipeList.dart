@@ -167,7 +167,7 @@ class _RecipeListState extends State<RecipeList> {
     setState(() {
       tagList.add(value);
     });
-    print(widget.myTags);
+
     List valueList = widget.map[value];
     for (int i = 0; i < valueList.length; i++) {
       bool findTag = false;

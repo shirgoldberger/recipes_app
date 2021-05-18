@@ -426,10 +426,8 @@ class _FilterState extends State<Filter> {
     setState(() {
       widget.listForWatch.clear();
     });
-    print(widget.list);
-    print(widget.listForWatch);
+
     for (int i = 0; i < widget.list.length; i++) {
-      print(widget.list[i].level);
       if (widget.levelList.contains(widget.list[i].level)) {
         setState(() {
           widget.listForWatch.add(widget.list[i]);

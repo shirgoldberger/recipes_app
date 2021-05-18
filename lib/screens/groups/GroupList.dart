@@ -33,7 +33,7 @@ class _GroupListState extends State<GroupList> {
             Expanded(
                 child: Padding(
               padding: EdgeInsets.all(8),
-              child: groupsList(),
+              child: widget.groupId.length > 0 ? groupsList() : emptyMessage(),
             ))
           ]));
     }
@@ -78,6 +78,11 @@ class _GroupListState extends State<GroupList> {
         child: groupName(index),
       ),
     );
+  }
+
+  Widget emptyMessage() {
+    return Text("you dont have any group// kets create new one!",
+        style: TextStyle(fontSize: 25, fontFamily: 'Raleway'));
   }
 
   Widget groupName(int index) {

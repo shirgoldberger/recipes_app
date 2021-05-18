@@ -6,6 +6,7 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/screens/personal_screen/homeLogIn.dart';
 import 'package:recipes_app/screens/recipes/watch_recipes/watchRecipeBody.dart';
+import 'package:recipes_app/shared_screen/loading.dart';
 
 //הסבר כללי לגבי העמוד הזה-
 // העמוד מקבל מתכון ומציג אותו למשתמש כאשר הוא מחולק ל 3 מצבים:
@@ -49,8 +50,7 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
     super.initState();
     getuser();
     makeList();
-    print("init state");
-    // print(widget.current.publish);
+
     if (widget.current.publish == '') {
       widget.iconPublish = Icons.public;
       widget.publishString = "publish";
@@ -65,7 +65,6 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
     final FirebaseUser user = await auth.currentUser();
     setState(() {
       widget.uid = user.uid;
-      print(widget.uid);
     });
     if (widget.uid != null) {
       QuerySnapshot snap = await Firestore.instance
@@ -84,46 +83,50 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.current.level == 1) {
-      widget.levelColor = Colors.green[900];
-      widget.levelString = "easy";
-    }
-    if (widget.current.level == 2) {
-      widget.levelColor = Colors.red[900];
-      widget.levelString = "nedium";
-    }
-    if (widget.current.level == 3) {
-      widget.levelColor = Colors.blue[900];
-      widget.levelString = "hard";
-    }
+    if (!widget.done) {
+      return Loading();
+    } else {
+      if (widget.current.level == 1) {
+        widget.levelColor = Colors.green[900];
+        widget.levelString = "easy";
+      }
+      if (widget.current.level == 2) {
+        widget.levelColor = Colors.red[900];
+        widget.levelString = "nedium";
+      }
+      if (widget.current.level == 3) {
+        widget.levelColor = Colors.blue[900];
+        widget.levelString = "hard";
+      }
 
-    //מצב שני 2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
-    return Scaffold(
-        backgroundColor: Colors.blueGrey[50],
-        appBar: AppBar(
-            backgroundColor: Colors.blueGrey[700],
-            elevation: 0.0,
-            title: Text(
-              'watch this recipe',
-              style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
-            ),
-            actions: <Widget>[
-              FlatButton.icon(
-                  icon: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
-                  label: Text(
-                    'delete',
-                    style:
-                        TextStyle(fontFamily: 'Raleway', color: Colors.white),
-                  ),
-                  onPressed: () {
-                    deleteFromGroupRecipe();
-                  }),
-            ]),
-        body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
-            widget.levelColor, widget.levelString, widget.uid));
+      //מצב שני 2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+      return Scaffold(
+          backgroundColor: Colors.blueGrey[50],
+          appBar: AppBar(
+              backgroundColor: Colors.blueGrey[700],
+              elevation: 0.0,
+              title: Text(
+                'watch this recipe',
+                style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+              ),
+              actions: <Widget>[
+                FlatButton.icon(
+                    icon: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      'delete',
+                      style:
+                          TextStyle(fontFamily: 'Raleway', color: Colors.white),
+                    ),
+                    onPressed: () {
+                      deleteFromGroupRecipe();
+                    }),
+              ]),
+          body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
+              widget.levelColor, widget.levelString, widget.uid));
+    }
   }
 
   Future<void> makeList() async {
@@ -195,8 +198,6 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
   }
 
   void deleteFromGroupRecipe() async {
-    print("delleeetetete");
-    print(widget.groupId);
     final db = Firestore.instance;
     QuerySnapshot snap = await Firestore.instance
         .collection('Group')
@@ -205,10 +206,8 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
         .getDocuments();
     snap.documents.forEach((element) async {
       String recipeIdfromSnap = element.data['recipeId'];
-      print(recipeIdfromSnap);
-      print(widget.current.id);
+
       if (recipeIdfromSnap == widget.current.id) {
-        print("found");
         db
             .collection('Group')
             .document(widget.groupId)

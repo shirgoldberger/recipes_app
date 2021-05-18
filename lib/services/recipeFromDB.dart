@@ -88,7 +88,7 @@ class RecipeFromDB {
     }
 
     Recipe r = Recipe(name, description, l, levelInt, nList, writer, writerUid,
-        timeInt, false, id, publish, '');
+        timeInt, true, id, publish, '');
     r.setId(id);
     return r;
   }

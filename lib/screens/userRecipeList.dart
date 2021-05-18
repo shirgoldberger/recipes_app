@@ -55,8 +55,6 @@ class _UserRecipeListState extends State<UserRecipeList> {
                 padding: EdgeInsets.only(top: 1, bottom: 1, left: 5, right: 5),
                 itemCount: widget.recipeList.length,
                 itemBuilder: (context, index) {
-                  // print('recipeList');
-                  // print(widget.list[index]);
                   return Padding(
                       padding: EdgeInsets.all(8),
                       child: Container(
@@ -95,8 +93,6 @@ class _UserRecipeListState extends State<UserRecipeList> {
         .collection('recipes')
         .getDocuments();
 
-    // print("check");
-    // print(snap.documents.length);
     if (snap.documents.length == 0) {
       setState(() {
         widget.doneLoad = true;

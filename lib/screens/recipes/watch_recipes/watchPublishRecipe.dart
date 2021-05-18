@@ -31,12 +31,19 @@ class WatchPublishRecipe extends StatefulWidget {
   bool doneLoadLikeList = false;
 
   // constructor
-  WatchPublishRecipe(String _uid, Recipe _currentRecipe, Color _levelColor,
-      String _levelString) {
+  WatchPublishRecipe(
+      String _uid,
+      Recipe _currentRecipe,
+      Color _levelColor,
+      String _levelString,
+      List<IngredientsModel> _ingredients,
+      List<Stages> _stages) {
     this.uid = _uid;
     this.currentRecipe = _currentRecipe;
     this.levelColor = _levelColor;
     this.levelString = _levelString;
+    this.ingredients = _ingredients;
+    this.stages = _stages;
   }
 
   @override
@@ -48,7 +55,7 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
   void initState() {
     super.initState();
     getuser();
-    makeList();
+    // makeList();
     if (widget.uid != null) {
       initLikeIcon();
     }
@@ -66,9 +73,6 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.done) {
-      return Loading();
-    }
     return Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
@@ -321,80 +325,5 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
                 'you can not save this recipe - please first register or sign in to this app, do this in the personal page');
           }
         });
-  }
-
-  Future<void> makeList() async {
-    if (!widget.done) {
-      if (widget.currentRecipe.saveInUser) {
-        //final user = Provider.of<User>(context);
-        String uid = widget.currentRecipe.writerUid;
-        // print('save in user');
-        //print(uid);
-        //print(widget.current.id.toString());
-        QuerySnapshot snap = await Firestore.instance
-            .collection('users')
-            .document(uid)
-            .collection('recipes')
-            .document(widget.currentRecipe.id.toString())
-            .collection('ingredients')
-            .getDocuments();
-        snap.documents.forEach((element) {
-          var count = element.data['count'] ?? 0;
-          setState(() {
-            widget.ingredients.add(IngredientsModel.antherConstactor(
-                element.data['name'] ?? '',
-                count.toDouble(),
-                element.data['unit'] ?? '',
-                element.data['index'] ?? 0));
-          });
-        });
-        QuerySnapshot snap2 = await Firestore.instance
-            .collection('users')
-            .document(uid)
-            .collection('recipes')
-            .document(widget.currentRecipe.id.toString())
-            .collection('stages')
-            .getDocuments();
-        snap2.documents.forEach((element1) {
-          // print(element1.data.toString());
-          setState(() {
-            widget.stages.add(Stages.antheeConstractor(
-                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
-          });
-        });
-      } else {
-        QuerySnapshot snap = await Firestore.instance
-            .collection('recipes')
-            .document(widget.currentRecipe.id)
-            .collection('ingredients')
-            .getDocuments();
-        snap.documents.forEach((element) {
-          var count = element.data['count'] ?? 0;
-          setState(() {
-            widget.ingredients.add(IngredientsModel.antherConstactor(
-                element.data['name'] ?? '',
-                count.toDouble(),
-                element.data['unit'] ?? '',
-                element.data['index'] ?? 0));
-          });
-        });
-        QuerySnapshot snap2 = await Firestore.instance
-            .collection('recipes')
-            .document(widget.currentRecipe.id)
-            .collection('stages')
-            .getDocuments();
-        snap2.documents.forEach((element1) {
-          //print(element1.data.toString());
-          setState(() {
-            widget.stages.add(Stages.antheeConstractor(
-                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
-          });
-        });
-      }
-
-      setState(() {
-        widget.done = true;
-      });
-    }
   }
 }

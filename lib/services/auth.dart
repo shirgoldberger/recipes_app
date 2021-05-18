@@ -30,6 +30,7 @@ class AuthService {
       return _userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());
+      print("sign in anon 1");
       return null;
     }
   }
@@ -40,6 +41,7 @@ class AuthService {
       return await _auth.signOut();
     } catch (e) {
       print(e.toString());
+      print("sign out 2");
       return null;
     }
   }
@@ -73,6 +75,7 @@ class AuthService {
       return _userFromFirebaseUser(user);
     } catch (e) {
       print("erorr: " + e.toString());
+      print("signInWithEmailAndPass  3");
       return e.toString();
     }
   }
@@ -93,6 +96,7 @@ class AuthService {
       return _userFromFirebaseUser(user);
     } catch (e) {
       print("errorrrrrr");
+      print("handleSignIn 4");
     }
   }
 

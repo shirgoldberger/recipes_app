@@ -30,11 +30,13 @@ class WatchMyRecipe extends StatefulWidget {
 
   // constructor
   WatchMyRecipe(String _uid, Recipe _currentRecipe, Color _levelColor,
-      String _levelString) {
+      String _levelString, List<IngredientsModel> _ing, List<Stages> _stages) {
     this.uid = _uid;
     this.currentRecipe = _currentRecipe;
     this.levelColor = _levelColor;
     this.levelString = _levelString;
+    this.ingredients = _ing;
+    this.stages = _stages;
   }
 
   @override
@@ -45,37 +47,28 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
   @override
   void initState() {
     super.initState();
-    makeList();
+    // makeList();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.done) {
-      return Loading();
-    } else {
-      return Scaffold(
-          backgroundColor: backgroundColor,
-          appBar: AppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
-            backgroundColor: appBarBackgroundColor,
-            elevation: 0.0,
-            title: Text(
-              'Watch Recipe',
-              style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
-            ),
+    return Scaffold(
+        backgroundColor: backgroundColor,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context),
           ),
-          endDrawer: leftMenu(),
-          body: WatchRecipeBody(
-              widget.currentRecipe,
-              widget.ingredients,
-              widget.stages,
-              widget.levelColor,
-              widget.levelString,
-              widget.uid));
-    }
+          backgroundColor: appBarBackgroundColor,
+          elevation: 0.0,
+          title: Text(
+            'Watch Recipe',
+            style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+          ),
+        ),
+        endDrawer: leftMenu(),
+        body: WatchRecipeBody(widget.currentRecipe, widget.ingredients,
+            widget.stages, widget.levelColor, widget.levelString, widget.uid));
   }
 
   Widget leftMenu() {
@@ -135,7 +128,6 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
       List group = snap.data['saveInGroup'] ?? [];
       List users = snap.data['saveUser'] ?? [];
       for (int i = 0; i < group.length; i++) {
-        print(group[i]);
         QuerySnapshot snap2 = await Firestore.instance
             .collection('Group')
             .document(group[i])
@@ -143,7 +135,6 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
             .getDocuments();
         snap2.documents.forEach((element) async {
           if (element.data['recipeId'] == widget.currentRecipe.id) {
-            print("find");
             db
                 .collection('Group')
                 .document(group[i])
@@ -269,80 +260,5 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => HomeLogIn(widget.uid)));
         });
-  }
-
-  Future<void> makeList() async {
-    if (!widget.done) {
-      if (widget.currentRecipe.saveInUser) {
-        //final user = Provider.of<User>(context);
-        String uid = widget.currentRecipe.writerUid;
-        // print('save in user');
-        //print(uid);
-        //print(widget.current.id.toString());
-        QuerySnapshot snap = await Firestore.instance
-            .collection('users')
-            .document(uid)
-            .collection('recipes')
-            .document(widget.currentRecipe.id.toString())
-            .collection('ingredients')
-            .getDocuments();
-        snap.documents.forEach((element) {
-          var count = element.data['count'] ?? 0;
-          setState(() {
-            widget.ingredients.add(IngredientsModel.antherConstactor(
-                element.data['name'] ?? '',
-                count.toDouble(),
-                element.data['unit'] ?? '',
-                element.data['index'] ?? 0));
-          });
-        });
-        QuerySnapshot snap2 = await Firestore.instance
-            .collection('users')
-            .document(uid)
-            .collection('recipes')
-            .document(widget.currentRecipe.id.toString())
-            .collection('stages')
-            .getDocuments();
-        snap2.documents.forEach((element1) {
-          // print(element1.data.toString());
-          setState(() {
-            widget.stages.add(Stages.antheeConstractor(
-                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
-          });
-        });
-      } else {
-        QuerySnapshot snap = await Firestore.instance
-            .collection('recipes')
-            .document(widget.currentRecipe.id)
-            .collection('ingredients')
-            .getDocuments();
-        snap.documents.forEach((element) {
-          var count = element.data['count'] ?? 0;
-          setState(() {
-            widget.ingredients.add(IngredientsModel.antherConstactor(
-                element.data['name'] ?? '',
-                count.toDouble(),
-                element.data['unit'] ?? '',
-                element.data['index'] ?? 0));
-          });
-        });
-        QuerySnapshot snap2 = await Firestore.instance
-            .collection('recipes')
-            .document(widget.currentRecipe.id)
-            .collection('stages')
-            .getDocuments();
-        snap2.documents.forEach((element1) {
-          //print(element1.data.toString());
-          setState(() {
-            widget.stages.add(Stages.antheeConstractor(
-                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
-          });
-        });
-      }
-
-      setState(() {
-        widget.done = true;
-      });
-    }
   }
 }

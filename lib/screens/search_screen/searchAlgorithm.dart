@@ -57,7 +57,6 @@ class Algorithm {
         amountUsersOfRecipe,
         (key1, key2) =>
             amountUsersOfRecipe[key1].compareTo(amountUsersOfRecipe[key2]));
-    print("listttt user: " + amountUsersOfRecipe.toString());
   }
 
   getGroupsAmount() async {
@@ -68,13 +67,11 @@ class Algorithm {
       List groups = element.data['saveInGroup'] ?? [];
       int amount = groups.length;
       amountGroupsOfRecipe[recipeId] = amount;
-      print("listttt group: " + amountGroupsOfRecipe.toString());
     });
     amountGroupsOfRecipe = SplayTreeMap.from(
         amountGroupsOfRecipe,
         (key1, key2) =>
             amountGroupsOfRecipe[key1].compareTo(amountGroupsOfRecipe[key2]));
-    print("listttt group: " + amountGroupsOfRecipe.toString());
   }
 
   getLikesAmount() async {
@@ -91,7 +88,6 @@ class Algorithm {
         amountLikesOfRecipe,
         (key1, key2) =>
             amountLikesOfRecipe[key1].compareTo(amountLikesOfRecipe[key2]));
-    print("listttt likes: " + amountLikesOfRecipe.toString());
   }
 
   Future myFriends(String uid) async {
@@ -118,7 +114,7 @@ class Algorithm {
           snap3.documents.forEach((element) async {
             String uid2 = element.data['userID'];
             String recipeId2 = element.data['recipeID'];
-            //     print("add to list");
+
             list.add(Pair(uid2, recipeId2));
           });
         }
@@ -131,12 +127,10 @@ class Algorithm {
   }
 
   Future<void> convertToRecipe(List<Pair> pair) async {
-    print("convert");
     for (int i = 0; i < pair.length; i++) {
       String uid = pair[i].user;
       String recipeId = pair[i].recipe;
-      print(uid);
-      print(recipeId);
+
       DocumentSnapshot doc = await Firestore.instance
           .collection('users')
           .document(uid)
@@ -184,10 +178,8 @@ class Algorithm {
       Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
           true, id, publish, path);
       recipes.add(r);
-      // print("Add");
-      // print(recipesFromFriends);
     }
-    print("done");
+
     // return recipesFromFriends;
   }
 }

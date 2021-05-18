@@ -83,7 +83,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         _showAlertDialog();
       });
     }
-    print(string);
   }
 
   void getProfileImage() async {

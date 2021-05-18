@@ -29,11 +29,13 @@ class WatchSaveRecipe extends StatefulWidget {
   String publishRecipeId;
   // constructor
   WatchSaveRecipe(String _uid, Recipe _currentRecipe, Color _levelColor,
-      String _levelString) {
+      String _levelString, List<IngredientsModel> ing, List<Stages> sta) {
     this.uid = _uid;
     this.currentRecipe = _currentRecipe;
     this.levelColor = _levelColor;
     this.levelString = _levelString;
+    this.ingredients = ing;
+    this.stages = sta;
   }
 
   @override
@@ -148,7 +150,7 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
       String recipeIdfromSnap = element.data['recipeID'];
       if (recipeIdfromSnap == widget.currentRecipe.id) {
         List notes = element.data['notes'];
-        //print(notes);
+
         showModalBottomSheet(
             context: context,
             isScrollControlled: true,

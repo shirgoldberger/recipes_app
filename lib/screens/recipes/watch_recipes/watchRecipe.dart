@@ -65,17 +65,17 @@ class _WatchRecipeState extends State<WatchRecipe> {
     } else {
       if (widget.home) {
         // 3
-        return WatchPublishRecipe(
-            widget.uid, widget.current, widget.levelColor, widget.levelString);
+        return WatchPublishRecipe(widget.uid, widget.current, widget.levelColor,
+            widget.levelString, widget.ing, widget.stages);
       } else {
         if (widget.uid == widget.current.writerUid) {
           // 1
           return WatchMyRecipe(widget.uid, widget.current, widget.levelColor,
-              widget.levelString);
+              widget.levelString, widget.ing, widget.stages);
         } else {
           // 2
           return WatchSaveRecipe(widget.uid, widget.current, widget.levelColor,
-              widget.levelString);
+              widget.levelString, widget.ing, widget.stages);
         }
       }
     }
@@ -115,6 +115,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
     if (!widget.done) {
       if (widget.current.saveInUser) {
         String uid = widget.current.writerUid;
+
         QuerySnapshot snap = await Firestore.instance
             .collection('users')
             .document(uid)
@@ -122,6 +123,7 @@ class _WatchRecipeState extends State<WatchRecipe> {
             .document(widget.current.id.toString())
             .collection('ingredients')
             .getDocuments();
+
         snap.documents.forEach((element) {
           var i = element.data['count'] ?? 0.0;
 

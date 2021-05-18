@@ -166,9 +166,12 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
         child: ListView(children: [
       Container(
           child: new Column(children: [
-        Row(children: [widthBox(20), name(), widthBox(30), recipePicture()]),
+        Row(children: [widthBox(20), name(), widthBox(30)]),
         padding,
         description(),
+        padding,
+        recipePicture(),
+        padding,
         if (widget.current.publish != '')
           Row(
             children: [
@@ -191,7 +194,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
           height: 40,
           thickness: 8,
         ),
-        padding,
         padding,
         Row(children: [
           picture(),
@@ -268,17 +270,17 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     if (widget.current.imagePath == "") {
       return CircleAvatar(
           backgroundColor: backgroundColor,
-          radius: 40,
+          radius: 120,
           backgroundImage: ExactAssetImage(noImagePath));
     } else {
       if (widget.recipeImage != null) {
         return CircleAvatar(
             backgroundColor: backgroundColor,
-            radius: 40,
+            radius: 120,
             backgroundImage: widget.recipeImage);
       } else {
         return Container(
-            height: 20, width: 20, child: CircularProgressIndicator());
+            height: 60, width: 60, child: CircularProgressIndicator());
       }
     }
   }
@@ -418,7 +420,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    index.toString() + ". " + widget.stages[index].s,
+                    (index + 1).toString() + ". " + widget.stages[index].s,
                     style: TextStyle(
                         color: Colors.black,
                         fontFamily: 'DescriptionFont',
@@ -461,7 +463,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    index.toString() + ". " + widget.current.notes[index],
+                    (index + 1).toString() + ". " + widget.current.notes[index],
                     style: TextStyle(
                         color: Colors.black,
                         fontFamily: 'DescriptionFont',

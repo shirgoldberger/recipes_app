@@ -148,7 +148,6 @@ class _AddRecipeNotesState extends State<AddRecipeNotes> {
     setState(() {
       notes.add(' ');
     });
-    print(notes.length);
   }
 
   void onDelteNotes(int i) {
@@ -164,9 +163,7 @@ class _AddRecipeNotesState extends State<AddRecipeNotes> {
       onPressed: () {
         bool check = false;
         for (int i = 0; i < notes.length; i++) {
-          print(notes[i]);
           if ((notes[i] == null) || (notes[i] == ' ')) {
-            print("aa");
             check = true;
           }
         }

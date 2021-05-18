@@ -49,13 +49,18 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
     });
     if ((!widget.doneLoadPublishRecipe) && (!widget.doneLoadSavedRecipe)) {
       if (!widget.home) {
-        widget.doneLoadPublishRecipe = true;
+        setState(() {
+          widget.doneLoadPublishRecipe = true;
+        });
+
         getuser();
         if (widget.uid != null) {
           loadSavedRecipe();
         }
       } else {
-        widget.doneLoadSavedRecipe = true;
+        setState(() {
+          widget.doneLoadSavedRecipe = true;
+        });
         loadPublishRecipe();
       }
     }
