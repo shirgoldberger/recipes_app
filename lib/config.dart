@@ -81,3 +81,5 @@ String errorNetworkRequestFaild =
     'PlatformException(ERROR_NETWORK_REQUEST_FAILED, A network error (such as timeout, interrupted connection or unreachable host) has occurred., null, null)';
 String errorHasNoUser =
     'PlatformException(ERROR_USER_NOT_FOUND, There is no user record corresponding to this identifier. The user may have been deleted., null, null)';
+String errorPassword =
+    'PlatformException(ERROR_WRONG_PASSWORD, The password is invalid or the user does not have a password., null, null)';

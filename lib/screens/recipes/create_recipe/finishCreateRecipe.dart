@@ -57,8 +57,7 @@ class _FinishCreateRecipeState extends State<FinishCreateRecipe> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(children: [
-        box,
-        box,
+        heightBox(260),
         title(),
         box,
         Row(children: [
@@ -71,7 +70,7 @@ class _FinishCreateRecipeState extends State<FinishCreateRecipe> {
           ),
           yesButton(),
         ]),
-        heightBox(350),
+        heightBox(240),
         previousLevelButton()
       ]),
     );
@@ -79,9 +78,9 @@ class _FinishCreateRecipeState extends State<FinishCreateRecipe> {
 
   Widget title() {
     return Text(
-      "Are you sure you want to save this recipe?",
+      "Are you sure\nyou want to save this recipe?",
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 25, fontFamily: 'Raleway'),
+      style: TextStyle(fontSize: 20, fontFamily: 'Raleway'),
     );
   }
 

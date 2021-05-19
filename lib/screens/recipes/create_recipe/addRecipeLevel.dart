@@ -47,6 +47,7 @@ class _AddRecipeLevelState extends State<AddRecipeLevel> {
   Color timeInit1 = Colors.black;
   Color timeInit2 = Colors.black;
   Color timeInit3 = Colors.black;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,7 +127,7 @@ class _AddRecipeLevelState extends State<AddRecipeLevel> {
             ),
           ]),
           SizedBox(
-            height: 200,
+            height: 300,
           ),
           Row(
             children: [

@@ -95,7 +95,8 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
         return RefreshIndicator(
           color: Colors.blue,
           onRefresh: refresh,
-          child: Column(
+          child: ListView(
+            physics: AlwaysScrollableScrollPhysics(),
             children: [
               Text(
                 "you dont have any recipe :(",
@@ -115,18 +116,15 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
           ),
         );
       } else {
-        return ListView(shrinkWrap: true, primary: false, children: <Widget>[
-          SizedBox(
-            height: 10.0,
-          ),
-          RefreshIndicator(
-            color: Colors.blue,
-            onRefresh: refresh,
-            child: Container(
-              height: MediaQuery.of(context).size.height + 500,
+        return RefreshIndicator(
+          color: Colors.blue,
+          onRefresh: refresh,
+          child: Stack(children: [
+            Container(
+              height: mapCat.length / 2.0 * 300,
               child: GridView.count(
+                physics: AlwaysScrollableScrollPhysics(),
                 crossAxisCount: 2,
-                physics: ScrollPhysics(),
                 children: List.generate(mapCat.length, (index) {
                   return Container(
                       height: 900,
@@ -137,9 +135,9 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
                               mapCat.values.elementAt(index))));
                 }),
               ),
-            ),
-          ),
-        ]);
+            )
+          ]),
+        );
       }
     }
   }

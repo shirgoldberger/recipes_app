@@ -46,7 +46,6 @@ class _SearchPage extends State<SearchPage> {
   void initState() {
     super.initState();
     getuser();
-
     changeState();
   }
 

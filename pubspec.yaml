@@ -49,6 +49,7 @@ dependencies:
   password_validator: ^0.0.1
   crop_your_image: ^0.5.3
   connectivity: ^0.4.2
+  flutter_native_image: ^0.0.6
 
 dev_dependencies:
   flutter_test:

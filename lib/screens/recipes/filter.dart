@@ -4,15 +4,6 @@ import 'package:recipes_app/models/recipe.dart';
 import '../../config.dart';
 
 class Filter extends StatefulWidget {
-  Filter(List<Recipe> _list, List<Recipe> _listForWatch, List<int> _levelList,
-      List<String> myTags, List<int> _timeList) {
-    this.list = _list;
-    this.listForWatch = _listForWatch;
-    this.levelList = _levelList;
-    this.myTags = myTags;
-    this.timeList = _timeList;
-  }
-
   String easyButtom = 'easy';
   Color easyButtomColor = Colors.green[100];
   String midButtom = 'medium';
@@ -38,7 +29,6 @@ class Filter extends StatefulWidget {
     'desert',
     'for children',
     'other',
-    //
     'vegetarian',
     'Gluten free',
     'without sugar',
@@ -55,6 +45,16 @@ class Filter extends StatefulWidget {
     'No carbs',
     'Spreads',
   ];
+
+  Filter(List<Recipe> _list, List<Recipe> _listForWatch, List<int> _levelList,
+      List<String> myTags, List<int> _timeList, String currentTag) {
+    this.list = _list;
+    this.listForWatch = _listForWatch;
+    this.levelList = _levelList;
+    this.myTags = myTags;
+    this.timeList = _timeList;
+    this.tagList.remove(currentTag);
+  }
 
   @override
   _FilterState createState() => _FilterState();
@@ -150,11 +150,12 @@ class _FilterState extends State<Filter> {
                       value: selectedSubject,
                       onChanged: (value) {
                         setState(() {
-                          tagList.remove(value);
+                          widget.tagList.remove(value);
                           widget.myTags.add(value);
                         });
                       },
-                      items: tagList.map<DropdownMenuItem<String>>((value) {
+                      items:
+                          widget.tagList.map<DropdownMenuItem<String>>((value) {
                         return DropdownMenuItem(
                             value: value, child: Text(value));
                       }).toList(),

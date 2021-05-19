@@ -9,7 +9,6 @@ import '../../config.dart';
 
 class RecipeList extends StatefulWidget {
   RecipeList(Map<String, List> map, String head, bool home) {
-    // this.list = list;
     this.head = head;
     this.home = home;
     this.map = map;
@@ -28,8 +27,6 @@ class RecipeList extends StatefulWidget {
   Color hardButtomColor = Colors.red[100];
   List<int> levelList = [];
   List<int> timeList = [];
-
-  //Color noteEasyButtomColor = Colors.red[400];
   @override
   _RecipeListState createState() => _RecipeListState();
 }
@@ -43,7 +40,6 @@ class _RecipeListState extends State<RecipeList> {
     'desert',
     'for children',
     'other',
-    //
     'vegetarian',
     'Gluten free',
     'without sugar',
@@ -235,7 +231,8 @@ class _RecipeListState extends State<RecipeList> {
                 widget.listForWatch,
                 widget.levelList,
                 widget.myTags,
-                widget.timeList))).then((value) => cameBack(value));
+                widget.timeList,
+                widget.head))).then((value) => cameBack(value));
   }
 
   cameBack(value) {

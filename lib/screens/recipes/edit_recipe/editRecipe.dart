@@ -21,7 +21,7 @@ class EditRecipe extends StatefulWidget {
   NetworkImage recipeImage;
   String levelString;
   Color levelColor;
-  String imagePath = "";
+  String imagePath;
   String timeText = '';
   EditRecipe(
       String _uid,
@@ -37,6 +37,7 @@ class EditRecipe extends StatefulWidget {
     ingredients = _ingredients;
     levelString = _levelString;
     levelColor = _levelColor;
+    imagePath = current.imagePath;
   }
 
   @override
@@ -60,6 +61,7 @@ class _EditRecipeState extends State<EditRecipe> {
     String downloadUrl = await FireStorageService.loadFromStorage(
         context, "uploads/" + widget.imagePath);
     setState(() {
+      widget.imagePath = downloadUrl.toString();
       widget.recipeImage = NetworkImage(downloadUrl);
     });
   }
@@ -133,6 +135,18 @@ class _EditRecipeState extends State<EditRecipe> {
         ]))
       ])),
       resizeToAvoidBottomInset: false,
+    );
+  }
+
+  Widget imageBox() {
+    return TextButton(
+      child: CircleAvatar(
+          backgroundColor: backgroundColor,
+          radius: 40,
+          backgroundImage: (widget.recipeImage == null)
+              ? ExactAssetImage(noImagePath)
+              : widget.recipeImage),
+      onPressed: uploadImagePressed,
     );
   }
 
@@ -277,7 +291,7 @@ class _EditRecipeState extends State<EditRecipe> {
     if (widget.imagePath == "") {
       return CircleAvatar(
           backgroundColor: backgroundColor,
-          radius: 40,
+          radius: 30,
           backgroundImage: ExactAssetImage(noImagePath),
           child: FlatButton(onPressed: uploadImagePressed));
     } else {
@@ -289,9 +303,7 @@ class _EditRecipeState extends State<EditRecipe> {
             child: FlatButton(onPressed: uploadImagePressed));
       } else {
         return Container(
-            height: MediaQuery.of(context).size.height / 10,
-            width: MediaQuery.of(context).size.width / 10,
-            child: CircularProgressIndicator());
+            height: 20, width: 20, child: CircularProgressIndicator());
       }
     }
   }
@@ -301,12 +313,18 @@ class _EditRecipeState extends State<EditRecipe> {
             context,
             MaterialPageRoute(
                 builder: (context) => UploadingImageToFirebaseStorage()))
-        .then((value) => {
-              setState(() {
-                widget.current.imagePath = value.toString();
-                widget.recipeImage = NetworkImage(widget.current.imagePath);
-              })
-            });
+        .then((value) async {
+      setState(() {
+        widget.imagePath = value;
+        widget.current.imagePath = value;
+      });
+
+      String downloadUrl = await FireStorageService.loadFromStorage(
+          context, "uploads/" + widget.imagePath);
+      setState(() {
+        widget.recipeImage = NetworkImage(downloadUrl);
+      });
+    });
   }
 
   Widget time() {
@@ -333,6 +351,17 @@ class _EditRecipeState extends State<EditRecipe> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        picture(),
+        SizedBox(width: 20),
+        RaisedButton(
+          color: widget.levelColor,
+          child: Text(
+            widget.levelString,
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        SizedBox(width: 10),
+        time(),
         RawMaterialButton(
           onPressed: () => Navigator.push(
                   context,
@@ -350,24 +379,11 @@ class _EditRecipeState extends State<EditRecipe> {
                         })
                       }
                   }),
-          elevation: 0.2,
           child: Icon(
             Icons.edit,
-            size: 20,
           ),
-          padding: EdgeInsets.all(5.0),
           shape: CircleBorder(),
         ),
-        SizedBox(width: 20),
-        RaisedButton(
-            color: widget.levelColor,
-            child: Text(
-              widget.levelString,
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {}),
-        SizedBox(width: 20),
-        time(),
       ],
     );
   }

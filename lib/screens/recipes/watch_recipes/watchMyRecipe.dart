@@ -257,8 +257,10 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
             style: TextStyle(fontFamily: 'Raleway', color: Colors.black)),
         onPressed: () {
           delete();
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => HomeLogIn(widget.uid)));
+          int count = 0;
+          Navigator.popUntil(context, (route) {
+            return count++ == 3;
+          });
         });
   }
 }

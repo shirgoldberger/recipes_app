@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/screens/personal_screen/homeLogIn.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
@@ -65,6 +66,13 @@ class _SignInState extends State<SignIn> {
         });
         return;
       }
+      if (result == errorPassword) {
+        setState(() {
+          loading = false;
+          error = "The password not match to this account";
+        });
+        return;
+      }
       if (result == null) {
         setState(() {
           loading = false;
@@ -72,8 +80,7 @@ class _SignInState extends State<SignIn> {
         });
         return;
       }
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => HomeLogIn(result.uid)));
+      Phoenix.rebirth(context);
     }
   }
 

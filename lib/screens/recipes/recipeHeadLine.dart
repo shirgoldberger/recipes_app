@@ -90,6 +90,7 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
           children: <Widget>[
             Row(
               children: <Widget>[
+                SizedBox(width: 10.0),
                 // image
                 CircleAvatar(
                   backgroundImage: (widget.image == null)
@@ -97,22 +98,14 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
                       : widget.image,
                   radius: 35.0,
                 ),
-                SizedBox(width: 10.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    // name
-                    recipeName(),
-                    SizedBox(height: 5.0),
-                    Container(
-                      child: recipeWriter(),
-                    ),
-                  ],
-                ),
+                SizedBox(width: 20.0),
+                // name
+                recipeName(),
               ],
             ),
             Column(
               children: <Widget>[
+                recipeWriter(),
                 SizedBox(height: 5.0),
                 // level
                 recipeLevel(),
