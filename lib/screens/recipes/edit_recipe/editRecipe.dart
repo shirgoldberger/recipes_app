@@ -5,6 +5,7 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/screens/personal_screen/uploadImage.dart';
 import 'package:recipes_app/screens/recipes/edit_recipe/editRecipeIngredients.dart';
+import 'package:recipes_app/screens/recipes/edit_recipe/editRecipeLevel.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import '../../../config.dart';
 import 'editRecipeNotes.dart';
@@ -21,6 +22,7 @@ class EditRecipe extends StatefulWidget {
   String levelString;
   Color levelColor;
   String imagePath = "";
+  String timeText = '';
   EditRecipe(
       String _uid,
       Recipe _current,
@@ -47,6 +49,8 @@ class _EditRecipeState extends State<EditRecipe> {
     super.initState();
     getUserImage();
     sortStages();
+    sortIngredients();
+    setTimeText();
   }
 
   void getImage(BuildContext context) async {
@@ -70,21 +74,34 @@ class _EditRecipeState extends State<EditRecipe> {
     });
   }
 
+  void sortIngredients() {
+    setState(() {
+      widget.ingredients.sort((a, b) => a.index.compareTo(b.index));
+    });
+  }
+
   void sortStages() {
-    List<Stages> stageCopy = [];
-    stageCopy.addAll(widget.stages);
-    for (int i = 0; i < stageCopy.length; i++) {
-      setState(() {
-        widget.stages[stageCopy[i].i] = stageCopy[i];
-      });
-    }
+    widget.stages.sort((a, b) => a.i.compareTo(b.i));
+    // List<Stages> stageCopy = [];
+    // stageCopy.addAll(widget.stages);
+    // for (int i = 0; i < stageCopy.length; i++) {
+    //   setState(() {
+    //     widget.stages[stageCopy[i].i] = stageCopy[i];
+    //   });
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     getImage(context);
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: AppBar(
+        backgroundColor: appBarBackgroundColor,
+        title: Text(
+          'Edit Recipe',
+          style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+        ),
         actions: [saveIcon(), cancelIcon()],
       ),
       body: Container(
@@ -133,6 +150,29 @@ class _EditRecipeState extends State<EditRecipe> {
         onPressed: saveThisRecipe);
   }
 
+  setTimeText() {
+    switch (widget.current.time) {
+      case 1:
+        setState(() {
+          widget.timeText = 'Until half-hour';
+        });
+
+        break;
+      case 2:
+        setState(() {
+          widget.timeText = 'Until hour';
+        });
+
+        break;
+      case 3:
+        setState(() {
+          widget.timeText = 'Over an hour';
+        });
+
+        break;
+    }
+  }
+
   Widget cancelIcon() {
     // ignore: deprecated_member_use
     return FlatButton.icon(
@@ -156,6 +196,23 @@ class _EditRecipeState extends State<EditRecipe> {
         .document(widget.current.id)
         .updateData(widget.current.toJson());
     //set the new id to data base
+    QuerySnapshot ingredientsFromDb = await Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .collection('recipes')
+        .document(widget.current.id)
+        .collection('ingredients')
+        .getDocuments();
+    ingredientsFromDb.documents.forEach((element) async {
+      await db
+          .collection('users')
+          .document(widget.uid)
+          .collection('recipes')
+          .document(widget.current.id)
+          .collection('ingredients')
+          .document(element.documentID)
+          .delete();
+    });
 
     for (int i = 0; i < widget.ingredients.length; i++) {
       await db
@@ -166,6 +223,25 @@ class _EditRecipeState extends State<EditRecipe> {
           .collection('ingredients')
           .add(widget.ingredients[i].toJson());
     }
+
+    QuerySnapshot stagwsFromDB = await Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .collection('recipes')
+        .document(widget.current.id)
+        .collection('stages')
+        .getDocuments();
+    stagwsFromDB.documents.forEach((element) async {
+      await db
+          .collection('users')
+          .document(widget.uid)
+          .collection('recipes')
+          .document(widget.current.id)
+          .collection('stages')
+          .document(element.documentID)
+          .delete();
+    });
+
     for (int i = 0; i < widget.stages.length; i++) {
       await db
           .collection('users')
@@ -233,6 +309,16 @@ class _EditRecipeState extends State<EditRecipe> {
             });
   }
 
+  Widget time() {
+    return Text(widget.timeText,
+        style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w900,
+            // fontStyle: FontStyle.italic,
+            fontFamily: 'Raleway',
+            fontSize: 15));
+  }
+
   Widget description() {
     return TextFormField(
       initialValue: widget.current.description,
@@ -244,13 +330,46 @@ class _EditRecipeState extends State<EditRecipe> {
 
   Widget level() {
     // ignore: deprecated_member_use
-    return RaisedButton(
-        color: widget.levelColor,
-        child: Text(
-          widget.levelString,
-          style: TextStyle(color: Colors.white),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        RawMaterialButton(
+          onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditRecipeLevel(
+                          widget.current.level, widget.current.time)))
+              .then((value) => {
+                    if (value != null)
+                      {
+                        setState(() {
+                          widget.current.level = value["level"];
+                          widget.current.time = value["time"];
+                          setLevels();
+                          setTimeText();
+                        })
+                      }
+                  }),
+          elevation: 0.2,
+          child: Icon(
+            Icons.edit,
+            size: 20,
+          ),
+          padding: EdgeInsets.all(5.0),
+          shape: CircleBorder(),
         ),
-        onPressed: () {});
+        SizedBox(width: 20),
+        RaisedButton(
+            color: widget.levelColor,
+            child: Text(
+              widget.levelString,
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {}),
+        SizedBox(width: 20),
+        time(),
+      ],
+    );
   }
 
   Widget ingredients() {
@@ -300,6 +419,21 @@ class _EditRecipeState extends State<EditRecipe> {
     );
   }
 
+  setLevels() {
+    if (widget.current.level == 1) {
+      widget.levelColor = Colors.green[900];
+      widget.levelString = "Easy";
+    }
+    if (widget.current.level == 2) {
+      widget.levelColor = Colors.red[900];
+      widget.levelString = "Medium";
+    }
+    if (widget.current.level == 3) {
+      widget.levelColor = Colors.blue[900];
+      widget.levelString = "Hard";
+    }
+  }
+
   Widget editIngredients() {
     return RawMaterialButton(
       onPressed: () => Navigator.push(
@@ -312,8 +446,11 @@ class _EditRecipeState extends State<EditRecipe> {
                   {
                     setState(() {
                       widget.ingredients = value;
+                      print("change");
                     })
                   }
+                else
+                  {print("else" + widget.ingredients.length.toString())}
               }),
       elevation: 0.2,
       child: Icon(
@@ -328,10 +465,21 @@ class _EditRecipeState extends State<EditRecipe> {
   Widget editStages() {
     return RawMaterialButton(
       onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  EditRecipeStages(widget.uid, widget.stages))),
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EditRecipeStages(widget.uid, widget.stages)))
+          .then((value) => {
+                if (value != null)
+                  {
+                    setState(() {
+                      widget.stages = value;
+                      print("change");
+                    })
+                  }
+                else
+                  {print("else" + widget.ingredients.length.toString())}
+              }),
       elevation: 0.2,
       child: Icon(
         Icons.add,
@@ -349,7 +497,14 @@ class _EditRecipeState extends State<EditRecipe> {
               MaterialPageRoute(
                   builder: (context) =>
                       EditRecipeTags(widget.uid, widget.current.tags)))
-          .then((value) => widget.current.tags = value),
+          .then((value) => {
+                if (value != null)
+                  {
+                    setState(() {
+                      widget.current.tags = value;
+                    })
+                  }
+              }),
       elevation: 0.2,
       child: Icon(
         Icons.add,
@@ -363,10 +518,21 @@ class _EditRecipeState extends State<EditRecipe> {
   Widget editNotes() {
     return RawMaterialButton(
       onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  EditRecipeNotes(widget.uid, widget.current.notes))),
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EditRecipeNotes(widget.uid, widget.current.notes)))
+          .then((value) => {
+                if (value != null)
+                  {
+                    setState(() {
+                      widget.current.notes = value;
+                      print("change");
+                    })
+                  }
+                else
+                  {print("else" + widget.ingredients.length.toString())}
+              }),
       elevation: 0.2,
       child: Icon(
         Icons.add,

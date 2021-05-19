@@ -7,10 +7,10 @@ import '../../../config.dart';
 // ignore: must_be_immutable
 class EditRecipeStages extends StatefulWidget {
   String uid;
-  List<Stages> stages;
+  List<Stages> stages = [];
   EditRecipeStages(String _uid, List<Stages> _stages) {
     uid = _uid;
-    stages = _stages;
+    stages.addAll(_stages);
   }
   @override
   _EditRecipeStagesState createState() => _EditRecipeStagesState();
@@ -57,7 +57,7 @@ class _EditRecipeStagesState extends State<EditRecipeStages> {
                                       height: 37.0,
                                       child: TextFormField(
                                         decoration: InputDecoration(
-                                          hintText: 'write stage...',
+                                          hintText: widget.stages[i].s,
                                         ),
                                         validator: (val) => val.length < 2
                                             ? 'Enter a description eith 2 letter at least'
@@ -71,14 +71,16 @@ class _EditRecipeStagesState extends State<EditRecipeStages> {
                             ])),
                   ),
             box,
-            addButton(),
-            SizedBox(
-              height: (min(50 * widget.stages.length.toDouble(), 300) ==
-                      50 * widget.stages.length.toDouble())
-                  ? 300 - 50 * widget.stages.length.toDouble()
-                  : 0,
-            ),
-            saveButton()
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                addButton(),
+                SizedBox(width: 60),
+                saveButton(),
+                SizedBox(width: 60),
+                cancelButton()
+              ],
+            )
           ])),
         ],
       ),
@@ -148,6 +150,20 @@ class _EditRecipeStagesState extends State<EditRecipeStages> {
       },
       tooltip: 'save',
       child: Icon(Icons.save_rounded),
+    );
+  }
+
+  Widget cancelButton() {
+    return FloatingActionButton(
+      onPressed: () => Navigator.pop(context, null),
+      elevation: 2.0,
+      heroTag: null,
+      backgroundColor: mainButtonColor,
+      child: Icon(
+        Icons.cancel,
+        color: Colors.white,
+      ),
+      shape: CircleBorder(),
     );
   }
 }

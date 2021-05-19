@@ -77,14 +77,16 @@ class _EditRecipeTagsState extends State<EditRecipeTags> {
             ),
 
       box,
-      addButton(),
-      SizedBox(
-        height: (min(50 * widget.tags.length.toDouble(), 300) ==
-                50 * widget.tags.length.toDouble())
-            ? 300 - 50 * widget.tags.length.toDouble()
-            : 0,
-      ),
-      saveButton()
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          addButton(),
+          SizedBox(width: 60),
+          saveButton(),
+          SizedBox(width: 60),
+          cancelButton()
+        ],
+      )
     ]));
   }
 
@@ -144,6 +146,20 @@ class _EditRecipeTagsState extends State<EditRecipeTags> {
         size: 30,
       ),
       padding: EdgeInsets.all(5.0),
+      shape: CircleBorder(),
+    );
+  }
+
+  Widget cancelButton() {
+    return FloatingActionButton(
+      onPressed: () => Navigator.pop(context, null),
+      elevation: 2.0,
+      heroTag: null,
+      backgroundColor: mainButtonColor,
+      child: Icon(
+        Icons.cancel,
+        color: Colors.white,
+      ),
       shape: CircleBorder(),
     );
   }

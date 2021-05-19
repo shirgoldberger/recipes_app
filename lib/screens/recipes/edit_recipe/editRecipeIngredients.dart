@@ -7,10 +7,12 @@ import '../../../config.dart';
 // ignore: must_be_immutable
 class EditRecipeIngredients extends StatefulWidget {
   String uid;
-  List<IngredientsModel> ingredients;
+  List<IngredientsModel> ingredients = [];
   EditRecipeIngredients(String _uid, List<IngredientsModel> _ingredients) {
     uid = _uid;
-    ingredients = _ingredients ?? [];
+    ingredients = [];
+    ingredients.addAll(_ingredients);
+    print(_ingredients);
   }
   @override
   _EditRecipeIngredientsState createState() => _EditRecipeIngredientsState();
@@ -35,15 +37,16 @@ class _EditRecipeIngredientsState extends State<EditRecipeIngredients> {
               ? noIngredientsText()
               : ingredientsContainer(),
           box,
-          addButton(),
-          SizedBox(
-            height: (min(50 * widget.ingredients.length.toDouble(), 300) ==
-                    50 * widget.ingredients.length.toDouble())
-                ? 300 - 50 * widget.ingredients.length.toDouble()
-                : 0,
-          ),
-          saveButton(),
-          cancelButton()
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              addButton(),
+              SizedBox(width: 60),
+              saveButton(),
+              SizedBox(width: 60),
+              cancelButton()
+            ],
+          )
         ],
       ))
     ]));
@@ -120,7 +123,8 @@ class _EditRecipeIngredientsState extends State<EditRecipeIngredients> {
       "Kilogram",
       "Milliliter",
       "Liter",
-      "Cup"
+      "Cup",
+      "Box"
     ];
 
     return DropdownButton(
@@ -232,7 +236,7 @@ class _EditRecipeIngredientsState extends State<EditRecipeIngredients> {
       heroTag: null,
       backgroundColor: mainButtonColor,
       child: Icon(
-        Icons.add,
+        Icons.cancel,
         color: Colors.white,
       ),
       shape: CircleBorder(),

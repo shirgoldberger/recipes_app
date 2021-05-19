@@ -6,10 +6,10 @@ import '../../../config.dart';
 // ignore: must_be_immutable
 class EditRecipeNotes extends StatefulWidget {
   String uid;
-  List<String> notes;
+  List<String> notes = [];
   EditRecipeNotes(String _uid, List<String> _notes) {
     uid = _uid;
-    notes = _notes;
+    notes.addAll(_notes);
   }
   @override
   _EditRecipeNotesState createState() => _EditRecipeNotesState();
@@ -46,8 +46,7 @@ class _EditRecipeNotesState extends State<EditRecipeNotes> {
                                 height: 37.0,
                                 child: TextFormField(
                                   decoration: InputDecoration(
-                                    hintText: 'add note...',
-                                  ),
+                                      hintText: widget.notes[i]),
                                   validator: (val) => val.length < 2
                                       ? 'Enter a description eith 2 letter at least'
                                       : null,
@@ -62,15 +61,31 @@ class _EditRecipeNotesState extends State<EditRecipeNotes> {
                       ]))),
 
       box,
-      addButton(),
-      SizedBox(
-        height: (min(50 * widget.notes.length.toDouble(), 300) ==
-                50 * widget.notes.length.toDouble())
-            ? 300 - 50 * widget.notes.length.toDouble()
-            : 0,
-      ),
-      saveButton()
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          addButton(),
+          SizedBox(width: 60),
+          saveButton(),
+          SizedBox(width: 60),
+          cancelButton()
+        ],
+      )
     ]));
+  }
+
+  Widget cancelButton() {
+    return FloatingActionButton(
+      onPressed: () => Navigator.pop(context, null),
+      elevation: 2.0,
+      heroTag: null,
+      backgroundColor: mainButtonColor,
+      child: Icon(
+        Icons.cancel,
+        color: Colors.white,
+      ),
+      shape: CircleBorder(),
+    );
   }
 
   void addNotes() {

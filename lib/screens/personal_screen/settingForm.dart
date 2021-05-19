@@ -15,7 +15,7 @@ import 'uploadImage.dart';
 // ignore: must_be_immutable
 class SettingForm extends StatefulWidget {
   String uid;
-  String imagePath = "";
+  String imagePath;
   NetworkImage m;
 
   SettingForm(String _uid, NetworkImage _m) {
