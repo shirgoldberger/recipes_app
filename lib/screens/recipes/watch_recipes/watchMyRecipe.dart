@@ -4,11 +4,12 @@ import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
+import 'package:recipes_app/screens/groups/publishGroup2.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import 'watchRecipeBody.dart';
 import '../edit_recipe/editRecipe.dart';
-import '../../personal_screen/homeLogIn.dart';
-import '../../groups/publishGroup2.dart';
+
+import '../../../services/recipeFromDB.dart';
 
 // ignore: must_be_immutable
 class WatchMyRecipe extends StatefulWidget {
@@ -119,80 +120,82 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
   }
 
   Future<void> delete() async {
-    final db = Firestore.instance;
-    if (widget.currentRecipe.publish != '') {
-      DocumentSnapshot snap = await Firestore.instance
-          .collection('publish recipe')
-          .document(widget.currentRecipe.publish)
-          .get();
-      List group = snap.data['saveInGroup'] ?? [];
-      List users = snap.data['saveUser'] ?? [];
-      for (int i = 0; i < group.length; i++) {
-        QuerySnapshot snap2 = await Firestore.instance
-            .collection('Group')
-            .document(group[i])
-            .collection('recipes')
-            .getDocuments();
-        snap2.documents.forEach((element) async {
-          if (element.data['recipeId'] == widget.currentRecipe.id) {
-            db
-                .collection('Group')
-                .document(group[i])
-                .collection('recipes')
-                .document(element.documentID)
-                .delete();
-          }
-        });
-      }
-      for (int i = 0; i < users.length; i++) {
-        QuerySnapshot snap2 = await Firestore.instance
-            .collection('users')
-            .document(users[i])
-            .collection('saved recipe')
-            .getDocuments();
-        snap2.documents.forEach((element) async {
-          if (element.data['recipeId'] == widget.currentRecipe.id) {
-            db
-                .collection('users')
-                .document(users[i])
-                .collection('saved recipe')
-                .document(element.documentID)
-                .delete();
-          }
-        });
-      }
-    }
-    QuerySnapshot snap2 =
-        await Firestore.instance.collection('Group').getDocuments();
-    snap2.documents.forEach((element) async {
-      QuerySnapshot snap3 = await Firestore.instance
-          .collection('Group')
-          .document(element.documentID)
-          .collection('recipes')
-          .getDocuments();
-      snap3.documents.forEach((element2) {
-        if (element2.data['recipeId'] == widget.currentRecipe.id) {
-          db
-              .collection('Group')
-              .document(element.documentID)
-              .collection('recipes')
-              .document(element2.documentID)
-              .delete();
-        }
-      });
-    });
-    if (widget.currentRecipe.publish != '') {
-      db
-          .collection('publish recipe')
-          .document(widget.currentRecipe.publish)
-          .delete();
-    }
-    db
-        .collection('users')
-        .document(widget.uid)
-        .collection('recipes')
-        .document(widget.currentRecipe.id)
-        .delete();
+    await RecipeFromDB.deleteRecipe(
+        widget.currentRecipe.publish, widget.currentRecipe.id, widget.uid);
+    // final db = Firestore.instance;
+    // if (widget.currentRecipe.publish != '') {
+    //   DocumentSnapshot snap = await Firestore.instance
+    //       .collection('publish recipe')
+    //       .document(widget.currentRecipe.publish)
+    //       .get();
+    //   List group = snap.data['saveInGroup'] ?? [];
+    //   List users = snap.data['saveUser'] ?? [];
+    //   for (int i = 0; i < group.length; i++) {
+    //     QuerySnapshot snap2 = await Firestore.instance
+    //         .collection('Group')
+    //         .document(group[i])
+    //         .collection('recipes')
+    //         .getDocuments();
+    //     snap2.documents.forEach((element) async {
+    //       if (element.data['recipeId'] == widget.currentRecipe.id) {
+    //         db
+    //             .collection('Group')
+    //             .document(group[i])
+    //             .collection('recipes')
+    //             .document(element.documentID)
+    //             .delete();
+    //       }
+    //     });
+    //   }
+    //   for (int i = 0; i < users.length; i++) {
+    //     QuerySnapshot snap2 = await Firestore.instance
+    //         .collection('users')
+    //         .document(users[i])
+    //         .collection('saved recipe')
+    //         .getDocuments();
+    //     snap2.documents.forEach((element) async {
+    //       if (element.data['recipeId'] == widget.currentRecipe.id) {
+    //         db
+    //             .collection('users')
+    //             .document(users[i])
+    //             .collection('saved recipe')
+    //             .document(element.documentID)
+    //             .delete();
+    //       }
+    //     });
+    //   }
+    // }
+    // QuerySnapshot snap2 =
+    //     await Firestore.instance.collection('Group').getDocuments();
+    // snap2.documents.forEach((element) async {
+    //   QuerySnapshot snap3 = await Firestore.instance
+    //       .collection('Group')
+    //       .document(element.documentID)
+    //       .collection('recipes')
+    //       .getDocuments();
+    //   snap3.documents.forEach((element2) {
+    //     if (element2.data['recipeId'] == widget.currentRecipe.id) {
+    //       db
+    //           .collection('Group')
+    //           .document(element.documentID)
+    //           .collection('recipes')
+    //           .document(element2.documentID)
+    //           .delete();
+    //     }
+    //   });
+    // });
+    // if (widget.currentRecipe.publish != '') {
+    //   db
+    //       .collection('publish recipe')
+    //       .document(widget.currentRecipe.publish)
+    //       .delete();
+    // }
+    // db
+    //     .collection('users')
+    //     .document(widget.uid)
+    //     .collection('recipes')
+    //     .document(widget.currentRecipe.id)
+    //     .delete();
   }
 
   Widget publishIcon() {

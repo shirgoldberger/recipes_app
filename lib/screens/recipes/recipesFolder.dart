@@ -121,7 +121,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
           onRefresh: refresh,
           child: Stack(children: [
             Container(
-              height: mapCat.length / 2.0 * 300,
+              height: 900,
               child: GridView.count(
                 physics: AlwaysScrollableScrollPhysics(),
                 crossAxisCount: 2,

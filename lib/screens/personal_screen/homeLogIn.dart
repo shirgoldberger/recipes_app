@@ -4,6 +4,7 @@ import 'package:recipes_app/screens/groups/GroupList.dart';
 import 'package:recipes_app/services/groupFromDB.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
+import 'package:recipes_app/shared_screen/loading.dart';
 import 'settingForm.dart';
 import '../groups/newGroup.dart';
 import '../../services/auth.dart';
@@ -61,28 +62,32 @@ class _HomeLogInState extends State<HomeLogIn> {
   @override
   Widget build(BuildContext context) {
     getProfileImage(context);
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: appBar(),
-      drawer: leftMenu(),
-      drawerEdgeDragWidth: 30.0,
-      body: Container(
-          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-          child: ListView(children: <Widget>[
-            box,
-            title(),
-            box,
-            newRecipeButtom(),
-            box,
-            box,
-            Column(children: [
-              newGroupButtom2(),
+    if (name == "") {
+      return Loading();
+    } else {
+      return Scaffold(
+        backgroundColor: backgroundColor,
+        appBar: appBar(),
+        drawer: leftMenu(),
+        drawerEdgeDragWidth: 30.0,
+        body: Container(
+            padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+            child: ListView(children: <Widget>[
               box,
-              widthBox(70),
-              watchGroupButtom2(),
-            ]),
-          ])),
-    );
+              title(),
+              box,
+              newRecipeButtom(),
+              box,
+              box,
+              Column(children: [
+                newGroupButtom2(),
+                box,
+                widthBox(70),
+                watchGroupButtom2(),
+              ]),
+            ])),
+      );
+    }
     // floatingActionButton: addNewRecipe());
   }
 

@@ -284,8 +284,8 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
           if (widget.uid != null) {
             _pressLikeRecipe();
           } else {
-            _showAlertDialog('you can not save this recipe - ' +
-                'please first register or sign in to this app, do this in the personal page');
+            _showAlertDialog('You can not save this recipe - ' +
+                'please first register or sign in to the app and try again');
           }
         });
   }
@@ -318,11 +318,11 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
               _showSavedGroup();
             } else {
               _showAlertDialog(
-                  'you can not save this recipe - becouse you wroye it!');
+                  'You can not save this recipe because you wrote it!');
             }
           } else {
             _showAlertDialog(
-                'you can not save this recipe - please first register or sign in to this app, do this in the personal page');
+                'you can not save this recipe - please first register or sign in to the app and try again');
           }
         });
   }

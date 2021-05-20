@@ -21,6 +21,7 @@ class _NewGroupState extends State<NewGroup> {
   List<String> userFullNames = [];
   String groupName = "";
   String error = '';
+  String errorGroupName = '';
   bool findUser = false;
   String emailTocheck;
   final _formKey = GlobalKey<FormState>();
@@ -55,6 +56,7 @@ class _NewGroupState extends State<NewGroup> {
                   title(),
                   heightBox(30),
                   groupNameField(),
+                  errorFroupNameText(),
                   heightBox(20),
                   heightBox(20),
                   addMembersText(),
@@ -140,6 +142,13 @@ class _NewGroupState extends State<NewGroup> {
     );
   }
 
+  Widget errorFroupNameText() {
+    return Text(
+      errorGroupName,
+      style: TextStyle(color: errorColor),
+    );
+  }
+
   Widget addMemberButton() {
     return RawMaterialButton(
       onPressed: () => saveUser(emailTocheck),
@@ -178,7 +187,7 @@ class _NewGroupState extends State<NewGroup> {
   Widget saveGroupWidgwt() {
     if (groupName.length > 20) {
       setState(() {
-        error = 'Group name is limited to 20 characters';
+        errorGroupName = 'Group name is limited to 20 characters';
       });
       return FlatButton.icon(
           icon: Icon(
@@ -188,6 +197,9 @@ class _NewGroupState extends State<NewGroup> {
           label: Text('SAVE', style: TextStyle(color: Colors.white)),
           onPressed: null);
     } else {
+      setState(() {
+        errorGroupName = '';
+      });
       return FlatButton.icon(
           icon: Icon(
             Icons.save,

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:recipes_app/models/recipe.dart';
-
 import '../config.dart';
 
 class RecipeFromDB {
@@ -167,5 +166,75 @@ class RecipeFromDB {
             .delete();
       }
     }
+  }
+
+  static Future<void> deleteRecipe(
+      String publish, String recipeId, String uid) async {
+    // publish recipe
+    if (publish != '') {
+      DocumentSnapshot publishRecipe = await Firestore.instance
+          .collection('publish recipe')
+          .document(publish)
+          .get();
+      List users = publishRecipe.data['saveUser'] ?? [];
+      deleteRecipeFromAllUsers(users, recipeId);
+      deletePublishRecipe(publish);
+    }
+    deleteRecipeFromAllGroups(recipeId);
+    deleteRecipeFromUser(uid, recipeId);
+  }
+
+  static Future deleteRecipeFromAllGroups(String recipeId) async {
+    QuerySnapshot groups =
+        await Firestore.instance.collection('Group').getDocuments();
+    for (int i = 0; i < groups.documents.length; i++) {
+      // all recipes of group i
+      QuerySnapshot groupRecipes = await Firestore.instance
+          .collection('Group')
+          .document(groups.documents[i].documentID)
+          .collection('recipes')
+          .getDocuments();
+      for (int j = 0; j < groupRecipes.documents.length; j++) {
+        // the specific recipe
+        if (groupRecipes.documents[j].data['recipeId'] == recipeId) {
+          await db
+              .collection('Group')
+              .document(groups.documents[i].documentID)
+              .collection('recipes')
+              .document(groupRecipes.documents[j].documentID)
+              .delete();
+        }
+      }
+    }
+  }
+
+  static Future deleteRecipeFromAllUsers(List users, String recipeId) async {
+    for (int i = 0; i < users.length; i++) {
+      QuerySnapshot userSavedRecipes = await Firestore.instance
+          .collection('users')
+          .document(users[i])
+          .collection('saved recipe')
+          .getDocuments();
+      for (int j = 0; j < userSavedRecipes.documents.length; j++) {
+        if (userSavedRecipes.documents[j].data['recipeId'] == recipeId) {
+          await db
+              .collection('users')
+              .document(users[i])
+              .collection('saved recipe')
+              .document(userSavedRecipes.documents[j].documentID)
+              .delete();
+        }
+      }
+    }
+  }
+
+  // delete recipe from the user that wrote it
+  static Future deleteRecipeFromUser(String uid, String recipeId) async {
+    await db
+        .collection('users')
+        .document(uid)
+        .collection('recipes')
+        .document(recipeId)
+        .delete();
   }
 }

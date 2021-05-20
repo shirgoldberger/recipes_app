@@ -144,8 +144,8 @@ class _SaveGroupState extends State<SaveGroup> {
                             : Colors.blueGrey[600],
                         icon: Icon(
                             widget.map.values.elementAt(index)
-                                ? Icons.favorite_border
-                                : Icons.favorite,
+                                ? Icons.favorite
+                                : Icons.favorite_border,
                             color: Colors.white),
                         label: Text(
                             widget.map.values.elementAt(index)
