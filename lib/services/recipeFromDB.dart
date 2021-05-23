@@ -50,7 +50,7 @@ class RecipeFromDB {
     var id = recipe.documentID;
     String name = recipe.data['name'] ?? '';
     String description = recipe.data['description'] ?? '';
-    String level = recipe.data['level'] ?? 0;
+    String level = recipe.data['level'] ?? '0';
     int levelInt = int.parse(level);
     String time = recipe.data['time'] ?? '0';
     int timeInt = int.parse(time);
@@ -236,5 +236,26 @@ class RecipeFromDB {
         .collection('recipes')
         .document(recipeId)
         .delete();
+  }
+
+  static Future<List<Recipe>> getDirectoryRecipesList(
+      String uid, String directoryId) async {
+    List<Recipe> directoryRecipes = [];
+    DocumentSnapshot recipesList = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .document(directoryId)
+        .get();
+    List<String> list = recipesList.data['Recipes'] ?? [];
+    for (String publishId in list) {
+      var publishRecipe =
+          await db.collection('publish recipe').document(publishId).get();
+      String writerId = await publishRecipe.data['userID'] ?? "";
+      String recipeId = await publishRecipe.data['recipeId'] ?? "";
+      Recipe r = await getRecipeOfUser(writerId, recipeId);
+      directoryRecipes.add(r);
+    }
+    return directoryRecipes;
   }
 }

@@ -58,26 +58,74 @@ class _GroupListState extends State<GroupList> {
   }
 
   Widget groupTitle(int index) {
+    int pictureIndex = (index % 6) + 1;
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      // ignore: deprecated_member_use
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18.0),
-            side: BorderSide(color: Colors.white)),
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => GroupRecipeList(widget.groupId[index],
-                      widget.groupName[index], widget.uid)));
-        },
-        padding: EdgeInsets.all(20.0),
-        color: subButtonColor,
-        textColor: Colors.white,
-        child: groupName(index),
-      ),
+      padding: const EdgeInsets.all(10.0),
+      child: Stack(children: <Widget>[
+        InkWell(
+          borderRadius: BorderRadius.circular(10),
+          child: GestureDetector(
+              child: Container(
+                  width: 400,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.black,
+                    image: DecorationImage(
+                        image: AssetImage('lib/images/group (' +
+                            pictureIndex.toString() +
+                            ').JPG'),
+                        fit: BoxFit.cover),
+                    // button text
+                  )),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => GroupRecipeList(
+                            widget.groupId[index],
+                            widget.groupName[index],
+                            widget.uid)));
+              }),
+        ),
+        Column(
+          children: [
+            SizedBox(
+              height: 25,
+            ),
+            Center(
+                child: Text(
+              widget.groupName[index],
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
+                  fontStyle: FontStyle.italic,
+                  fontFamily: 'Raleway',
+                  fontSize: 35),
+            )),
+          ],
+        ),
+      ]),
     );
+    // return Padding(
+    //   padding: const EdgeInsets.all(8.0),
+    //   // ignore: deprecated_member_use
+    //   child: RaisedButton(
+    //     shape: RoundedRectangleBorder(
+    //         borderRadius: BorderRadius.circular(18.0),
+    //         side: BorderSide(color: Colors.white)),
+    //     onPressed: () {
+    //       Navigator.push(
+    //           context,
+    //           MaterialPageRoute(
+    //               builder: (context) => GroupRecipeList(widget.groupId[index],
+    //                   widget.groupName[index], widget.uid)));
+    //     },
+    //     padding: EdgeInsets.all(20.0),
+    //     textColor: Colors.white,
+    //     child: groupName(index),
+    //   ),
+    // );
   }
 
   Widget emptyMessage() {
@@ -86,8 +134,28 @@ class _GroupListState extends State<GroupList> {
   }
 
   Widget groupName(int index) {
-    return Text(widget.groupName[index],
-        style: TextStyle(fontSize: 25, fontFamily: 'Raleway'));
+    return MaterialButton(
+      padding: EdgeInsets.all(8.0),
+      textColor: Colors.white,
+      splashColor: Colors.greenAccent,
+      elevation: 8.0,
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage('lib/images/group1.JPG'), fit: BoxFit.cover),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text("SIGN OUT"),
+        ),
+      ),
+      // ),
+      onPressed: () {
+        print('Tapped');
+      },
+    );
+    // return Text(widget.groupName[index],
+    //     style: TextStyle(fontSize: 25, fontFamily: 'Raleway'));
   }
 
   // database function //

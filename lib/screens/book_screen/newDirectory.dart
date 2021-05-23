@@ -1,16 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/config.dart';
-import 'package:recipes_app/services/groupFromDB.dart';
-import 'package:recipes_app/services/userFromDB.dart';
+import 'package:recipes_app/models/directory.dart';
 
 // ignore: must_be_immutable
 class NewDirectory extends StatefulWidget {
   String uid;
+  List<Directory> directories;
   String error2 = "";
 
-  NewDirectory(String _uid) {
+  NewDirectory(String _uid, List<Directory> _directories) {
     this.uid = _uid;
+    this.directories = _directories;
   }
 
   @override
@@ -22,7 +23,7 @@ class _NewDirectoryState extends State<NewDirectory> {
   List<String> userFullNames = [];
   String directoryName = "";
   String error = '';
-  String errorGroupName = '';
+  String errorDirectoryName = '';
   bool findUser = false;
   String emailTocheck;
   final _formKey = GlobalKey<FormState>();
@@ -41,13 +42,13 @@ class _NewDirectoryState extends State<NewDirectory> {
           backgroundColor: backgroundColor,
           appBar: appBar(),
           body: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+              padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 15.0),
               child: Column(children: <Widget>[
                 Flexible(
                     child: ListView(children: [
                   title(),
                   heightBox(30),
-                  groupNameField(),
+                  directoryNameField(),
                   heightBox(20),
                   heightBox(20),
                   errorText(),
@@ -61,26 +62,26 @@ class _NewDirectoryState extends State<NewDirectory> {
   Widget appBar() {
     return AppBar(
         title: Text(
-          'New group',
+          'New Directory',
           style: TextStyle(fontFamily: logoFont),
         ),
         backgroundColor: appBarBackgroundColor,
         actions: <Widget>[
           // ignore: deprecated_member_use
-          saveGroupWidgwt()
+          saveGroupWidget()
         ]);
   }
 
   Widget title() {
     return Text(
-      'Hey let\'s create a new group!',
+      'let\'s create a new directory!',
       style: TextStyle(
           fontFamily: 'Raleway', fontSize: 25, color: Colors.blueGrey[800]),
       textAlign: TextAlign.center,
     );
   }
 
-  Widget groupNameField() {
+  Widget directoryNameField() {
     return TextFormField(
       cursorWidth: 10,
       decoration: InputDecoration(
@@ -92,7 +93,9 @@ class _NewDirectoryState extends State<NewDirectory> {
         if (value.isEmpty) {
           return 'Please enter Directory name';
         }
-
+        if (checkDirectoryName(value)) {
+          return 'You have directory with this name';
+        }
         return null;
       },
       onChanged: (val) {
@@ -108,22 +111,26 @@ class _NewDirectoryState extends State<NewDirectory> {
     );
   }
 
-  Widget saveGroupWidgwt() {
+  Widget saveGroupWidget() {
     return FlatButton.icon(
         icon: Icon(
           Icons.save,
           color: Colors.white,
         ),
         label: Text('SAVE', style: TextStyle(color: Colors.white)),
-        onPressed: () {
+        onPressed: () async {
           if ((directoryName == null) || (directoryName == "")) {
             setState(() {
               widget.error2 = "Fill directory name!";
             });
+          } else if (checkDirectoryName(directoryName)) {
+            setState(() {
+              widget.error2 = 'You have directory with this name';
+            });
           } else {
             List<String> a = [];
             print(widget.uid);
-            Firestore.instance
+            DocumentReference d = await Firestore.instance
                 .collection('users')
                 .document(widget.uid)
                 .collection('Directory')
@@ -131,5 +138,14 @@ class _NewDirectoryState extends State<NewDirectory> {
             Navigator.pop(context);
           }
         });
+  }
+
+  bool checkDirectoryName(String name) {
+    for (Directory d in widget.directories) {
+      if (d.name == name) {
+        return true;
+      }
+    }
+    return false;
   }
 }

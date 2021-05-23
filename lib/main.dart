@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:recipes_app/screens/bookPage.dart';
+import 'package:recipes_app/screens/book_screen/bookPage.dart';
 import 'package:recipes_app/screens/home.dart';
 import 'package:recipes_app/screens/personal_screen/logIn/logInWrapper.dart';
 import 'package:recipes_app/screens/search_screen/search_page.dart';
@@ -156,21 +156,21 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               label: 'Home',
               activeIcon: Icon(
                 Icons.home,
-                color: appBarBackgroundColor,
+                color: Colors.grey[800],
               )),
           BottomNavigationBarItem(
               icon: Icon(Icons.search, color: Colors.grey),
               label: 'Search',
               activeIcon: Icon(
                 Icons.search,
-                color: appBarBackgroundColor,
+                color: Colors.grey[800],
               )),
           BottomNavigationBarItem(
               icon: Icon(Icons.book_outlined, color: Colors.grey),
               label: 'Book',
               activeIcon: Icon(
                 Icons.book,
-                color: appBarBackgroundColor,
+                color: Colors.grey[800],
               )),
           BottomNavigationBarItem(
             icon: image == null
@@ -183,11 +183,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             activeIcon: image == null
                 ? Icon(
                     Icons.account_circle_rounded,
-                    color: appBarBackgroundColor,
+                    color: Colors.grey[800],
                   )
                 : CircleAvatar(
                     radius: 14,
-                    backgroundColor: appBarBackgroundColor,
+                    backgroundColor: Colors.grey[800],
                     child: CircleAvatar(
                         backgroundColor: backgroundColor,
                         radius: 12,
@@ -195,7 +195,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: appBarBackgroundColor,
+        selectedItemColor: Colors.grey[800],
         onTap: _onItemTapped,
       ),
     );

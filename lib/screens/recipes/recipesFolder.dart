@@ -121,6 +121,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
           onRefresh: refresh,
           child: Stack(children: [
             Container(
+              padding: EdgeInsets.only(left: 6.0, right: 6.0),
               height: 900,
               child: GridView.count(
                 physics: AlwaysScrollableScrollPhysics(),
@@ -130,7 +131,9 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
                       height: 900,
                       width: 900,
                       child: Card(
-                          shape: RoundedRectangleBorder(side: BorderSide.none),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
                           child: categoryButtom(mapCat.keys.elementAt(index),
                               mapCat.values.elementAt(index))));
                 }),
@@ -158,46 +161,39 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
 
   Widget categoryButtom(String cat, List listCat) {
     final db = Firestore.instance;
-    return InkWell(
-      customBorder: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      borderRadius: BorderRadius.circular(5),
-      highlightColor: Colors.blueGrey,
-      child: Container(
-          width: 50,
-          height: 200,
-          decoration: BoxDecoration(
-            color: Colors.blueGrey[50],
-            image: DecorationImage(
-                image: ExactAssetImage('lib/images/' + cat + ".JPG"),
-                fit: BoxFit.cover),
-          ),
-          child: FlatButton(onPressed: () async {
-            if (widget.uid != null) {
-              DocumentSnapshot snap = await Firestore.instance
-                  .collection("users")
-                  .document(widget.uid)
-                  .get();
-              Map<dynamic, dynamic> tagsCount = snap.data['tags'];
-              int count = tagsCount[cat];
-              if (count == null) {
-                count = 0;
-              }
-              count++;
-              tagsCount[cat] = count;
-              db
-                  .collection('users')
-                  .document(widget.uid)
-                  .updateData({'tags': tagsCount});
+    return Container(
+        width: 50,
+        height: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: Colors.blueGrey[50],
+          image: DecorationImage(
+              image: ExactAssetImage('lib/images/' + cat + ".JPG"),
+              fit: BoxFit.fill),
+        ),
+        child: FlatButton(onPressed: () async {
+          if (widget.uid != null) {
+            DocumentSnapshot snap = await Firestore.instance
+                .collection("users")
+                .document(widget.uid)
+                .get();
+            Map<dynamic, dynamic> tagsCount = snap.data['tags'];
+            int count = tagsCount[cat];
+            if (count == null) {
+              count = 0;
             }
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        RecipeList(mapCat, cat, widget.home)));
-          })),
-    );
+            count++;
+            tagsCount[cat] = count;
+            db
+                .collection('users')
+                .document(widget.uid)
+                .updateData({'tags': tagsCount});
+          }
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => RecipeList(mapCat, cat, widget.home)));
+        }));
   }
 
   void makeCategories(List<Recipe> recipeList) {
