@@ -10,7 +10,6 @@ class PublishGroup2 extends StatefulWidget {
   String uid;
   String recipeId;
   List<String> groupName = [];
-  // List<String> groupName2 = [];
   List<String> groupId = [];
   List<bool> isCheck = [];
   List<String> publish = [];
@@ -22,7 +21,6 @@ class PublishGroup2 extends StatefulWidget {
   IconData iconPublish = Icons.public;
   String stringPublish;
   Color colorPublish;
-  bool donePublish = true;
 
   PublishGroup2(String _uid, String _recipeId, Recipe _recipe) {
     this.uid = _uid;
@@ -40,11 +38,11 @@ class _PublishGroup2State extends State<PublishGroup2> {
       widget.iconPublish = Icons.public;
       widget.stringPublish = "Publish the recipe to everyone";
 
-      widget.colorPublish = Colors.blueGrey[600];
+      widget.colorPublish = Colors.blueGrey;
     } else {
       widget.iconPublish = Icons.public_off;
       widget.stringPublish = "Un publish the recipe to everyone";
-      widget.colorPublish = Colors.grey[300];
+      widget.colorPublish = Colors.grey[350];
     }
 
     QuerySnapshot snap = await Firestore.instance
@@ -58,7 +56,7 @@ class _PublishGroup2State extends State<PublishGroup2> {
         widget.groupName.add(element.data['groupName']);
         widget.map.addAll({element.data['groupName']: false});
         widget.isCheck.add(false);
-        widget.colors.add(Colors.blueGrey[400]);
+        widget.colors.add(Colors.blueGrey);
       });
 
       QuerySnapshot snap2 = await Firestore.instance
@@ -88,48 +86,40 @@ class _PublishGroup2State extends State<PublishGroup2> {
   Widget build(BuildContext context) {
     if (!widget.doneLoad) {
       getGroups();
-
       return Loading();
     } else {
-      if (!widget.donePublish) {
-        return Loading();
-      } else {
-        return Column(children: <Widget>[
-          new Padding(padding: EdgeInsets.only(top: 20.0)),
-          new Text(
-            'choose where to publish yuor recipe:',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w900,
-                fontStyle: FontStyle.italic,
-                fontFamily: 'Raleway',
-                fontSize: 35),
-          ),
-          box,
-          publishEveyoume(),
-          Expanded(
-              child: ListView.builder(
-                  itemCount: widget.map.length,
-                  itemBuilder: (context, index) {
-                    return publishInGroupWidget(index);
-                  }))
-        ]);
-      }
+      return Column(children: <Widget>[
+        Padding(padding: EdgeInsets.only(top: 20.0)),
+        Text(
+          'Choose where to publish your recipe:',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w900,
+              fontFamily: 'Raleway',
+              fontSize: 18),
+        ),
+        box,
+        publishEveryone(),
+        Expanded(
+            child: ListView.builder(
+                padding: EdgeInsets.only(left: 5, right: 5),
+                itemCount: widget.map.length,
+                itemBuilder: (context, index) {
+                  return publishInGroupWidget(index);
+                }))
+      ]);
     }
   }
 
   Widget publishInGroupWidget(int index) {
     return ClipRRect(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
-            bottomLeft: Radius.circular(30.0),
-            bottomRight: Radius.circular(30.0)),
+        borderRadius: BorderRadius.circular(20),
         // ignore: deprecated_member_use
         child: FlatButton.icon(
           color: widget.map.values.elementAt(index)
-              ? Colors.grey[300]
-              : Colors.blueGrey[600],
+              ? Colors.grey[350]
+              : Colors.blueGrey,
           icon: Icon(
               widget.map.values.elementAt(index)
                   ? Icons.public_off
@@ -137,30 +127,58 @@ class _PublishGroup2State extends State<PublishGroup2> {
               color: Colors.white),
           label: Text(
             widget.map.values.elementAt(index)
-                ? "unpublish in " + widget.map.keys.elementAt(index)
-                : "publish in " + widget.map.keys.elementAt(index),
+                ? "Un publish in " + widget.map.keys.elementAt(index)
+                : "Publish in " + widget.map.keys.elementAt(index),
             style: TextStyle(
                 color: Colors.white,
-                //fontWeight: FontWeight.w900,
-                // fontStyle: FontStyle.italic,
-                fontFamily: 'Raleway',
-                fontSize: 20),
+                fontFamily: 'DescriptionFont',
+                fontSize: 15,
+                fontWeight: FontWeight.w300),
           ),
-          onPressed: () {
+          onPressed: () async {
+            BuildContext dialogContext;
             if (widget.map.values.elementAt(index)) {
               setState(() {
-                widget.donePublish = false;
                 widget.isCheck[index] = false;
-                widget.colors[index] = Colors.blueGrey[400];
+                widget.colors[index] = Colors.blueGrey;
                 widget.map
                     .update(widget.map.keys.elementAt(index), (value) => false);
               });
-              unPublishGroup(index);
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  dialogContext = context;
+                  return WillPopScope(
+                      onWillPop: () async => false,
+                      child: AlertDialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8.0))),
+                          backgroundColor: Colors.black87,
+                          content: loadingIndicator()));
+                },
+              );
+              await unPublishGroup(index);
+              Navigator.pop(dialogContext);
             } else {
-              setState(() {
-                widget.donePublish = false;
-              });
-              publishInGroup(index);
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  dialogContext = context;
+                  return WillPopScope(
+                      onWillPop: () async => false,
+                      child: AlertDialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8.0))),
+                          backgroundColor: Colors.black87,
+                          content: loadingIndicator()));
+                },
+              );
+              await publishInGroup(index);
+              Navigator.pop(dialogContext);
               setState(() {
                 widget.isCheck[index] = true;
                 widget.colors[index] = Colors.grey;
@@ -172,41 +190,54 @@ class _PublishGroup2State extends State<PublishGroup2> {
         ));
   }
 
-  Widget publishEveyoume() {
+  Widget publishEveryone() {
     return ClipRRect(
-      borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30.0),
-          topRight: Radius.circular(30.0),
-          bottomLeft: Radius.circular(30.0),
-          bottomRight: Radius.circular(30.0)),
+      borderRadius: BorderRadius.circular(20),
       // ignore: deprecated_member_use
 
       child: SizedBox(
-        width: double.infinity,
+        width: 400,
         child: RaisedButton.icon(
             color: widget.colorPublish,
             icon: Icon(widget.iconPublish, color: Colors.white),
             label: Text(
               widget.stringPublish,
               style: TextStyle(
-                  color: Colors.white, fontFamily: 'Raleway', fontSize: 20),
+                  color: Colors.white,
+                  fontFamily: 'DescriptionFont',
+                  fontSize: 15),
             ),
-            onPressed: () {
+            onPressed: () async {
               if (widget.recipe.publish == '') {
+                BuildContext dialogContext;
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    dialogContext = context;
+                    return WillPopScope(
+                        onWillPop: () async => false,
+                        child: AlertDialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.0))),
+                            backgroundColor: Colors.black87,
+                            content: loadingIndicator()));
+                  },
+                );
+                await publishRecipe();
+                Navigator.pop(dialogContext);
                 setState(() {
                   widget.iconPublish = Icons.public_off;
-                  widget.stringPublish = " Un publish the recipe to everyone";
-                  widget.colorPublish = Colors.grey[300];
-                  widget.donePublish = false;
-                  publishRecipe();
+                  widget.stringPublish = "Un publish the recipe to everyone";
+                  widget.colorPublish = Colors.grey[350];
                 });
               } else {
+                await unPublishRecipe();
                 setState(() {
-                  widget.donePublish = false;
-                  unPublishRecipe();
                   widget.iconPublish = Icons.public;
                   widget.stringPublish = "Publish the recipe to everyone";
-                  widget.colorPublish = Colors.blueGrey[600];
+                  widget.colorPublish = Colors.blueGrey;
                 });
               }
             }),
@@ -214,22 +245,19 @@ class _PublishGroup2State extends State<PublishGroup2> {
     );
   }
 
-  void publishInGroup(int index) async {
+  Future<void> publishInGroup(int index) async {
     final db = Firestore.instance;
     await db
         .collection('Group')
         .document(widget.groupId[index])
         .collection('recipes')
         .add({'userId': widget.uid, 'recipeId': widget.recipeId, 'likes': []});
-    setState(() {
-      widget.donePublish = true;
-    });
   }
 
   Future<void> unPublishGroup(int index) async {
     setState(() {
       widget.isCheck[index] = false;
-      widget.colors[index] = Colors.blueGrey[400];
+      widget.colors[index] = Colors.blueGrey;
     });
 
     final db = Firestore.instance;
@@ -248,9 +276,6 @@ class _PublishGroup2State extends State<PublishGroup2> {
             .document(element.documentID)
             .delete();
       }
-    });
-    setState(() {
-      widget.donePublish = true;
     });
   }
 
@@ -274,12 +299,9 @@ class _PublishGroup2State extends State<PublishGroup2> {
         .collection('recipes')
         .document(widget.recipeId)
         .updateData(widget.recipe.toJson());
-    setState(() {
-      widget.donePublish = true;
-    });
   }
 
-  void unPublishRecipe() {
+  Future<void> unPublishRecipe() {
     final db = Firestore.instance;
     db.collection('publish recipe').document(widget.recipe.publish).delete();
     widget.recipe.publishThisRecipe('');
@@ -290,8 +312,5 @@ class _PublishGroup2State extends State<PublishGroup2> {
         .collection('recipes')
         .document(widget.recipeId)
         .updateData(widget.recipe.toJson());
-    setState(() {
-      widget.donePublish = true;
-    });
   }
 }

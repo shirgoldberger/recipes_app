@@ -8,6 +8,7 @@ import 'package:recipes_app/screens/groups/changeNameGroup.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
 import 'package:recipes_app/services/groupFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
+import 'package:slider_button/slider_button.dart';
 import '../../config.dart';
 import '../personal_screen/homeLogIn.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
@@ -43,7 +44,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
         backgroundColor: backgroundColor,
         appBar: appBar(),
         drawerDragStartBehavior: DragStartBehavior.down,
-        endDrawer: leftMenu(),
+        endDrawer: widget.toDelete ? leftMenu() : null,
         body: Column(
             children: (widget.directory.recipes.length == 0)
                 ? <Widget>[box, noRecipesText()]
@@ -58,12 +59,13 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
     return AppBar(
       title: Text(
         widget.directory.name,
-        style: TextStyle(fontFamily: 'Raleway'),
+        style: TextStyle(fontFamily: 'Raleway', color: appBarTextColor),
       ),
       backgroundColor: appBarBackgroundColor,
       elevation: 0.0,
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
+        color: appBarTextColor,
         onPressed: () => Navigator.pop(context, false),
       ),
     );
@@ -71,9 +73,9 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
 
   Widget noRecipesText() {
     return Text(
-      "thers is no recipes in this group - lets add some recipes...",
+      "there is no recipes in this group - lets add some recipes...",
       style: TextStyle(
-          fontFamily: 'Raleway', fontSize: 30, color: Colors.blueGrey[800]),
+          fontFamily: 'Raleway', fontSize: 30, color: appBarTextColor),
       textAlign: TextAlign.center,
     );
   }
@@ -83,23 +85,26 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
       itemCount: widget.directory.recipes.length,
       itemBuilder: (context, index) {
         return Padding(
-            padding: EdgeInsets.all(8),
+            padding: EdgeInsets.only(right: 8, left: 8, bottom: 5, top: 5),
             child: Row(
               children: [
                 Container(
+                    width: widget.toDelete ? 330 : 395,
                     decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
                       color: Colors.white,
                     ),
                     child: ClipRRect(
                         child: RecipeHeadLine(
                             widget.directory.recipes[index],
-                            (widget.directory.recipes[index].writerUid ==
+                            !(widget.directory.recipes[index].writerUid ==
                                 widget.uid)))),
                 Visibility(
                   visible: widget.toDelete,
                   child: IconButton(
-                      onPressed: () {
-                        deleteFromDirectory(index);
+                      onPressed: () async {
+                        await deleteFromDirectory(index);
+                        setState(() {});
                       },
                       icon: Icon(Icons.delete)),
                 )
@@ -121,7 +126,8 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
     List copyRecipes = [];
     copyRecipes.addAll(recipes);
     copyRecipes.remove(widget.directory.recipes[index].publish);
-    widget.directory.recipesId.remove(widget.directory.recipes[index].publish);
+    // widget.directory.recipesId.removeWhere(
+    //     (element) => element == widget.directory.recipes[index].publish);
     widget.directory.recipes.removeAt(index);
     Firestore.instance
         .collection('users')
@@ -132,21 +138,24 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
   }
 
   Widget deleteButtom() {
-    return ButtonTheme(
-        minWidth: 250.0,
-        height: 50.0,
-        // ignore: deprecated_member_use
-        child: FlatButton.icon(
-            color: subButtonColor,
-            icon: Icon(
-              Icons.delete,
-              color: Colors.white,
-            ),
-            label: Text(
-              "Delete Directory",
-              style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
-            ),
-            onPressed: delete));
+    return Visibility(
+      visible: widget.toDelete,
+      child: ButtonTheme(
+          minWidth: 250.0,
+          height: 50.0,
+          // ignore: deprecated_member_use
+          child: FlatButton.icon(
+              color: subButtonColor,
+              icon: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+              label: Text(
+                "Delete Directory",
+                style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+              ),
+              onPressed: delete)),
+    );
   }
 
   Widget editNameWidget() {
@@ -171,21 +180,23 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
   }
 
   Widget leftMenu() {
-    return Container(
-      color: appBarBackgroundColor,
-      width: MediaQuery.of(context).size.width * 0.5,
-      child: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            profileDetails(),
-            Column(children: [
-              box,
-              deleteButtom(),
-              heightBox(8),
-              editNameWidget()
-            ]),
-          ],
+    return Drawer(
+      child: Container(
+        color: appBarBackgroundColor,
+        width: MediaQuery.of(context).size.width * 0.5,
+        child: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              profileDetails(),
+              Column(children: [
+                box,
+                deleteButtom(),
+                heightBox(8),
+                editNameWidget()
+              ]),
+            ],
+          ),
         ),
       ),
     );

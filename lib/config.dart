@@ -11,12 +11,13 @@ String uploadImagePath = 'lib/images/upload_image.png';
 
 // colors
 Color backgroundColor = Colors.blueGrey[50];
-Color appBarBackgroundColor = Colors.grey;
+Color appBarBackgroundColor = Colors.blueGrey[100];
 Color titleColor = Colors.blueGrey[800];
 Color borderColor = Colors.blueGrey;
 Color mainButtonColor = Colors.blueGrey[500];
 Color subButtonColor = Colors.blueGrey[300];
 Color errorColor = Colors.red;
+Color appBarTextColor = Colors.grey[700];
 
 // collections names
 String usersCollectionName = 'users';
@@ -24,6 +25,38 @@ String publishCollectionName = 'publish recipe';
 
 // widgets
 Padding padding = new Padding(padding: EdgeInsets.only(top: 15.0));
+
+Widget loadingIndicator() {
+  return Container(
+      padding: EdgeInsets.all(16),
+      color: Colors.black.withOpacity(0.8),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _getLoadingIndicator(),
+            _getHeading(),
+          ]));
+}
+
+Widget _getLoadingIndicator() {
+  return Padding(
+      child: Container(
+          child: CircularProgressIndicator(strokeWidth: 3),
+          width: 32,
+          height: 32),
+      padding: EdgeInsets.only(bottom: 16));
+}
+
+Widget _getHeading() {
+  return Padding(
+      child: Text(
+        'Loading …',
+        style: TextStyle(color: Colors.white, fontSize: 16),
+        textAlign: TextAlign.center,
+      ),
+      padding: EdgeInsets.only(bottom: 4));
+}
 
 Widget box = SizedBox(
   height: 20.0,

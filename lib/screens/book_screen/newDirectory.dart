@@ -50,7 +50,6 @@ class _NewDirectoryState extends State<NewDirectory> {
                   heightBox(30),
                   directoryNameField(),
                   heightBox(20),
-                  heightBox(20),
                   errorText(),
                   new Padding(padding: EdgeInsets.only(top: 10.0)),
                 ])),
@@ -68,7 +67,7 @@ class _NewDirectoryState extends State<NewDirectory> {
         backgroundColor: appBarBackgroundColor,
         actions: <Widget>[
           // ignore: deprecated_member_use
-          saveGroupWidget()
+          saveDirectoryWidget()
         ]);
   }
 
@@ -106,38 +105,54 @@ class _NewDirectoryState extends State<NewDirectory> {
 
   Widget errorText() {
     return Text(
-      widget.error2,
+      errorDirectoryName,
       style: TextStyle(color: errorColor),
     );
   }
 
-  Widget saveGroupWidget() {
-    return FlatButton.icon(
-        icon: Icon(
-          Icons.save,
-          color: Colors.white,
-        ),
-        label: Text('SAVE', style: TextStyle(color: Colors.white)),
-        onPressed: () async {
-          if ((directoryName == null) || (directoryName == "")) {
-            setState(() {
-              widget.error2 = "Fill directory name!";
-            });
-          } else if (checkDirectoryName(directoryName)) {
-            setState(() {
-              widget.error2 = 'You have directory with this name';
-            });
-          } else {
-            List<String> a = [];
-            print(widget.uid);
-            DocumentReference d = await Firestore.instance
-                .collection('users')
-                .document(widget.uid)
-                .collection('Directory')
-                .add({"name": directoryName, "Recipes": a});
-            Navigator.pop(context);
-          }
-        });
+  Widget saveDirectoryWidget() {
+    if (directoryName.length > 20) {
+      setState(() {
+        errorDirectoryName = 'Group name is limited to 20 characters';
+      });
+      return FlatButton.icon(
+          icon: Icon(
+            Icons.save,
+            color: Colors.white,
+          ),
+          label: Text('SAVE', style: TextStyle(color: Colors.white)),
+          onPressed: null);
+    } else {
+      setState(() {
+        errorDirectoryName = '';
+      });
+      return FlatButton.icon(
+          icon: Icon(
+            Icons.save,
+            color: Colors.white,
+          ),
+          label: Text('SAVE', style: TextStyle(color: Colors.white)),
+          onPressed: () async {
+            if ((directoryName == null) || (directoryName == "")) {
+              setState(() {
+                errorDirectoryName = "Fill directory name!";
+              });
+            } else if (checkDirectoryName(directoryName)) {
+              setState(() {
+                errorDirectoryName = 'You have directory with this name';
+              });
+            } else {
+              List<String> a = [];
+              print(widget.uid);
+              await Firestore.instance
+                  .collection('users')
+                  .document(widget.uid)
+                  .collection('Directory')
+                  .add({"name": directoryName, "Recipes": a});
+              Navigator.pop(context);
+            }
+          });
+    }
   }
 
   bool checkDirectoryName(String name) {

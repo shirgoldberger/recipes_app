@@ -86,7 +86,7 @@ class _NewGroupState extends State<NewGroup> {
         backgroundColor: appBarBackgroundColor,
         actions: <Widget>[
           // ignore: deprecated_member_use
-          saveGroupWidgwt()
+          saveGroupWidget()
         ]);
   }
 
@@ -184,7 +184,7 @@ class _NewGroupState extends State<NewGroup> {
     );
   }
 
-  Widget saveGroupWidgwt() {
+  Widget saveGroupWidget() {
     if (groupName.length > 20) {
       setState(() {
         errorGroupName = 'Group name is limited to 20 characters';

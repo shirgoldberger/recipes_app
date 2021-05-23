@@ -30,15 +30,47 @@ class _DirectoriesListState extends State<DirectoriesList> {
   }
 
   Widget directoriesList() {
-    return ListView.builder(
-        padding: EdgeInsets.only(left: 6.0, right: 6.0),
-        itemCount: widget.directories.length,
-        itemBuilder: (context, index) {
-          return directoryTitle(index);
-        });
+    return ReorderableListView(
+      children: widget.directories
+          .map((item) => ListTile(
+                key: Key("${item.id}"),
+                title: directoryTitle(item),
+                trailing: Icon(Icons.menu),
+              ))
+          .toList(),
+      onReorder: (int start, int current) {
+        // dragging from top to bottom
+        if (start < current) {
+          int end = current - 1;
+          Directory startItem = widget.directories[start];
+          int i = 0;
+          int local = start;
+          do {
+            widget.directories[local] = widget.directories[++local];
+            i++;
+          } while (i < end - start);
+          widget.directories[end] = startItem;
+        }
+        // dragging from bottom to top
+        else if (start > current) {
+          Directory startItem = widget.directories[start];
+          for (int i = start; i > current; i--) {
+            widget.directories[i] = widget.directories[i - 1];
+          }
+          widget.directories[current] = startItem;
+        }
+        setState(() {});
+      },
+    );
+    // return ListView.builder(
+    //     padding: EdgeInsets.only(left: 6.0, right: 6.0),
+    //     itemCount: widget.directories.length,
+    //     itemBuilder: (context, index) {
+    //       return directoryTitle(index);
+    //     });
   }
 
-  Widget directoryTitle(int index) {
+  Widget directoryTitle(Directory d) {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       // ignore: deprecated_member_use
@@ -48,31 +80,53 @@ class _DirectoriesListState extends State<DirectoriesList> {
           borderRadius: BorderRadius.circular(10.0),
         ),
         onPressed: () async {
-          await getDirectoryRecipes(index);
+          BuildContext dialogContext;
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              dialogContext = context;
+              return WillPopScope(
+                  onWillPop: () async => false,
+                  child: AlertDialog(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                      backgroundColor: Colors.black87,
+                      content: loadingIndicator()));
+            },
+          );
+          await getDirectoryRecipes(d);
+          Navigator.pop(dialogContext);
+
           Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DirectoryRecipesList(
-                          widget.directories[index], widget.uid, true)))
-              .then((value) {
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DirectoryRecipesList(
+                      widget.directories
+                          .firstWhere((element) => element.id == d.id),
+                      widget.uid,
+                      true))).then((value) {
             if (value == "delete") {
               setState(() {
-                widget.directories.removeAt(index);
+                widget.directories.removeWhere((element) => element.id == d.id);
               });
             }
           });
         },
         padding: EdgeInsets.all(15.0),
         textColor: Colors.white,
-        child: directoryName(index),
+        child: directoryName(d),
       ),
     );
   }
 
-  void getDirectoryRecipes(int index) async {
+  void getDirectoryRecipes(Directory d) async {
     List<Recipe> recipes = await RecipeFromDB.getDirectoryRecipesList(
-        widget.uid, widget.directories[index].id);
-    widget.directories[index].initRecipes(recipes);
+        widget.uid,
+        widget.directories.firstWhere((element) => element.id == d.id).id);
+    widget.directories
+        .firstWhere((element) => element.id == d.id)
+        .initRecipes(recipes);
   }
 
   Widget emptyMessage() {
@@ -81,9 +135,9 @@ class _DirectoriesListState extends State<DirectoriesList> {
         style: TextStyle(fontSize: 25, fontFamily: 'Raleway'));
   }
 
-  Widget directoryName(int index) {
-    return Text(widget.directories[index].name,
+  Widget directoryName(Directory d) {
+    return Text(d.name,
         style: TextStyle(
-            fontSize: 25, fontFamily: 'Raleway', color: Colors.indigo[600]));
+            fontSize: 25, fontFamily: 'Raleway', color: Colors.blueGrey[700]));
   }
 }

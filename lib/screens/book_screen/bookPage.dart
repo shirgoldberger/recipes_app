@@ -58,10 +58,9 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
                   title: Text(
                     'My Book',
                     style: TextStyle(
-                      fontFamily: 'Raleway',
-                    ),
+                        fontFamily: 'Raleway', color: Colors.grey[700]),
                   ),
-                  backgroundColor: appBarBackgroundColor,
+                  backgroundColor: Colors.blueGrey[50],
                   actions: [addDirectory()],
                 ),
                 body: Column(
@@ -203,25 +202,23 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
   }
 
   void getdirectory() async {
-    setState(() {
-      widget.directorys = [];
-    });
+    widget.directorys = [];
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(widget.user)
         .collection('Directory')
         .getDocuments();
 
-    snap.documents.forEach((element) async {
-      String name = element.data['name'] ?? '';
-      List recipes = element.data['Recipes'] ?? [];
-      String id = element.documentID.toString();
+    for (int i = 0; i < snap.documents.length; i++) {
+      String name = snap.documents[i].data['name'] ?? '';
+      List recipes = snap.documents[i].data['Recipes'] ?? [];
+      String id = snap.documents[i].documentID.toString();
 
       Directory d = Directory(id: id, name: name, recipesId: recipes);
       setState(() {
         widget.directorys.add(d);
       });
-    });
+    }
     setState(() {
       widget.done = true;
     });
@@ -275,8 +272,8 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
 
   Widget addDirectory() {
     return FlatButton.icon(
-      icon: Icon(Icons.create_new_folder, color: Colors.white),
-      label: Text('Plus', style: TextStyle(color: Colors.white)),
+      icon: Icon(Icons.create_new_folder, color: Colors.grey[700]),
+      label: Text('Plus', style: TextStyle(color: Colors.grey[700])),
       onPressed: () {
         Navigator.push(
                 context,
@@ -308,37 +305,5 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
         // print(r);
       });
     }
-  }
-
-  Widget loadingIndicator() {
-    return Container(
-        padding: EdgeInsets.all(16),
-        color: Colors.black.withOpacity(0.8),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _getLoadingIndicator(),
-              _getHeading(),
-            ]));
-  }
-
-  Widget _getLoadingIndicator() {
-    return Padding(
-        child: Container(
-            child: CircularProgressIndicator(strokeWidth: 3),
-            width: 32,
-            height: 32),
-        padding: EdgeInsets.only(bottom: 16));
-  }
-
-  Widget _getHeading() {
-    return Padding(
-        child: Text(
-          'Please wait …',
-          style: TextStyle(color: Colors.white, fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-        padding: EdgeInsets.only(bottom: 4));
   }
 }

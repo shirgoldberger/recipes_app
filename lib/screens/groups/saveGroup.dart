@@ -175,6 +175,17 @@ class _SaveGroupState extends State<SaveGroup> {
 
   void publishInGroup(int index) async {
     final db = Firestore.instance;
+    QuerySnapshot recipes = await db
+        .collection('Group')
+        .document(widget.groupId[index])
+        .collection('recipes')
+        .getDocuments();
+    for (int i = 0; i < recipes.documents.length; i++) {
+      String id = recipes.documents[i].data['recipeId'];
+      if (id == widget.recipeId) {
+        return;
+      }
+    }
     await db
         .collection('Group')
         .document(widget.groupId[index])

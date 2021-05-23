@@ -28,6 +28,7 @@ class WatchRecipeBody extends StatefulWidget {
   String uid;
   String publishRecipeId;
   String timeText = '';
+  int likeAmount;
 
   WatchRecipeBody(
       Recipe _current,
@@ -62,7 +63,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
       if (widget.uid != null) {
         initLikeIcon();
       }
-      getLikesList();
     } else {
       setState(() {
         widget.doneLoadLikeList = true;
@@ -115,24 +115,31 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   }
 
   initLikeIcon() async {
-    var publishRecipes =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    publishRecipes.documents.forEach((element) async {
-      // the current publish recipe
-      if (element.data['recipeId'] == widget.current.id) {
-        widget.publishRecipeId = element.documentID.toString();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection("users")
-            .document(widget.uid)
-            .get();
-        List userLikes = currentUser.data['likes'] ?? [];
-        if (userLikes.contains(widget.publishRecipeId)) {
-          setState(() {
-            widget.isLikeRecipe = true;
-          });
-        }
-      }
-    });
+    var publishRecipe = await Firestore.instance
+        .collection('publish recipe')
+        .document(widget.current.publish)
+        .get();
+    List users = publishRecipe.data['likes'] ?? [];
+    if (users.contains(widget.uid)) {
+      widget.isLikeRecipe = true;
+    }
+    // for (int i = 0; i < publishRecipes.documents.length; i++) {
+    //   // the current publish recipe
+    //   if (publishRecipes.documents[i].data['recipeId'] == widget.current.id) {
+    //     widget.publishRecipeId =
+    //         publishRecipes.documents[i].documentID.toString();
+    //     DocumentSnapshot currentUser = await Firestore.instance
+    //         .collection("users")
+    //         .document(widget.uid)
+    //         .get();
+    //     List userLikes = currentUser.data['likes'] ?? [];
+    //     if (userLikes.contains(widget.publishRecipeId)) {
+    //       setState(() {
+    //         widget.isLikeRecipe = true;
+    //       });
+    //     }
+    //   }
+    // }
   }
 
   void sortStages() {
@@ -162,6 +169,9 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   Widget build(BuildContext context) {
     getImage(context);
     getRecipeImage(context);
+    if (widget.current.publish != '') {
+      getLikesList();
+    }
     return new Container(
         child: ListView(children: [
       Container(
@@ -541,6 +551,9 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   }
 
   Future<void> getLikesList() async {
+    if (widget.doneLoadLikeList) {
+      return;
+    }
     List likes;
     final db = Firestore.instance;
     var publishRecipes = await db.collection('publish recipe').getDocuments();
@@ -567,6 +580,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
       }
     });
     setState(() {
+      widget.likeAmount = widget.usersLikes.length;
       widget.doneLoadLikeList = true;
     });
   }
