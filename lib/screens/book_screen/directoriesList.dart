@@ -45,15 +45,16 @@ class _DirectoriesListState extends State<DirectoriesList> {
       child: RaisedButton(
         color: Colors.indigo[100],
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            side: BorderSide(color: Colors.white)),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
         onPressed: () async {
           await getDirectoryRecipes(index);
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => DirectoryRecipesList(
-                      widget.directories[index], widget.uid))).then((value) {
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DirectoryRecipesList(
+                          widget.directories[index], widget.uid, true)))
+              .then((value) {
             if (value == "delete") {
               setState(() {
                 widget.directories.removeAt(index);

@@ -20,10 +20,12 @@ class DirectoryRecipesList extends StatefulWidget {
   List userId = [];
   String uid;
   bool doneLoad = false;
+  bool toDelete;
 
-  DirectoryRecipesList(Directory _directory, String _uid) {
+  DirectoryRecipesList(Directory _directory, String _uid, bool _toDelete) {
     this.directory = _directory;
     this.uid = _uid;
+    this.toDelete = _toDelete;
   }
 
   @override
@@ -91,13 +93,16 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
                     child: ClipRRect(
                         child: RecipeHeadLine(
                             widget.directory.recipes[index],
-                            !(widget.directory.recipes[index].writerUid ==
+                            (widget.directory.recipes[index].writerUid ==
                                 widget.uid)))),
-                IconButton(
-                    onPressed: () {
-                      deleteFromDirectory(index);
-                    },
-                    icon: Icon(Icons.delete))
+                Visibility(
+                  visible: widget.toDelete,
+                  child: IconButton(
+                      onPressed: () {
+                        deleteFromDirectory(index);
+                      },
+                      icon: Icon(Icons.delete)),
+                )
               ],
             ));
       },

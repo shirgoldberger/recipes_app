@@ -48,6 +48,7 @@ class RecipeFromDB {
 
   static Recipe convertSnapshotToRecipe(DocumentSnapshot recipe) {
     var id = recipe.documentID;
+    print(id);
     String name = recipe.data['name'] ?? '';
     String description = recipe.data['description'] ?? '';
     String level = recipe.data['level'] ?? '0';
@@ -230,6 +231,42 @@ class RecipeFromDB {
 
   // delete recipe from the user that wrote it
   static Future deleteRecipeFromUser(String uid, String recipeId) async {
+    //delete ingredients
+    var a = await db
+        .collection('users')
+        .document(uid)
+        .collection('recipes')
+        .document(recipeId)
+        .collection('ingredients')
+        .getDocuments();
+    for (int i = 0; i < a.documents.length; i++) {
+      await db
+          .collection('users')
+          .document(uid)
+          .collection('recipes')
+          .document(recipeId)
+          .collection('ingredients')
+          .document(a.documents[i].documentID)
+          .delete();
+    }
+    //delete stages
+    var b = await db
+        .collection('users')
+        .document(uid)
+        .collection('recipes')
+        .document(recipeId)
+        .collection('stages')
+        .getDocuments();
+    for (int i = 0; i < b.documents.length; i++) {
+      await db
+          .collection('users')
+          .document(uid)
+          .collection('recipes')
+          .document(recipeId)
+          .collection('stages')
+          .document(b.documents[i].documentID)
+          .delete();
+    }
     await db
         .collection('users')
         .document(uid)

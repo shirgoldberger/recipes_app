@@ -70,11 +70,11 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
                     Row(
                       children: [
                         widthBox(10),
-                        categoryButtom('lib/images/favorite.JPG',
-                            widget.savedRecipe, "favorites"),
+                        categoryButtomFavorite(
+                            'lib/images/favorite.JPG', "favorites"),
                         widthBox(10),
-                        categoryButtom('lib/images/i_created.JPG',
-                            widget.myRecipe, "I created"),
+                        categoryButtomICreate(
+                            'lib/images/i_created.JPG', "I created"),
                       ],
                     ),
                     heightBox(10),
@@ -85,7 +85,7 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
     }
   }
 
-  Widget categoryButtom(String image, List recipes, String name) {
+  Widget categoryButtomFavorite(String image, String name) {
     return InkWell(
       customBorder: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -102,13 +102,83 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
                 image: ExactAssetImage(image), fit: BoxFit.cover),
           ),
           child: FlatButton(onPressed: () async {
+            BuildContext dialogContext;
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                dialogContext = context;
+                return WillPopScope(
+                    onWillPop: () async => false,
+                    child: AlertDialog(
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0))),
+                        backgroundColor: Colors.black87,
+                        content: loadingIndicator()));
+              },
+            );
             await loadSavedRecipe();
-            print(recipes);
+            Navigator.pop(dialogContext);
+            print("push");
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => DirectoryRecipesList(
-                        Directory(recipes: recipes, name: name), widget.user)));
+                        Directory(
+                          recipes: widget.savedRecipe,
+                          name: name,
+                        ),
+                        widget.user,
+                        false)));
+          })),
+    );
+  }
+
+  Widget categoryButtomICreate(String image, String name) {
+    return InkWell(
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      borderRadius: BorderRadius.circular(5),
+      highlightColor: Colors.blueGrey,
+      child: Container(
+          width: 190,
+          height: 180,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.blueGrey[50],
+            image: DecorationImage(
+                image: ExactAssetImage(image), fit: BoxFit.cover),
+          ),
+          child: FlatButton(onPressed: () async {
+            BuildContext dialogContext;
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                dialogContext = context;
+                return WillPopScope(
+                    onWillPop: () async => false,
+                    child: AlertDialog(
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0))),
+                        backgroundColor: Colors.black87,
+                        content: loadingIndicator()));
+              },
+            );
+            await loadCreatesdRecipe();
+            Navigator.pop(dialogContext);
+
+            print("push");
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DirectoryRecipesList(
+                        Directory(recipes: widget.myRecipe, name: name),
+                        widget.user,
+                        false)));
           })),
     );
   }
@@ -160,7 +230,6 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
   Future<void> loadSavedRecipe() async {
     setState(() {
       widget.savedRecipe = [];
-      widget.myRecipe = [];
     });
     String uid;
     String recipeId;
@@ -180,7 +249,7 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
     for (int i = 0; i < snap.documents.length; i++) {
       uid = snap.documents[i].data['userID'] ?? '';
       recipeId = snap.documents[i].data['recipeID'] ?? '';
-      print(i);
+      // print(i);
 
       Recipe r = await RecipeFromDB.getRecipeOfUser(uid, recipeId);
 
@@ -202,29 +271,6 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
         });
       }
     }
-
-    // QuerySnapshot snap2 = await Firestore.instance
-    //     .collection('users')
-    //     .document(widget.user)
-    //     .collection('recipes')
-    //     .getDocuments();
-    // int j = 0;
-    // snap.documents.forEach((element) async {
-    //   j++;
-
-    //   Recipe r = RecipeFromDB.convertSnapshotToRecipe(element);
-
-    //   setState(() {
-    //     widget.myRecipe.add(r);
-    //   });
-    //   if ((j) == snap2.documents.length) {
-    //     setState(() {
-    //       widget.doneLoadSavedRecipe++;
-    //     });
-    //   }
-    // });
-    // print("333");
-    // print(widget.savedRecipe);
   }
 
   Widget addDirectory() {
@@ -240,5 +286,59 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
             .then((value) => getdirectory());
       },
     );
+  }
+
+  Future<void> loadCreatesdRecipe() async {
+    setState(() {
+      widget.myRecipe = [];
+    });
+    QuerySnapshot snap2 = await Firestore.instance
+        .collection('users')
+        .document(widget.user)
+        .collection('recipes')
+        .getDocuments();
+    int j = 0;
+    for (int i = 0; i < snap2.documents.length; i++) {
+      // print(snap2.documents[i].documentID + "aaaa");
+      Recipe r = RecipeFromDB.convertSnapshotToRecipe(snap2.documents[i]);
+
+      setState(() {
+        widget.myRecipe.add(r);
+        print(r.id);
+        // print(r);
+      });
+    }
+  }
+
+  Widget loadingIndicator() {
+    return Container(
+        padding: EdgeInsets.all(16),
+        color: Colors.black.withOpacity(0.8),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _getLoadingIndicator(),
+              _getHeading(),
+            ]));
+  }
+
+  Widget _getLoadingIndicator() {
+    return Padding(
+        child: Container(
+            child: CircularProgressIndicator(strokeWidth: 3),
+            width: 32,
+            height: 32),
+        padding: EdgeInsets.only(bottom: 16));
+  }
+
+  Widget _getHeading() {
+    return Padding(
+        child: Text(
+          'Please wait …',
+          style: TextStyle(color: Colors.white, fontSize: 16),
+          textAlign: TextAlign.center,
+        ),
+        padding: EdgeInsets.only(bottom: 4));
   }
 }
