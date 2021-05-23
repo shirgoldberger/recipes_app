@@ -48,7 +48,7 @@ class _DirectoriesListState extends State<DirectoriesList> {
             borderRadius: BorderRadius.circular(10.0),
             side: BorderSide(color: Colors.white)),
         onPressed: () async {
-          getDirectoryRecipes(index);
+          await getDirectoryRecipes(index);
           Navigator.push(
               context,
               MaterialPageRoute(

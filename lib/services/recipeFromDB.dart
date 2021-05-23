@@ -247,7 +247,7 @@ class RecipeFromDB {
         .collection('Directory')
         .document(directoryId)
         .get();
-    List<String> list = recipesList.data['Recipes'] ?? [];
+    List list = recipesList.data['Recipes'] ?? [];
     for (String publishId in list) {
       var publishRecipe =
           await db.collection('publish recipe').document(publishId).get();

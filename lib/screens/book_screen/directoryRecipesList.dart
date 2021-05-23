@@ -16,7 +16,6 @@ import 'package:recipes_app/shared_screen/loading.dart';
 class DirectoryRecipesList extends StatefulWidget {
   Directory directory;
   List<Recipe> recipeList = [];
-  List<Recipe> recipes = [];
   List usersName = [];
   List userId = [];
   String uid;
@@ -44,7 +43,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
         drawerDragStartBehavior: DragStartBehavior.down,
         endDrawer: leftMenu(),
         body: Column(
-            children: (widget.recipes.length == 0)
+            children: (widget.directory.recipes.length == 0)
                 ? <Widget>[box, noRecipesText()]
                 : [
                     Expanded(
@@ -79,7 +78,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
 
   Widget recipesList() {
     return ListView.builder(
-      itemCount: widget.recipes.length,
+      itemCount: widget.directory.recipes.length,
       itemBuilder: (context, index) {
         return Padding(
             padding: EdgeInsets.all(8),
@@ -90,8 +89,10 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
                       color: Colors.white,
                     ),
                     child: ClipRRect(
-                        child: RecipeHeadLine(widget.recipes[index],
-                            !(widget.recipes[index].writerUid == widget.uid)))),
+                        child: RecipeHeadLine(
+                            widget.directory.recipes[index],
+                            !(widget.directory.recipes[index].writerUid ==
+                                widget.uid)))),
                 IconButton(
                     onPressed: () {
                       deleteFromDirectory(index);

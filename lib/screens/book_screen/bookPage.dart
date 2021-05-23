@@ -181,12 +181,6 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
       uid = snap.documents[i].data['userID'] ?? '';
       recipeId = snap.documents[i].data['recipeID'] ?? '';
       print(i);
-      DocumentSnapshot doc = await Firestore.instance
-          .collection('users')
-          .document(uid)
-          .collection('recipes')
-          .document(recipeId)
-          .get();
 
       Recipe r = await RecipeFromDB.getRecipeOfUser(uid, recipeId);
 
@@ -209,28 +203,28 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
       }
     }
 
-    QuerySnapshot snap2 = await Firestore.instance
-        .collection('users')
-        .document(widget.user)
-        .collection('recipes')
-        .getDocuments();
-    int j = 0;
-    snap.documents.forEach((element) async {
-      j++;
+    // QuerySnapshot snap2 = await Firestore.instance
+    //     .collection('users')
+    //     .document(widget.user)
+    //     .collection('recipes')
+    //     .getDocuments();
+    // int j = 0;
+    // snap.documents.forEach((element) async {
+    //   j++;
 
-      Recipe r = RecipeFromDB.convertSnapshotToRecipe(element);
+    //   Recipe r = RecipeFromDB.convertSnapshotToRecipe(element);
 
-      setState(() {
-        widget.myRecipe.add(r);
-      });
-      if ((j) == snap2.documents.length) {
-        setState(() {
-          widget.doneLoadSavedRecipe++;
-        });
-      }
-    });
-    print("333");
-    print(widget.savedRecipe);
+    //   setState(() {
+    //     widget.myRecipe.add(r);
+    //   });
+    //   if ((j) == snap2.documents.length) {
+    //     setState(() {
+    //       widget.doneLoadSavedRecipe++;
+    //     });
+    //   }
+    // });
+    // print("333");
+    // print(widget.savedRecipe);
   }
 
   Widget addDirectory() {
