@@ -96,9 +96,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
                     ),
                     child: ClipRRect(
                         child: RecipeHeadLine(
-                            widget.directory.recipes[index],
-                            !(widget.directory.recipes[index].writerUid ==
-                                widget.uid)))),
+                            widget.directory.recipes[index], false))),
                 Visibility(
                   visible: widget.toDelete,
                   child: IconButton(

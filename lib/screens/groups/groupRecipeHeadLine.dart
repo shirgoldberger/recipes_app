@@ -5,24 +5,38 @@ import '../recipes/watch_recipes/watchRecipeGroup.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 
 // ignore: must_be_immutable
-class GroupRecipeHeadLine extends StatelessWidget {
+class GroupRecipeHeadLine extends StatefulWidget {
   Recipe recipe;
-  Color circleColor;
-  String level;
   String groupId;
-  String time;
-  String image = "";
+  String imagePath = "";
 
   GroupRecipeHeadLine(Recipe r, String _groupId) {
     this.recipe = r;
     this.groupId = _groupId;
-    image = r.imagePath;
+    imagePath = r.imagePath;
+  }
+
+  @override
+  _GroupRecipeHeadLineState createState() => _GroupRecipeHeadLineState();
+}
+
+class _GroupRecipeHeadLineState extends State<GroupRecipeHeadLine> {
+  void initState() {
+    super.initState();
     setLevelColor();
     setTimeText();
   }
 
+  Color circleColor;
+
+  String level;
+
+  String time;
+
+  NetworkImage image;
+
   setLevelColor() {
-    switch (recipe.level) {
+    switch (widget.recipe.level) {
       case 1:
         circleColor = Colors.green[400];
         level = 'easy';
@@ -43,7 +57,7 @@ class GroupRecipeHeadLine extends StatelessWidget {
   }
 
   setTimeText() {
-    switch (recipe.time) {
+    switch (widget.recipe.time) {
       case 1:
         time = 'Until half-hour';
         break;
@@ -56,24 +70,22 @@ class GroupRecipeHeadLine extends StatelessWidget {
     }
   }
 
-  Future<Widget> getImage(BuildContext context) async {
-    if (image == "") {
-      return null;
+  Future<void> getImage(BuildContext context) async {
+    if (widget.imagePath == "" || image != null) {
+      return;
     }
-    Image m;
-    await FireStorageService.loadFromStorage(context, "uploads/" + image)
+    await FireStorageService.loadFromStorage(
+            context, "uploads/" + widget.imagePath)
         .then((downloadUrl) {
-      m = Image.network(
-        downloadUrl.toString(),
-        fit: BoxFit.scaleDown,
-      );
+      setState(() {
+        image = NetworkImage(downloadUrl.toString());
+      });
     });
-
-    return m;
   }
 
   @override
   Widget build(BuildContext context) {
+    getImage(context);
     return Padding(
       padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
       child: InkWell(
@@ -82,7 +94,8 @@ class GroupRecipeHeadLine extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => WatchRecipeGroup(recipe, groupId)));
+                  builder: (context) =>
+                      WatchRecipeGroup(widget.recipe, widget.groupId, image)));
         },
         child: recipeRow(context),
       ),
@@ -121,27 +134,14 @@ class GroupRecipeHeadLine extends StatelessWidget {
 
   Widget recipeImage(BuildContext context) {
     return CircleAvatar(
-      child: FutureBuilder(
-          future: getImage(context),
-          // ignore: missing_return
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done)
-              return Container(
-                child: snapshot.data,
-              );
-            if (snapshot.connectionState == ConnectionState.waiting)
-              return Container(
-                  height: MediaQuery.of(context).size.height / 1.25,
-                  width: MediaQuery.of(context).size.width / 1.25,
-                  child: CircularProgressIndicator());
-          }),
+      backgroundImage: (image == null) ? ExactAssetImage(noImagePath) : image,
       radius: 35.0,
     );
   }
 
   Widget recipeName() {
     return Text(
-      recipe.name,
+      widget.recipe.name,
       style: TextStyle(
           color: Colors.black,
           fontSize: 15.0,
@@ -152,7 +152,7 @@ class GroupRecipeHeadLine extends StatelessWidget {
 
   Widget recipeWriter() {
     return Text(
-      recipe.writer,
+      widget.recipe.writer,
       style: TextStyle(
           color: Colors.grey,
           fontSize: 10.0,

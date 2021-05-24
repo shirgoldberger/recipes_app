@@ -75,7 +75,7 @@ class _DirectoriesListState extends State<DirectoriesList> {
       padding: const EdgeInsets.all(4.0),
       // ignore: deprecated_member_use
       child: RaisedButton(
-        color: Colors.indigo[100],
+        color: Colors.blueGrey[100],
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),

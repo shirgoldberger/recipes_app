@@ -11,11 +11,12 @@ class RecipeHeadLineSearch extends StatefulWidget {
   String level;
   bool home;
   Color colorName = Colors.blueGrey[700];
-  String image = "";
+  NetworkImage image;
+  String imagePath = "";
   RecipeHeadLineSearch(Recipe r, bool home) {
     this.recipe = r;
     this.home = home;
-    image = r.imagePath;
+    imagePath = r.imagePath;
     switch (r.time) {
       case 1:
         circleColor = Colors.green[400];
@@ -42,7 +43,7 @@ class RecipeHeadLineSearch extends StatefulWidget {
 class _RecipeHeadLineSearchState extends State<RecipeHeadLineSearch> {
   @override
   Widget build(BuildContext context) {
-    _getImage(context, widget.image);
+    _getImage(context);
     return Padding(
       padding: EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 5),
       child: InkWell(
@@ -56,7 +57,7 @@ class _RecipeHeadLineSearchState extends State<RecipeHeadLineSearch> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      WatchRecipe(widget.recipe, widget.home)));
+                      WatchRecipe(widget.recipe, widget.home, widget.image)));
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,9 +74,9 @@ class _RecipeHeadLineSearchState extends State<RecipeHeadLineSearch> {
                   ),
                   child: Image(
                     height: 135,
-                    image: (widget.image == "")
+                    image: (widget.image == null)
                         ? ExactAssetImage(noImagePath)
-                        : NetworkImage(widget.image),
+                        : widget.image,
                   ),
                 ),
                 SizedBox(width: 10.0),
@@ -99,18 +100,15 @@ class _RecipeHeadLineSearchState extends State<RecipeHeadLineSearch> {
     );
   }
 
-  void _getImage(BuildContext context, String image) async {
-    if (image == "") {
-      setState(() {
-        widget.image = "";
-      });
+  void _getImage(BuildContext context) async {
+    if (widget.imagePath == "") {
       return null;
     }
-    image = "uploads/" + image;
+    String image = "uploads/" + widget.imagePath;
     String downloadUrl =
         await FireStorageService.loadFromStorage(context, image);
     setState(() {
-      widget.image = downloadUrl;
+      widget.image = NetworkImage(downloadUrl);
     });
   }
 

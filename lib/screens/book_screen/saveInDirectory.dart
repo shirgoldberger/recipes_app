@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
@@ -20,7 +21,7 @@ class SaveInDirectory extends StatefulWidget {
   Recipe recipe;
   Color saveColor = Colors.blueGrey[600];
   IconData iconSave = Icons.favorite_border;
-  String saveString = 'save for yourself';
+  // String saveString = 'save for yourself';
   List<Directory> directorys = [];
 
   SaveInDirectory(String _uid, Recipe _recipe) {
@@ -81,7 +82,7 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
       if ((recipe == widget.recipe.id) && (user == widget.recipe.writerUid)) {
         setState(() {
           widget.iconSave = Icons.favorite;
-          widget.saveString = "un save for yourself";
+          // widget.saveString = "un save for yourself";
           widget.saveColor = Colors.grey[300];
         });
       }
@@ -93,57 +94,69 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
     if (!widget.doneLoad) {
       getGroups();
       initFavotite();
-
+      saveRecipe();
       return Loading();
     } else {
       //print(widget.isCheck);
       return Column(children: <Widget>[
-        new Padding(padding: EdgeInsets.only(top: 20.0)),
-        new Text(
-          'choose where to save this recipe:',
-          style: new TextStyle(
-              color: Colors.black, fontSize: 25.0, fontWeight: FontWeight.w700),
+        Padding(padding: EdgeInsets.only(top: 20.0)),
+        Text(
+          'Choose in which directory\nsave this recipe:',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.w700),
         ),
-        ClipRRect(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30.0),
-                topRight: Radius.circular(30.0),
-                bottomLeft: Radius.circular(30.0),
-                bottomRight: Radius.circular(30.0)),
-            // ignore: deprecated_member_use
-            child: FlatButton.icon(
-                color: widget.saveColor,
-                icon: Icon(widget.iconSave, color: Colors.white),
-                label: Text(widget.saveString,
-                    style: TextStyle(color: Colors.white)),
-                onPressed: () {
-                  if (widget.saveString == 'save for yourself') {
-                    setState(() {
-                      widget.iconSave = Icons.favorite;
-                      widget.saveString = "un save for yourself";
-                      widget.saveColor = Colors.grey[300];
-                      saveRecipe();
-                    });
-                  } else {
-                    setState(() {
-                      unSaveRecipe();
+        heightBox(10),
+        Text(
+          'This recipe will save automatically in your favorites group',
+          textAlign: TextAlign.center,
+          style: new TextStyle(
+            color: Colors.green,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'DescriptionFont',
+          ),
+        ),
+        heightBox(20),
+        // ClipRRect(
+        //     borderRadius: BorderRadius.only(
+        //         topLeft: Radius.circular(30.0),
+        //         topRight: Radius.circular(30.0),
+        //         bottomLeft: Radius.circular(30.0),
+        //         bottomRight: Radius.circular(30.0)),
+        //     // ignore: deprecated_member_use
+        //     child: FlatButton.icon(
+        //         color: widget.saveColor,
+        //         icon: Icon(widget.iconSave, color: Colors.white),
+        //         label: Text(widget.saveString,
+        //             style: TextStyle(color: Colors.white)),
+        //         onPressed: () {
+        //           if (widget.saveString == 'save for yourself') {
+        //             setState(() {
+        //               widget.iconSave = Icons.favorite;
+        //               widget.saveString = "un save for yourself";
+        //               widget.saveColor = Colors.grey[300];
+        //               saveRecipe();
+        //             });
+        //           } else {
+        //             setState(() {
+        //               unSaveRecipe();
 
-                      widget.iconSave = Icons.favorite_border;
-                      widget.saveString = "save for yourself";
-                      widget.saveColor = Colors.blueGrey[600];
-                    });
-                  }
-                })),
+        //               widget.iconSave = Icons.favorite_border;
+        //               widget.saveString = "save for yourself";
+        //               widget.saveColor = Colors.blueGrey[600];
+        //             });
+        //           }
+        //         })),
         Expanded(
             child: ListView.builder(
                 itemCount: widget.directorys.length,
                 itemBuilder: (context, index) {
                   return ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30.0),
-                          topRight: Radius.circular(30.0),
-                          bottomLeft: Radius.circular(30.0),
-                          bottomRight: Radius.circular(30.0)),
+                      borderRadius: BorderRadius.circular(20),
                       // ignore: deprecated_member_use
                       child: FlatButton.icon(
                           color: widget.isCheck[index]
@@ -159,7 +172,9 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
                                   ? "un save in " +
                                       widget.directorys[index].name
                                   : "save in " + widget.directorys[index].name,
-                              style: TextStyle(color: Colors.white)),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'DescriptionFont')),
                           onPressed: () {
                             saveInDirectory(index);
                             if (widget.isCheck[index]) {
@@ -336,7 +351,6 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
   }
 
   Future<void> saveInDirectory(int index) async {
-    print("1");
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(widget.uid)

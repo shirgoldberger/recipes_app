@@ -36,7 +36,8 @@ class WatchRecipeBody extends StatefulWidget {
       List<Stages> _stages,
       Color _levelColor,
       String _levelString,
-      String _uid) {
+      String _uid,
+      NetworkImage _image) {
     this.current = _current;
     this.ing = _ing;
     _isChecked = List<bool>.filled(ing.length, false);
@@ -44,6 +45,7 @@ class WatchRecipeBody extends StatefulWidget {
     this.levelColor = _levelColor;
     this.levelString = _levelString;
     this.uid = _uid;
+    this.recipeImage = _image;
   }
 
   @override
@@ -168,7 +170,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   @override
   Widget build(BuildContext context) {
     getImage(context);
-    getRecipeImage(context);
+    // getRecipeImage(context);
     if (widget.current.publish != '') {
       getLikesList();
     }
@@ -277,22 +279,24 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
 
   Widget recipePicture() {
     // there is no image yet
-    if (widget.current.imagePath == "") {
+    // if (widget.current.imagePath == "") {
+    //   return CircleAvatar(
+    //       backgroundColor: backgroundColor,
+    //       radius: 120,
+    //       backgroundImage: ExactAssetImage(noImagePath));
+    // } else {
+    if (widget.recipeImage != null) {
+      return CircleAvatar(
+          backgroundColor: backgroundColor,
+          radius: 120,
+          backgroundImage: widget.recipeImage);
+    } else {
       return CircleAvatar(
           backgroundColor: backgroundColor,
           radius: 120,
           backgroundImage: ExactAssetImage(noImagePath));
-    } else {
-      if (widget.recipeImage != null) {
-        return CircleAvatar(
-            backgroundColor: backgroundColor,
-            radius: 120,
-            backgroundImage: widget.recipeImage);
-      } else {
-        return Container(
-            height: 60, width: 60, child: CircularProgressIndicator());
-      }
     }
+    // }
   }
 
   Widget description() {

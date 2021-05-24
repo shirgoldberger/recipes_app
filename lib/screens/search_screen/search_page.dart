@@ -311,8 +311,8 @@ class _SearchPage extends State<SearchPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            WatchRecipe(widget.recipes[index], true)));
+                        builder: (context) => WatchRecipe(
+                            widget.recipes[index], true, snapshot.data)));
               },
             );
 

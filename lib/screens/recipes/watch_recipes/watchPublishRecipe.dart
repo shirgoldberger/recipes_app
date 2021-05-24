@@ -30,6 +30,8 @@ class WatchPublishRecipe extends StatefulWidget {
   String publishRecipeId;
   bool doneLoadLikeList = false;
 
+  NetworkImage image;
+
   // constructor
   WatchPublishRecipe(
       String _uid,
@@ -37,13 +39,15 @@ class WatchPublishRecipe extends StatefulWidget {
       Color _levelColor,
       String _levelString,
       List<IngredientsModel> _ingredients,
-      List<Stages> _stages) {
+      List<Stages> _stages,
+      NetworkImage _image) {
     this.uid = _uid;
     this.currentRecipe = _currentRecipe;
     this.levelColor = _levelColor;
     this.levelString = _levelString;
     this.ingredients = _ingredients;
     this.stages = _stages;
+    this.image = _image;
   }
 
   @override
@@ -90,8 +94,14 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
               // save icon
               saveIcon(),
             ]),
-        body: WatchRecipeBody(widget.currentRecipe, widget.ingredients,
-            widget.stages, widget.levelColor, widget.levelString, widget.uid));
+        body: WatchRecipeBody(
+            widget.currentRecipe,
+            widget.ingredients,
+            widget.stages,
+            widget.levelColor,
+            widget.levelString,
+            widget.uid,
+            widget.image));
   }
 
   initLikeIcon() async {

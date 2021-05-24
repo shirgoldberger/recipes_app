@@ -27,15 +27,23 @@ class WatchSaveRecipe extends StatefulWidget {
   // username and id that like current recipe
   Map<String, String> usersLikes = {};
   String publishRecipeId;
-  // constructor
-  WatchSaveRecipe(String _uid, Recipe _currentRecipe, Color _levelColor,
-      String _levelString, List<IngredientsModel> ing, List<Stages> sta) {
+  NetworkImage image;
+
+  WatchSaveRecipe(
+      String _uid,
+      Recipe _currentRecipe,
+      Color _levelColor,
+      String _levelString,
+      List<IngredientsModel> ing,
+      List<Stages> sta,
+      NetworkImage _image) {
     this.uid = _uid;
     this.currentRecipe = _currentRecipe;
     this.levelColor = _levelColor;
     this.levelString = _levelString;
     this.ingredients = ing;
     this.stages = sta;
+    this.image = _image;
   }
 
   @override
@@ -75,8 +83,14 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
           ),
         ),
         endDrawer: leftMenu(),
-        body: WatchRecipeBody(widget.currentRecipe, widget.ingredients,
-            widget.stages, widget.levelColor, widget.levelString, widget.uid));
+        body: WatchRecipeBody(
+            widget.currentRecipe,
+            widget.ingredients,
+            widget.stages,
+            widget.levelColor,
+            widget.levelString,
+            widget.uid,
+            widget.image));
   }
 
   Widget leftMenu() {
@@ -146,10 +160,10 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
         .document(id)
         .collection('saved recipe')
         .getDocuments();
-    snap.documents.forEach((element) async {
-      String recipeIdfromSnap = element.data['recipeID'];
+    for (int i = 0; i < snap.documents.length; i++) {
+      String recipeIdfromSnap = snap.documents[i].data['recipeID'];
       if (recipeIdfromSnap == widget.currentRecipe.id) {
-        List notes = element.data['notes'];
+        List notes = snap.documents[i].data['notes'];
 
         showModalBottomSheet(
             context: context,
@@ -164,10 +178,10 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
                     topRight: const Radius.circular(25.0),
                   ),
                 ),
-                child: NotesForm(
-                    notes, id, element.documentID, widget.currentRecipe.id)));
+                child: NotesForm(notes, id, snap.documents[i].documentID,
+                    widget.currentRecipe.id)));
       }
-    });
+    }
   }
 
   Future<void> _pressLikeRecipe() async {

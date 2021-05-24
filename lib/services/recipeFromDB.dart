@@ -58,6 +58,7 @@ class RecipeFromDB {
     String writer = recipe.data['writer'] ?? '';
     String writerUid = recipe.data['writerUid'] ?? '';
     String publish = recipe.data['publishID'] ?? '';
+    String imagePath = recipe.data['imagePath'] ?? '';
 
     // tags
     var tags = recipe.data['tags'] ?? [];
@@ -88,7 +89,7 @@ class RecipeFromDB {
     }
 
     Recipe r = Recipe(name, description, l, levelInt, nList, writer, writerUid,
-        timeInt, true, id, publish, '');
+        timeInt, true, id, publish, imagePath);
     r.setId(id);
     return r;
   }

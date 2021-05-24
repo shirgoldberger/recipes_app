@@ -14,9 +14,10 @@ import 'package:recipes_app/shared_screen/loading.dart';
 //  לכן אפשר רק למחוק אותו, נמחק רק אצלי, או להוסיף עליו הערות אישיות שלי. (עשינו לו save )  מצב שני - אנחנו צופים במתכון ששמרנו אותו
 // מצב שלישי - צפיה במתכון מתוך העמוד הכללי - ניתן רק לשמור מתכון.
 class WatchRecipeGroup extends StatefulWidget {
-  WatchRecipeGroup(Recipe r, String _groupId) {
+  WatchRecipeGroup(Recipe r, String _groupId, NetworkImage _image) {
     this.current = r;
     this.groupId = _groupId;
+    this.image = _image;
   }
 
   String groupId;
@@ -36,7 +37,7 @@ class WatchRecipeGroup extends StatefulWidget {
   String saveRecipe = '';
   IconData iconSave = Icons.favorite_border;
   String saveString = 'save';
-  //bool publish = false;
+  NetworkImage image;
 
   @override
   @override
@@ -125,7 +126,7 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
                     }),
               ]),
           body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
-              widget.levelColor, widget.levelString, widget.uid));
+              widget.levelColor, widget.levelString, widget.uid, widget.image));
     }
   }
 

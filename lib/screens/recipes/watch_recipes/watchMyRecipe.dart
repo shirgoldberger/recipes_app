@@ -28,16 +28,23 @@ class WatchMyRecipe extends StatefulWidget {
   String levelString;
   // username and id that like current recipe
   Map<String, String> usersLikes;
+  NetworkImage image;
 
-  // constructor
-  WatchMyRecipe(String _uid, Recipe _currentRecipe, Color _levelColor,
-      String _levelString, List<IngredientsModel> _ing, List<Stages> _stages) {
+  WatchMyRecipe(
+      String _uid,
+      Recipe _currentRecipe,
+      Color _levelColor,
+      String _levelString,
+      List<IngredientsModel> _ing,
+      List<Stages> _stages,
+      NetworkImage _image) {
     this.uid = _uid;
     this.currentRecipe = _currentRecipe;
     this.levelColor = _levelColor;
     this.levelString = _levelString;
     this.ingredients = _ing;
     this.stages = _stages;
+    this.image = _image;
   }
 
   @override
@@ -69,8 +76,14 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
           ),
         ),
         endDrawer: leftMenu(),
-        body: WatchRecipeBody(widget.currentRecipe, widget.ingredients,
-            widget.stages, widget.levelColor, widget.levelString, widget.uid));
+        body: WatchRecipeBody(
+            widget.currentRecipe,
+            widget.ingredients,
+            widget.stages,
+            widget.levelColor,
+            widget.levelString,
+            widget.uid,
+            widget.image));
   }
 
   Widget leftMenu() {

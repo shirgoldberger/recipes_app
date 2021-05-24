@@ -83,7 +83,7 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      WatchRecipe(widget.recipe, widget.home)));
+                      WatchRecipe(widget.recipe, widget.home, widget.image)));
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

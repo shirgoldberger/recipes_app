@@ -119,7 +119,6 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
             );
             await loadSavedRecipe();
             Navigator.pop(dialogContext);
-            print("push");
             Navigator.push(
                 context,
                 MaterialPageRoute(

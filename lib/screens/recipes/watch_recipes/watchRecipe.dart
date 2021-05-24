@@ -16,12 +16,14 @@ import 'package:recipes_app/shared_screen/loading.dart';
 // מצב שלישי - צפיה במתכון מתוך העמוד הכללי - ניתן רק לשמור מתכון.
 // ignore: must_be_immutable
 class WatchRecipe extends StatefulWidget {
-  WatchRecipe(Recipe r, bool home) {
+  WatchRecipe(Recipe r, bool home, NetworkImage _image) {
     this.current = r;
     this.home = home;
+    this.image = _image;
   }
 
   bool home;
+  NetworkImage image;
   List<IngredientsModel> ing = [];
   List<Stages> stages = [];
   Recipe current;
@@ -66,16 +68,16 @@ class _WatchRecipeState extends State<WatchRecipe> {
       if (widget.home) {
         // 3
         return WatchPublishRecipe(widget.uid, widget.current, widget.levelColor,
-            widget.levelString, widget.ing, widget.stages);
+            widget.levelString, widget.ing, widget.stages, widget.image);
       } else {
         if (widget.uid == widget.current.writerUid) {
           // 1
           return WatchMyRecipe(widget.uid, widget.current, widget.levelColor,
-              widget.levelString, widget.ing, widget.stages);
+              widget.levelString, widget.ing, widget.stages, widget.image);
         } else {
           // 2
           return WatchSaveRecipe(widget.uid, widget.current, widget.levelColor,
-              widget.levelString, widget.ing, widget.stages);
+              widget.levelString, widget.ing, widget.stages, widget.image);
         }
       }
     }
