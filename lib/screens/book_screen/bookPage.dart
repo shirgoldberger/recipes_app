@@ -128,7 +128,8 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
                           name: name,
                         ),
                         widget.user,
-                        false)));
+                        false,
+                        "favorite")));
           })),
     );
   }
@@ -176,7 +177,8 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
                     builder: (context) => DirectoryRecipesList(
                         Directory(recipes: widget.myRecipe, name: name),
                         widget.user,
-                        false)));
+                        false,
+                        "favorite")));
           })),
     );
   }

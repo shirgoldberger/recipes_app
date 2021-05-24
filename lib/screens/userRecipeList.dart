@@ -73,7 +73,7 @@ class _UserRecipeListState extends State<UserRecipeList> {
                                   bottomLeft: Radius.circular(30.0),
                                   bottomRight: Radius.circular(30.0)),
                               child: RecipeHeadLine(
-                                  widget.recipeList[index], true))));
+                                  widget.recipeList[index], true, ""))));
                 },
               ),
             )

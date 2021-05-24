@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
+import 'package:recipes_app/screens/recipes/watch_recipes/watchFavoriteRecipe.dart';
 import 'watchMyRecipe.dart';
 import 'watchPublishRecipe.dart';
 import 'watchSaveRecipe.dart';
@@ -16,13 +17,15 @@ import 'package:recipes_app/shared_screen/loading.dart';
 // מצב שלישי - צפיה במתכון מתוך העמוד הכללי - ניתן רק לשמור מתכון.
 // ignore: must_be_immutable
 class WatchRecipe extends StatefulWidget {
-  WatchRecipe(Recipe r, bool home, NetworkImage _image) {
+  WatchRecipe(Recipe r, bool home, NetworkImage _image, String _directory) {
     this.current = r;
     this.home = home;
     this.image = _image;
+    this.directory = _directory;
   }
 
   bool home;
+  String directory;
   NetworkImage image;
   List<IngredientsModel> ing = [];
   List<Stages> stages = [];
@@ -65,19 +68,40 @@ class _WatchRecipeState extends State<WatchRecipe> {
     if (!widget.done) {
       return Loading();
     } else {
+      print(widget.directory);
       if (widget.home) {
         // 3
+        print("WatchPublishRecipe");
         return WatchPublishRecipe(widget.uid, widget.current, widget.levelColor,
             widget.levelString, widget.ing, widget.stages, widget.image);
       } else {
         if (widget.uid == widget.current.writerUid) {
           // 1
+          print("WatchMyRecipe");
           return WatchMyRecipe(widget.uid, widget.current, widget.levelColor,
               widget.levelString, widget.ing, widget.stages, widget.image);
         } else {
           // 2
-          return WatchSaveRecipe(widget.uid, widget.current, widget.levelColor,
-              widget.levelString, widget.ing, widget.stages, widget.image);
+          print("WatchSaveRecipe");
+          if (widget.directory == "favorite") {
+            return WatchFavoriteRecipe(
+                widget.uid,
+                widget.current,
+                widget.levelColor,
+                widget.levelString,
+                widget.ing,
+                widget.stages,
+                widget.image);
+          }
+          return WatchSaveRecipe(
+              widget.uid,
+              widget.current,
+              widget.levelColor,
+              widget.levelString,
+              widget.ing,
+              widget.stages,
+              widget.image,
+              widget.directory);
         }
       }
     }

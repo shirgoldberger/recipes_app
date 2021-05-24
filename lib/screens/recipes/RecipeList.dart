@@ -134,7 +134,7 @@ class _RecipeListState extends State<RecipeList> {
                                 bottomLeft: Radius.circular(30.0),
                                 bottomRight: Radius.circular(30.0)),
                             child: RecipeHeadLine(
-                                widget.listForWatch[index], widget.home))));
+                                widget.listForWatch[index], widget.home, ""))));
               },
             ),
           )

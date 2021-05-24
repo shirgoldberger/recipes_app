@@ -170,6 +170,85 @@ class RecipeFromDB {
     }
   }
 
+  static Future<void> deleteFromDirectoryRecipe(String uid, String recipeUserid,
+      String recipeId, String directoryId) async {
+    //get publish id
+    DocumentSnapshot publishRecipe = await Firestore.instance
+        .collection('users')
+        .document(recipeUserid)
+        .collection('recipes')
+        .document(recipeId)
+        .get();
+    String publishID = publishRecipe.data['publishID'];
+    //delete from directory
+    DocumentSnapshot directory = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .document(directoryId)
+        .get();
+    List recipes = directory.data['Recipes'];
+
+    //remove recipe from list
+    List copyRecipe = [];
+    copyRecipe.addAll(recipes);
+    copyRecipe.remove(publishID);
+    Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .document(directoryId)
+        .updateData({'Recipes': copyRecipe});
+  }
+
+  static Future<void> deleteFromFavoriteRecipe(
+      String uid, String recipeUserid, String recipeId) async {
+    DocumentSnapshot publishRecipe = await Firestore.instance
+        .collection('users')
+        .document(recipeUserid)
+        .collection('recipes')
+        .document(recipeId)
+        .get();
+    String publishID = publishRecipe.data['publishID'];
+    //find recipe in directory
+    QuerySnapshot savedDirectory = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .getDocuments();
+    for (int i = 0; i < savedDirectory.documents.length; i++) {
+      List recipes = savedDirectory.documents[i].data['Recipes'];
+      if (recipes.contains(publishID)) {
+        //remove recipe from list
+        List copyRecipe = [];
+        copyRecipe.addAll(recipes);
+        copyRecipe.remove(publishID);
+        Firestore.instance
+            .collection('users')
+            .document(uid)
+            .collection('Directory')
+            .document(savedDirectory.documents[i].documentID)
+            .updateData({'Recipes': copyRecipe});
+      }
+    }
+    QuerySnapshot savedRecipes = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('saved recipe')
+        .getDocuments();
+    for (int i = 0; i < savedRecipes.documents.length; i++) {
+      String recipeIdfromSnap = savedRecipes.documents[i].data['recipeID'];
+      if (recipeIdfromSnap == recipeId) {
+        db
+            .collection('users')
+            .document(uid)
+            .collection('saved recipe')
+            .document(savedRecipes.documents[i].documentID)
+            .delete();
+      }
+    }
+  }
+
   static Future<void> deleteRecipe(
       String publish, String recipeId, String uid) async {
     // publish recipe

@@ -56,8 +56,8 @@ class _RecipeHeadLineSearchState extends State<RecipeHeadLineSearch> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      WatchRecipe(widget.recipe, widget.home, widget.image)));
+                  builder: (context) => WatchRecipe(
+                      widget.recipe, widget.home, widget.image, "")));
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

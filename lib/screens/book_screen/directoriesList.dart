@@ -105,7 +105,8 @@ class _DirectoriesListState extends State<DirectoriesList> {
                       widget.directories
                           .firstWhere((element) => element.id == d.id),
                       widget.uid,
-                      true))).then((value) {
+                      true,
+                      d.id))).then((value) {
             if (value == "delete") {
               setState(() {
                 widget.directories.removeWhere((element) => element.id == d.id);

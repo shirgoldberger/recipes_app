@@ -284,7 +284,7 @@ class _SearchPage extends State<SearchPage> {
                               bottomLeft: Radius.circular(30.0),
                               bottomRight: Radius.circular(30.0)),
                           child: RecipeHeadLine(
-                              widget.recipesSearch[index], true))));
+                              widget.recipesSearch[index], true, ""))));
             }));
 
     // child: UserHeadLine(
@@ -312,7 +312,7 @@ class _SearchPage extends State<SearchPage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => WatchRecipe(
-                            widget.recipes[index], true, snapshot.data)));
+                            widget.recipes[index], true, snapshot.data, "")));
               },
             );
 

@@ -282,32 +282,52 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
   }
 
   void saveRecipe() async {
-    final db = Firestore.instance;
-
-    db.collection('users').document(widget.uid).collection('saved recipe').add({
-      'saveInUser': widget.recipe.saveInUser,
-      'recipeID': widget.recipe.id,
-      'userID': widget.recipe.writerUid
-    });
-
-    String id;
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.recipe.id) {
-        id = element.documentID;
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        List publishGroup = [];
-        List loadList = currentRecipe2.data['saveUser'] ?? [];
-        publishGroup.addAll(loadList);
-        publishGroup.add(widget.uid);
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'saveUser': publishGroup});
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .collection('saved recipe')
+        .getDocuments();
+    bool found = false;
+    for (int i = 0; i < snap.documents.length; i++) {
+      String recipeId = snap.documents[i].data['recipeID'];
+      String userID = snap.documents[i].data['userID'];
+      if ((recipeId == widget.recipe.id) &&
+          (userID == widget.recipe.writerUid)) {
+        found = true;
       }
-    });
+    }
+    if (!found) {
+      final db = Firestore.instance;
+
+      db
+          .collection('users')
+          .document(widget.uid)
+          .collection('saved recipe')
+          .add({
+        'saveInUser': widget.recipe.saveInUser,
+        'recipeID': widget.recipe.id,
+        'userID': widget.recipe.writerUid
+      });
+
+      String id;
+      QuerySnapshot snap =
+          await Firestore.instance.collection('publish recipe').getDocuments();
+      snap.documents.forEach((element) async {
+        if (element.data['recipeId'] == widget.recipe.id) {
+          id = element.documentID;
+          var currentRecipe2 =
+              await db.collection('publish recipe').document(id).get();
+          List publishGroup = [];
+          List loadList = currentRecipe2.data['saveUser'] ?? [];
+          publishGroup.addAll(loadList);
+          publishGroup.add(widget.uid);
+          db
+              .collection('publish recipe')
+              .document(id)
+              .updateData({'saveUser': publishGroup});
+        }
+      });
+    }
   }
 
   Future<void> unSaveRecipe() async {

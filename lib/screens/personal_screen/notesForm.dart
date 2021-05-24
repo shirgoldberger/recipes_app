@@ -13,6 +13,7 @@ class NotesForm extends StatefulWidget {
   bool doneLoad = false;
 
   NotesForm(List _notes, String _uid, String _docId, String _currentId) {
+    print("notes form");
     if (_notes != null) {
       this.notes = _notes.cast<String>().toList();
     } else {

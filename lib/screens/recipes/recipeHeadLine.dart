@@ -14,10 +14,12 @@ class RecipeHeadLine extends StatefulWidget {
   Color colorName = Colors.blue;
   String imagePath = "";
   NetworkImage image;
-  RecipeHeadLine(Recipe _recipe, bool home) {
+  String directory;
+  RecipeHeadLine(Recipe _recipe, bool home, String directory) {
     this.recipe = _recipe;
     this.home = home;
     imagePath = recipe.imagePath;
+    this.directory = directory;
     setLevelColor();
     setTimeText();
   }
@@ -82,8 +84,8 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      WatchRecipe(widget.recipe, widget.home, widget.image)));
+                  builder: (context) => WatchRecipe(widget.recipe, widget.home,
+                      widget.image, widget.directory)));
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

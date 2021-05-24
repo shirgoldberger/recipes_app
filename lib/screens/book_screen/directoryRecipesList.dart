@@ -8,7 +8,7 @@ import 'package:recipes_app/screens/groups/changeNameGroup.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
 import 'package:recipes_app/services/groupFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
-import 'package:slider_button/slider_button.dart';
+
 import '../../config.dart';
 import '../personal_screen/homeLogIn.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
@@ -22,11 +22,14 @@ class DirectoryRecipesList extends StatefulWidget {
   String uid;
   bool doneLoad = false;
   bool toDelete;
+  String directoryToFo;
 
-  DirectoryRecipesList(Directory _directory, String _uid, bool _toDelete) {
+  DirectoryRecipesList(
+      Directory _directory, String _uid, bool _toDelete, String directoryToFo) {
     this.directory = _directory;
     this.uid = _uid;
     this.toDelete = _toDelete;
+    this.directoryToFo = directoryToFo;
   }
 
   @override
@@ -95,8 +98,8 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
                       color: Colors.white,
                     ),
                     child: ClipRRect(
-                        child: RecipeHeadLine(
-                            widget.directory.recipes[index], false))),
+                        child: RecipeHeadLine(widget.directory.recipes[index],
+                            false, widget.directoryToFo))),
                 Visibility(
                   visible: widget.toDelete,
                   child: IconButton(

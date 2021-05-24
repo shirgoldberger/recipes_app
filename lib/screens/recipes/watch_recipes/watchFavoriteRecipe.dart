@@ -5,13 +5,14 @@ import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
+import 'package:recipes_app/screens/groups/saveGroup.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'watchRecipeBody.dart';
 import '../../personal_screen/likesList.dart';
 import '../../personal_screen/notesForm.dart';
 
 // ignore: must_be_immutable
-class WatchSaveRecipe extends StatefulWidget {
+class WatchFavoriteRecipe extends StatefulWidget {
   // true if the user like this recipe
   bool isLikeRecipe = false;
   // true if the user save this recipe
@@ -28,16 +29,15 @@ class WatchSaveRecipe extends StatefulWidget {
   Map<String, String> usersLikes = {};
   String publishRecipeId;
   NetworkImage image;
-  String directory;
-  WatchSaveRecipe(
+
+  WatchFavoriteRecipe(
       String _uid,
       Recipe _currentRecipe,
       Color _levelColor,
       String _levelString,
       List<IngredientsModel> ing,
       List<Stages> sta,
-      NetworkImage _image,
-      String _directory) {
+      NetworkImage _image) {
     this.uid = _uid;
     this.currentRecipe = _currentRecipe;
     this.levelColor = _levelColor;
@@ -45,14 +45,13 @@ class WatchSaveRecipe extends StatefulWidget {
     this.ingredients = ing;
     this.stages = sta;
     this.image = _image;
-    this.directory = _directory;
   }
 
   @override
-  _WatchSaveRecipeState createState() => _WatchSaveRecipeState();
+  _WatchFavoriteRecipeState createState() => _WatchFavoriteRecipeState();
 }
 
-class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
+class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
   @override
   void initState() {
     super.initState();
@@ -102,7 +101,7 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
       child: ListView(
         children: <Widget>[
           drawerTitle(),
-          Column(children: [deleteFromSaveIcon(), addNoteIcon()]),
+          Column(children: [delete(), saveIcon(), addNoteIcon()]),
         ],
       ),
     );
@@ -154,36 +153,6 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
               ),
             ),
             child: LikesList(widget.currentRecipe)));
-  }
-
-  Future<void> _showNotesPanel(String id) async {
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(id)
-        .collection('saved recipe')
-        .getDocuments();
-    for (int i = 0; i < snap.documents.length; i++) {
-      String recipeIdfromSnap = snap.documents[i].data['recipeID'];
-      if (recipeIdfromSnap == widget.currentRecipe.id) {
-        List notes = snap.documents[i].data['notes'];
-
-        showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (context) => Container(
-                height: MediaQuery.of(context).size.height * 0.75,
-                decoration: new BoxDecoration(
-                  color: Colors.blueGrey[50],
-                  borderRadius: new BorderRadius.only(
-                    topLeft: const Radius.circular(25.0),
-                    topRight: const Radius.circular(25.0),
-                  ),
-                ),
-                child: NotesForm(notes, id, snap.documents[i].documentID,
-                    widget.currentRecipe.id)));
-      }
-    }
   }
 
   Future<void> _pressLikeRecipe() async {
@@ -283,14 +252,9 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
   Future<void> deleteFromSavedRecipe(
     String id,
   ) async {
-    print(widget.directory);
     final db = Firestore.instance;
-    await RecipeFromDB.deleteFromDirectoryRecipe(
-        widget.uid,
-        widget.currentRecipe.writerUid,
-        widget.currentRecipe.id,
-        widget.directory);
-
+    await RecipeFromDB.deleteFromFavoriteRecipe(
+        widget.uid, widget.currentRecipe.writerUid, widget.currentRecipe.id);
     // QuerySnapshot snap = await Firestore.instance
     //     .collection('users')
     //     .document(id)
@@ -377,7 +341,7 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
         ));
   }
 
-  Widget deleteFromSaveIcon() {
+  Widget delete() {
     // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
@@ -390,6 +354,50 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
         onPressed: () {
           deleteFromSavedRecipe(widget.uid);
         });
+  }
+
+  Widget saveIcon() {
+    // ignore: deprecated_member_use
+    return FlatButton.icon(
+        icon: Icon(
+          Icons.favorite,
+          color: Colors.red,
+        ),
+        label: Text(
+          widget.isSaveRecipe ? 'Unsave' : 'Save',
+          style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
+        ),
+        onPressed: () {
+          if (widget.uid != null) {
+            if (widget.uid != widget.currentRecipe.writerUid) {
+              _showSavedGroup();
+            } else {
+              _showAlertDialog2(
+                  'You can not save this recipe because you wrote it!');
+            }
+          } else {
+            _showAlertDialog2(
+                'you can not save this recipe - please first register or sign in to the app and try again');
+          }
+        });
+  }
+
+  Future<void> _showSavedGroup() async {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.75,
+            decoration: new BoxDecoration(
+              color: Colors.blueGrey[50],
+              borderRadius: new BorderRadius.only(
+                topLeft: const Radius.circular(25.0),
+                topRight: const Radius.circular(25.0),
+              ),
+            ),
+            child: SaveGroup(
+                widget.uid, widget.currentRecipe.id, widget.currentRecipe)));
   }
 
   Widget addNoteIcon() {
@@ -405,5 +413,62 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
         onPressed: () {
           _showNotesPanel(widget.uid);
         });
+  }
+
+  Future<void> _showNotesPanel(String id) async {
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(id)
+        .collection('saved recipe')
+        .getDocuments();
+    for (int i = 0; i < snap.documents.length; i++) {
+      String recipeIdfromSnap = snap.documents[i].data['recipeID'];
+      if (recipeIdfromSnap == widget.currentRecipe.id) {
+        List notes = snap.documents[i].data['notes'];
+
+        showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => Container(
+                height: MediaQuery.of(context).size.height * 0.75,
+                decoration: new BoxDecoration(
+                  color: Colors.blueGrey[50],
+                  borderRadius: new BorderRadius.only(
+                    topLeft: const Radius.circular(25.0),
+                    topRight: const Radius.circular(25.0),
+                  ),
+                ),
+                child: NotesForm(notes, id, snap.documents[i].documentID,
+                    widget.currentRecipe.id)));
+      }
+    }
+  }
+
+  Future<void> _showAlertDialog2(String message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
