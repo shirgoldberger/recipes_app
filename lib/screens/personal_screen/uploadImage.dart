@@ -22,6 +22,9 @@ class _UploadingImageToFirebaseStorageState
     final pickedFile = await picker.getImage(
       source: ImageSource.camera,
     );
+    if (pickedFile == null) {
+      return;
+    }
     setState(() {
       _imageFile = File(pickedFile.path);
     });

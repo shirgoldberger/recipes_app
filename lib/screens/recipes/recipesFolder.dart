@@ -462,20 +462,14 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
           }
         }
         //notes
-        var note = doc.data['notes'];
-        String noteString = note.toString();
-        List<String> nList = [];
-        if (noteString != "[]") {
-          String tag = noteString.substring(1, noteString.length - 1);
-          nList = tag.split(',');
-          for (int i = 0; i < nList.length; i++) {
-            if (nList[i][0] == ' ') {
-              nList[i] = nList[i].substring(1, nList[i].length);
-            }
-          }
+        List nList = doc.data['notes'];
+        List<String> noteList = [];
+        for (int i = 0; i < nList.length; i++) {
+          String note = nList[i].toString();
+          noteList.add(note);
         }
-        r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, true,
-            id, publish, path);
+        r = Recipe(n, de, l, levlelInt, noteList, writer, writerUid, timeI,
+            true, id, publish, path);
       }
       //from recipe
       else {
@@ -510,20 +504,14 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
           }
         }
         //notes
-        var note = doc.data['notes'];
-        String noteString = note.toString();
-        List<String> nList = [];
-        if (noteString != "[]") {
-          String tag = noteString.substring(1, noteString.length - 1);
-          nList = tag.split(',');
-          for (int i = 0; i < nList.length; i++) {
-            if (nList[i][0] == ' ') {
-              nList[i] = nList[i].substring(1, nList[i].length);
-            }
-          }
+        List nList = doc.data['notes'];
+        List<String> noteList = [];
+        for (int i = 0; i < nList.length; i++) {
+          String note = nList[i].toString();
+          noteList.add(note);
         }
-        r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI, false,
-            id, publish, path);
+        r = Recipe(n, de, l, levlelInt, noteList, writer, writerUid, timeI,
+            false, id, publish, path);
       }
       bool check = false;
       for (int i = 0; i < widget.savedRecipe.length; i++) {

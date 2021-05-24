@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
@@ -16,8 +17,6 @@ import '../recipes/watch_recipes/watchRecipe.dart';
 // ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
   bool home;
-  // List<Recipe> publisRecipe = [];
-  // bool doneLoadPublishRecipe = true;
   int doneLoadCounter = 0;
   bool doneGetUser = false;
   String uid;
@@ -49,6 +48,22 @@ class _SearchPage extends State<SearchPage> {
     changeState();
   }
 
+  void a() async {
+    setState(() {
+      widget.doneLoadCounter = 0;
+    });
+    if (widget.getUser) {
+      myFriends(widget.uid);
+      tagsRecipe(widget.uid);
+      getPopularRecipes();
+    } else {
+      getPopularRecipes();
+      setState(() {
+        widget.doneLoadCounter = 2;
+      });
+    }
+  }
+
   void getuser() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     await auth.currentUser().then((value) {
@@ -75,53 +90,60 @@ class _SearchPage extends State<SearchPage> {
     }
   }
 
-  Widget box = SizedBox(
-    height: 20.0,
-  );
-
-  Future<Widget> _getImage(BuildContext context, String image) async {
+  Future _getImage(BuildContext context, String image) async {
     if (image == "") {
-      return Image.asset(noImagePath, fit: BoxFit.cover);
+      return null;
     }
     image = "uploads/" + image;
-    Image m;
+    NetworkImage m;
     await FireStorageService.loadFromStorage(context, image)
         .then((downloadUrl) {
-      m = Image.network(
-        downloadUrl.toString(),
-        fit: BoxFit.cover,
-      );
+      m = NetworkImage(downloadUrl.toString());
     });
     return m;
   }
 
+  Future<bool> refresh() async {
+    await Future.delayed(Duration(seconds: 1), a);
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.doneLoadCounter != 3) {
-      return Loading();
-    } else {
-      return MaterialApp(
-          home: Scaffold(
-        backgroundColor: Colors.blueGrey[50],
-        appBar: AppBar(
-          backgroundColor: Colors.blueGrey[700],
-          elevation: 0.0,
-          actions: <Widget>[],
-        ),
-        body: SafeArea(
-            child: SingleChildScrollView(
-                child: Container(
-                    child: Column(children: <Widget>[
-          box,
-          searchWidget(),
-          box,
-          Center(
-            child: (widget.searchMode) ? searchButtomWidget() : recipeGrid(),
-          ),
-        ])))),
-        resizeToAvoidBottomInset: false,
-      ));
-    }
+    // if (widget.doneLoadCounter != 3) {
+    //   return Loading();
+    // } else {
+    return MaterialApp(
+        home: Scaffold(
+      backgroundColor: Colors.blueGrey[50],
+      appBar: AppBar(
+        backgroundColor: Colors.blueGrey[700],
+        elevation: 0.0,
+        actions: <Widget>[],
+      ),
+      body: SafeArea(
+          child: SingleChildScrollView(
+              child: Container(
+                  child: Column(children: <Widget>[
+        box,
+        searchWidget(),
+        box,
+        widget.doneLoadCounter != 3
+            ? Container(
+                child: Center(
+                child: SpinKitCircle(
+                  color: Colors.grey[600],
+                  size: 50.0,
+                ),
+              ))
+            : Center(
+                child:
+                    (widget.searchMode) ? searchButtomWidget() : recipeGrid(),
+              ),
+      ])))),
+      resizeToAvoidBottomInset: false,
+    ));
+    // }
   }
 
   Widget searchButtomWidget() {
@@ -209,25 +231,29 @@ class _SearchPage extends State<SearchPage> {
   }
 
   Widget recipeGrid() {
-    return Container(
-      height: 500,
-      child: GridView.count(
-        crossAxisCount: 2,
-        children: List.generate(widget.recipes.length, (index) {
-          if (!widget.searchMode) {
-            return Container(
-                height: 500,
-                width: 500,
-                child: Card(
-                  shape: RoundedRectangleBorder(side: BorderSide.none),
-                  // child: RecipeHeadLineSearch(
-                  //     widget.recipes[index], true),
-                  child: _buildOneItem(index),
-                ));
-          }
-        }),
-      ),
-    );
+    return RefreshIndicator(
+        color: Colors.blue,
+        onRefresh: refresh,
+        child: Container(
+          height: 600,
+          child: GridView.count(
+            physics: AlwaysScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            children: List.generate(widget.recipes.length, (index) {
+              if (!widget.searchMode) {
+                return Container(
+                    height: 500,
+                    width: 500,
+                    child: Card(
+                      shape: RoundedRectangleBorder(side: BorderSide.none),
+                      // child: RecipeHeadLineSearch(
+                      //     widget.recipes[index], true),
+                      child: _buildOneItem(index),
+                    ));
+              }
+            }),
+          ),
+        ));
   }
 
   Widget searchUsersWidget() {
@@ -300,32 +326,51 @@ class _SearchPage extends State<SearchPage> {
         // ignore: missing_return
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done)
-            return ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blueGrey[50],
-                // padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                textStyle: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              ),
-              child: snapshot.data,
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => WatchRecipe(
-                            widget.recipes[index], true, snapshot.data, "")));
-              },
-            );
-
+            return InkWell(
+                customBorder: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                // borderRadius: BorderRadius.circular(5),
+                highlightColor: Colors.blueGrey,
+                child: Container(
+                    width: 190,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      // borderRadius: BorderRadius.circular(10),
+                      color: Colors.blueGrey[50],
+                      image: DecorationImage(
+                          image: snapshot.data == null
+                              ? ExactAssetImage(noImagePath)
+                              // : Image.network(snapshot.data.url),
+                              : snapshot.data,
+                          fit: BoxFit.cover),
+                    ),
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WatchRecipe(
+                                    widget.recipes[index],
+                                    true,
+                                    snapshot.data,
+                                    "")));
+                      },
+                    )));
           if (snapshot.connectionState == ConnectionState.waiting)
             return Container(
-                height: MediaQuery.of(context).size.height / 10,
-                width: MediaQuery.of(context).size.width / 10,
-                child: CircularProgressIndicator());
+                child: Center(
+              child: SpinKitCircle(
+                color: Colors.grey[600],
+                size: 50.0,
+              ),
+            ));
         });
   }
 
 //algo funcs
   Future<void> myFriends(String uid) async {
+    widget.listusers = [];
     int i = 0;
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
@@ -432,6 +477,7 @@ class _SearchPage extends State<SearchPage> {
   }
 
   Future<void> tagsRecipe(String uid) async {
+    widget.listTags = [];
     DocumentSnapshot snap =
         await Firestore.instance.collection("users").document(uid).get();
     Map<dynamic, dynamic> tagsCount = snap.data['tags'];
@@ -483,14 +529,15 @@ class _SearchPage extends State<SearchPage> {
   }
 
   getUserAmount() async {
+    widget.amountUsersOfRecipe = {};
     QuerySnapshot snap =
         await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) {
-      String recipeId = element.documentID.toString();
-      List users = element.data['saveUser'] ?? [];
+    for (int i = 0; i < snap.documents.length; i++) {
+      String recipeId = snap.documents[i].documentID.toString();
+      List users = snap.documents[i].data['saveUser'] ?? [];
       int amount = users.length;
       widget.amountUsersOfRecipe[recipeId] = amount;
-    });
+    }
     widget.amountUsersOfRecipe = SplayTreeMap.from(
         widget.amountUsersOfRecipe,
         (key1, key2) => widget.amountUsersOfRecipe[key1]
@@ -498,6 +545,7 @@ class _SearchPage extends State<SearchPage> {
   }
 
   getGroupsAmount() async {
+    widget.amountGroupsOfRecipe = {};
     QuerySnapshot snap =
         await Firestore.instance.collection('publish recipe').getDocuments();
     snap.documents.forEach((element) {
@@ -513,6 +561,7 @@ class _SearchPage extends State<SearchPage> {
   }
 
   getLikesAmount() async {
+    widget.amountLikesOfRecipe = {};
     QuerySnapshot snap =
         await Firestore.instance.collection('publish recipe').getDocuments();
     // get amount of likes of all the publish recipes
@@ -532,7 +581,7 @@ class _SearchPage extends State<SearchPage> {
 
   Widget searchWidget() {
     return Container(
-      width: 250,
+      width: 300,
       height: 60,
       child: TextFormField(
         decoration: InputDecoration(
@@ -544,11 +593,11 @@ class _SearchPage extends State<SearchPage> {
           fillColor: Colors.white,
           border: InputBorder.none,
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+            borderSide: BorderSide(color: Colors.grey),
             borderRadius: BorderRadius.circular(25.7),
           ),
           enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+            borderSide: BorderSide(color: Colors.grey),
             borderRadius: BorderRadius.circular(25.7),
           ),
         ),

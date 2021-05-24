@@ -83,6 +83,9 @@ class _EditRecipeState extends State<EditRecipe> {
   }
 
   void sortStages() {
+    for (int i = 0; i < widget.stages.length; i++) {
+      print(widget.stages[i].i);
+    }
     widget.stages.sort((a, b) => a.i.compareTo(b.i));
     // List<Stages> stageCopy = [];
     // stageCopy.addAll(widget.stages);
@@ -161,7 +164,7 @@ class _EditRecipeState extends State<EditRecipe> {
           'SAVE',
           style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
         ),
-        onPressed: saveThisRecipe);
+        onPressed: save);
   }
 
   setTimeText() {
@@ -201,7 +204,28 @@ class _EditRecipeState extends State<EditRecipe> {
         onPressed: () => Navigator.pop(context, null));
   }
 
-  void saveThisRecipe() async {
+  void save() async {
+    BuildContext dialogContext;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        dialogContext = context;
+        return WillPopScope(
+            onWillPop: () async => false,
+            child: AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                backgroundColor: Colors.black87,
+                content: loadingIndicator()));
+      },
+    );
+    await saveThisRecipe();
+    Navigator.pop(dialogContext);
+    Navigator.pop(context, widget.current);
+  }
+
+  Future<void> saveThisRecipe() async {
     final db = Firestore.instance;
     await db
         .collection('users')
@@ -267,7 +291,6 @@ class _EditRecipeState extends State<EditRecipe> {
     }
     widget.current.ingredients = widget.ingredients;
     widget.current.stages = widget.stages;
-    Navigator.pop(context, widget.current);
   }
 
   Widget name() {
@@ -314,16 +337,18 @@ class _EditRecipeState extends State<EditRecipe> {
             MaterialPageRoute(
                 builder: (context) => UploadingImageToFirebaseStorage()))
         .then((value) async {
-      setState(() {
-        widget.imagePath = value;
-        widget.current.imagePath = value;
-      });
+      if (value != "") {
+        setState(() {
+          widget.imagePath = value;
+          widget.current.imagePath = value;
+        });
 
-      String downloadUrl = await FireStorageService.loadFromStorage(
-          context, "uploads/" + widget.imagePath);
-      setState(() {
-        widget.recipeImage = NetworkImage(downloadUrl);
-      });
+        String downloadUrl = await FireStorageService.loadFromStorage(
+            context, "uploads/" + widget.imagePath);
+        setState(() {
+          widget.recipeImage = NetworkImage(downloadUrl);
+        });
+      }
     });
   }
 

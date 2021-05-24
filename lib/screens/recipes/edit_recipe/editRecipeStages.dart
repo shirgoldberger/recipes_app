@@ -60,11 +60,13 @@ class _EditRecipeStagesState extends State<EditRecipeStages> {
                                           hintText: widget.stages[i].s,
                                         ),
                                         validator: (val) => val.length < 2
-                                            ? 'Enter a description eith 2 letter at least'
+                                            ? 'Enter a description with 2 letter at least'
                                             : null,
                                         onChanged: (val) {
-                                          setState(
-                                              () => widget.stages[i].s = val);
+                                          setState(() {
+                                            widget.stages[i].s = val;
+                                            widget.stages[i].i = i;
+                                          });
                                         },
                                       ))),
                               deleteButton(i),

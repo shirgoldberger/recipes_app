@@ -73,23 +73,15 @@ class RecipeFromDB {
         }
       }
     }
-
-    // notes
-    var note = recipe.data['notes'];
-    String noteString = note.toString();
-    List<String> nList = [];
-    if (noteString != "[]") {
-      String tag = noteString.substring(1, noteString.length - 1);
-      nList = tag.split(',');
-      for (int i = 0; i < nList.length; i++) {
-        if (nList[i][0] == ' ') {
-          nList[i] = nList[i].substring(1, nList[i].length);
-        }
-      }
+    List nList = recipe.data['notes'];
+    List<String> noteList = [];
+    for (int i = 0; i < nList.length; i++) {
+      String note = nList[i].toString();
+      noteList.add(note);
     }
 
-    Recipe r = Recipe(name, description, l, levelInt, nList, writer, writerUid,
-        timeInt, true, id, publish, imagePath);
+    Recipe r = Recipe(name, description, l, levelInt, noteList, writer,
+        writerUid, timeInt, true, id, publish, imagePath);
     r.setId(id);
     return r;
   }
