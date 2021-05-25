@@ -31,9 +31,17 @@ class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
             title(),
             heightBox(10),
             nameBox(),
+            errorText(),
             updateBox(),
           ]))
         ]));
+  }
+
+  Widget errorText() {
+    return Text(
+      error,
+      style: TextStyle(color: Colors.black),
+    );
   }
 
   Widget nameBox() {
@@ -63,15 +71,35 @@ class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
         child: Text('Update name',
             style: TextStyle(fontSize: 16.0, color: Colors.white)),
         onPressed: () {
-          saveUser(emailTocheck);
+          saveName();
         });
   }
 
   // database function //
-  Future<void> saveUser(String email) async {
+  Future<void> saveName() async {
+    print("999999999");
     final db = Firestore.instance;
-    if (widget.directory.name != null) {
+    if (widget.directory.name != "") {
+      print("55");
       if (widget.done) {
+        print("666");
+        QuerySnapshot snap = await db
+            .collection('users')
+            .document(widget.uid)
+            .collection('Directory')
+            .getDocuments();
+        print(snap.documents.toString());
+        for (int i = 0; i < snap.documents.length; i++) {
+          String name = snap.documents[i].data['name'] ?? '';
+          print("name");
+          if (name == widget.directory.name) {
+            print("2");
+            setState(() {
+              error = "You have directory with this name";
+              return;
+            });
+          }
+        }
         db
             .collection('users')
             .document(widget.uid)

@@ -177,54 +177,57 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     return new Container(
         child: ListView(children: [
       Container(
-          child: new Column(children: [
-        Row(children: [widthBox(20), name(), widthBox(30)]),
-        padding,
-        description(),
-        padding,
-        recipePicture(),
-        padding,
-        if (widget.current.publish != '')
+          child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: new Column(children: [
+          Row(children: [widthBox(20), name(), widthBox(30)]),
+          padding,
+          description(),
+          padding,
+          recipePicture(),
+          padding,
+          if (widget.current.publish != '')
+            Row(
+              children: [
+                showLikesButton(),
+                likeIcon(),
+              ],
+            ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              showLikesButton(),
-              likeIcon(),
+              if (widget.levelString != '') level(),
+              SizedBox(
+                height: 20.0,
+                width: 20,
+              ),
+              time(),
             ],
           ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (widget.levelString != '') level(),
-            SizedBox(
-              height: 20.0,
-              width: 20,
-            ),
-            time(),
-          ],
-        ),
-        Divider(
-          height: 40,
-          thickness: 8,
-        ),
-        padding,
-        Row(children: [
-          picture(),
+          Divider(
+            height: 40,
+            thickness: 8,
+          ),
           padding,
-          writer(),
+          Row(children: [
+            picture(),
+            padding,
+            writer(),
+          ]),
+          padding,
+          ingredients(),
+          padding,
+          stages(),
+          padding,
+          notes(),
+          padding,
+          new Text(
+            makeTags(),
+            style: TextStyle(
+                color: Colors.black, fontFamily: 'Raleway', fontSize: 20),
+          ),
         ]),
-        padding,
-        ingredients(),
-        padding,
-        stages(),
-        padding,
-        notes(),
-        padding,
-        new Text(
-          makeTags(),
-          style: TextStyle(
-              color: Colors.black, fontFamily: 'Raleway', fontSize: 20),
-        ),
-      ]))
+      ))
     ]));
   }
 
@@ -242,7 +245,9 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   String makeTags() {
     String tag = '';
     for (int i = 0; i < widget.current.tags.length; i++) {
-      tag += "#" + widget.current.tags[i] + " ,";
+      if (i != widget.current.tags.length - 1) {
+        tag += "#" + widget.current.tags[i] + " ,";
+      }
     }
     return tag;
   }
@@ -354,7 +359,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   Widget ingredients() {
     return Center(
       child: Container(
-        width: 450,
+        width: 400,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
@@ -427,6 +432,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
           ),
           new Padding(padding: EdgeInsets.only(top: 10.0)),
           ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
               itemCount: widget.stages.length,
@@ -470,6 +476,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
           ),
           new Padding(padding: EdgeInsets.only(top: 10.0)),
           ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
               itemCount: widget.current.notes.length,

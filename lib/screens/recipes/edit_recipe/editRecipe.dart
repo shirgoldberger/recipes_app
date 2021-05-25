@@ -606,6 +606,7 @@ class _EditRecipeState extends State<EditRecipe> {
           ),
           new Padding(padding: EdgeInsets.only(top: 10.0)),
           ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
               itemCount: widget.stages.length,
@@ -650,6 +651,7 @@ class _EditRecipeState extends State<EditRecipe> {
           ),
           new Padding(padding: EdgeInsets.only(top: 10.0)),
           ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
               itemCount: widget.current.notes.length,

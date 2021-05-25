@@ -56,9 +56,9 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
                 backgroundColor: Colors.blueGrey[50],
                 appBar: AppBar(
                   title: Text(
-                    'My Book',
+                    'My Cook Book',
                     style: TextStyle(
-                        fontFamily: 'Raleway', color: Colors.grey[700]),
+                        fontFamily: logoFont, color: Colors.grey[700]),
                   ),
                   backgroundColor: Colors.blueGrey[50],
                   actions: [addDirectory()],
@@ -77,11 +77,26 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
                       ],
                     ),
                     heightBox(10),
+                    titleDirectory(),
+                    heightBox(10),
                     DirectoriesList(widget.directorys, widget.user)
                   ],
                 )));
       }
     }
+  }
+
+  Widget titleDirectory() {
+    return Text(
+        // add the name of the user
+        "Your Directories:",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w900,
+            //fontStyle: FontStyle.italic,
+            fontFamily: 'Raleway',
+            fontSize: 25));
   }
 
   Widget categoryButtomFavorite(String image, String name) {

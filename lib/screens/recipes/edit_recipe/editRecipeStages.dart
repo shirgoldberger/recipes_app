@@ -86,6 +86,7 @@ class _EditRecipeStagesState extends State<EditRecipeStages> {
           ])),
         ],
       ),
+      resizeToAvoidBottomInset: false,
     );
   }
 

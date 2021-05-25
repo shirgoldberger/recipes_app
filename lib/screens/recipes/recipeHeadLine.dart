@@ -127,8 +127,9 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
     }
     String downloadUrl = await FireStorageService.loadFromStorage(
         context, "uploads/" + widget.imagePath);
+    NetworkImage m = NetworkImage(downloadUrl);
     setState(() {
-      widget.image = NetworkImage(downloadUrl);
+      widget.image = m;
     });
   }
 

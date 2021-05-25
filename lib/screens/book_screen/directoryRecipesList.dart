@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/screens/book_screen/changeDirectoryName.dart';
 import 'package:recipes_app/screens/groups/changeNameGroup.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
 import 'package:recipes_app/services/groupFromDB.dart';
@@ -228,8 +229,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
                     topRight: const Radius.circular(25.0),
                   ),
                 ),
-                child: ChangeNameGroup(
-                    widget.userId, widget.directory.id, widget.directory.name)))
+                child: ChangeDirectoryName(widget.directory, widget.uid)))
         .then((value) => updateName(value));
   }
 

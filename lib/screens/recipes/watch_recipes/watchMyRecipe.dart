@@ -264,6 +264,44 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
     }
   }
 
+  Future<void> _showAlertDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'You\'re sure you want to delete your recipe permanently ?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('yes- delete'),
+              onPressed: () async {
+                delete();
+                int count = 0;
+                Navigator.popUntil(context, (route) {
+                  return count++ == 4;
+                });
+              },
+            ),
+            TextButton(
+              child: Text('no- go back'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget deleteIcon() {
     // ignore: deprecated_member_use
     return FlatButton.icon(
@@ -274,11 +312,7 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
         label: Text('Delete',
             style: TextStyle(fontFamily: 'Raleway', color: Colors.black)),
         onPressed: () {
-          delete();
-          int count = 0;
-          Navigator.popUntil(context, (route) {
-            return count++ == 3;
-          });
+          _showAlertDialog();
         });
   }
 }

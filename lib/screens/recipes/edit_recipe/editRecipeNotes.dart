@@ -19,59 +19,63 @@ class _EditRecipeNotesState extends State<EditRecipeNotes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ListView(children: [
-      box, box,
-      title(), box, box,
-      //notes
-      widget.notes.length <= 0
-          ? Text(
-              'There is no notes in this recipe yet',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
-            )
-          : Container(
-              height: min(50 * widget.notes.length.toDouble(), 300),
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  addAutomaticKeepAlives: true,
-                  itemCount: widget.notes.length,
-                  itemBuilder: (_, i) => Row(children: <Widget>[
-                        SizedBox(
-                          width: 20,
-                        ),
-                        noteIndex(i),
-                        Expanded(
-                            child: SizedBox(
-                                height: 37.0,
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                      hintText: widget.notes[i]),
-                                  validator: (val) => val.length < 2
-                                      ? 'Enter a description eith 2 letter at least'
-                                      : null,
-                                  onChanged: (val) {
-                                    setState(() => widget.notes[i] = val);
-                                  },
-                                ))),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        deleteButton(i)
-                      ]))),
+      body: ListView(children: [
+        box, box,
+        title(), box, box,
+        //notes
+        widget.notes.length <= 0
+            ? Text(
+                'There is no notes in this recipe yet',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              )
+            : Container(
+                height: min(50 * widget.notes.length.toDouble(), 300),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    addAutomaticKeepAlives: true,
+                    itemCount: widget.notes.length,
+                    itemBuilder: (_, i) => Row(children: <Widget>[
+                          SizedBox(
+                            width: 20,
+                          ),
+                          noteIndex(i),
+                          Expanded(
+                              child: SizedBox(
+                                  height: 37.0,
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                        hintText: widget.notes[i]),
+                                    validator: (val) => val.length < 2
+                                        ? 'Enter a description eith 2 letter at least'
+                                        : null,
+                                    onChanged: (val) {
+                                      setState(() => widget.notes[i] = val);
+                                    },
+                                  ))),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          deleteButton(i)
+                        ]))),
 
-      box,
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          addButton(),
-          SizedBox(width: 60),
-          saveButton(),
-          SizedBox(width: 60),
-          cancelButton()
-        ],
-      )
-    ]));
+        box,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            addButton(),
+            SizedBox(width: 60),
+            saveButton(),
+            SizedBox(width: 60),
+            cancelButton()
+          ],
+        )
+      ]),
+      resizeToAvoidBottomInset: false,
+    );
   }
 
   Widget cancelButton() {

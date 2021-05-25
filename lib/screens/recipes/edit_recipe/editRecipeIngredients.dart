@@ -24,32 +24,35 @@ class _EditRecipeIngredientsState extends State<EditRecipeIngredients> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ListView(children: [
-      heightBox(40),
-      title(),
-      heightBox(40),
-      Container(
-          child: Column(
-        children: [
-          Text(error,
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-          widget.ingredients.length <= 0
-              ? noIngredientsText()
-              : ingredientsContainer(),
-          box,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              addButton(),
-              SizedBox(width: 60),
-              saveButton(),
-              SizedBox(width: 60),
-              cancelButton()
-            ],
-          )
-        ],
-      ))
-    ]));
+      body: ListView(children: [
+        heightBox(40),
+        title(),
+        heightBox(40),
+        Container(
+            child: Column(
+          children: [
+            Text(error,
+                style:
+                    TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            widget.ingredients.length <= 0
+                ? noIngredientsText()
+                : ingredientsContainer(),
+            box,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                addButton(),
+                SizedBox(width: 60),
+                saveButton(),
+                SizedBox(width: 60),
+                cancelButton()
+              ],
+            )
+          ],
+        ))
+      ]),
+      resizeToAvoidBottomInset: false,
+    );
   }
 
   Widget noIngredientsText() {

@@ -23,71 +23,74 @@ class _EditRecipeTagsState extends State<EditRecipeTags> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: ListView(children: [
-      box,
-      box,
-      title(),
-      box,
-      box,
-      // tags
-      widget.tags.length <= 0
-          ? Text(
-              'There is no tags in this recipe yet',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
-            )
-          : Container(
-              height: min(50 * widget.tags.length.toDouble(), 300),
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  addAutomaticKeepAlives: true,
-                  itemCount: widget.tags.length,
-                  itemBuilder: (_, i) => Row(children: <Widget>[
-                        SizedBox(
-                          width: 40,
-                        ),
-                        Expanded(
-                            child: SizedBox(
-                          height: 37.0,
-                          child: DropdownButton(
-                            hint: Text("choose this recipe tag"),
-                            dropdownColor: Colors.grey,
-                            icon: Icon(Icons.arrow_drop_down),
-                            iconSize: 36,
-                            isExpanded: true,
-                            value: widget.tags[i],
-                            onChanged: (newValue) {
-                              setState(() {
-                                widget.tags[i] = newValue;
-                              });
-                            },
-                            items: tagList.map((valueItem) {
-                              return DropdownMenuItem(
-                                value: valueItem,
-                                child: Text(valueItem),
-                              );
-                            }).toList(),
-                          ),
-                        )),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        deleteButton(i)
-                      ])),
-            ),
+          box,
+          box,
+          title(),
+          box,
+          box,
+          // tags
+          widget.tags.length <= 0
+              ? Text(
+                  'There is no tags in this recipe yet',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+                )
+              : Container(
+                  height: min(50 * widget.tags.length.toDouble(), 300),
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      addAutomaticKeepAlives: true,
+                      itemCount: widget.tags.length,
+                      itemBuilder: (_, i) => Row(children: <Widget>[
+                            SizedBox(
+                              width: 40,
+                            ),
+                            Expanded(
+                                child: SizedBox(
+                              height: 37.0,
+                              child: DropdownButton(
+                                hint: Text("choose this recipe tag"),
+                                dropdownColor: Colors.grey,
+                                icon: Icon(Icons.arrow_drop_down),
+                                iconSize: 36,
+                                isExpanded: true,
+                                value: widget.tags[i],
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    widget.tags[i] = newValue;
+                                  });
+                                },
+                                items: tagList.map((valueItem) {
+                                  return DropdownMenuItem(
+                                    value: valueItem,
+                                    child: Text(valueItem),
+                                  );
+                                }).toList(),
+                              ),
+                            )),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            deleteButton(i)
+                          ])),
+                ),
 
-      box,
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          addButton(),
-          SizedBox(width: 60),
-          saveButton(),
-          SizedBox(width: 60),
-          cancelButton()
-        ],
-      )
-    ]));
+          box,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              addButton(),
+              SizedBox(width: 60),
+              saveButton(),
+              SizedBox(width: 60),
+              cancelButton()
+            ],
+          )
+        ]),
+        resizeToAvoidBottomInset: false);
   }
 
   void addTags() {
