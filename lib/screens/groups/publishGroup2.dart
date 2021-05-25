@@ -209,24 +209,7 @@ class _PublishGroup2State extends State<PublishGroup2> {
             ),
             onPressed: () async {
               if (widget.recipe.publish == '') {
-                BuildContext dialogContext;
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (BuildContext context) {
-                    dialogContext = context;
-                    return WillPopScope(
-                        onWillPop: () async => false,
-                        child: AlertDialog(
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8.0))),
-                            backgroundColor: Colors.black87,
-                            content: loadingIndicator()));
-                  },
-                );
                 await publishRecipe();
-                Navigator.pop(dialogContext);
                 setState(() {
                   widget.iconPublish = Icons.public_off;
                   widget.stringPublish = "Un publish the recipe to everyone";
@@ -299,10 +282,36 @@ class _PublishGroup2State extends State<PublishGroup2> {
         .collection('recipes')
         .document(widget.recipeId)
         .updateData(widget.recipe.toJson());
+    var tags =
+        await db.collection('tags').document('xt0XXXOLgprfkO3QiANs').get();
+
+    for (int i = 0; i < widget.recipe.tags.length; i++) {
+      List tag = tags.data[widget.recipe.tags[i]];
+      List copyTag = [];
+      copyTag.addAll(tag);
+      copyTag.add(idPublish);
+      db
+          .collection('tags')
+          .document('xt0XXXOLgprfkO3QiANs')
+          .updateData({widget.recipe.tags[i]: copyTag});
+    }
   }
 
-  Future<void> unPublishRecipe() {
+  Future<void> unPublishRecipe() async {
     final db = Firestore.instance;
+    var tags =
+        await db.collection('tags').document('xt0XXXOLgprfkO3QiANs').get();
+    for (int i = 0; i < widget.recipe.tags.length; i++) {
+      List tag = tags.data[widget.recipe.tags[i]];
+      List copyTag = [];
+      copyTag.addAll(tag);
+      copyTag.remove(widget.recipe.publish);
+      db
+          .collection('tags')
+          .document('xt0XXXOLgprfkO3QiANs')
+          .updateData({widget.recipe.tags[i]: copyTag});
+    }
+
     db.collection('publish recipe').document(widget.recipe.publish).delete();
     widget.recipe.publishThisRecipe('');
 

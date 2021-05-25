@@ -5,6 +5,7 @@ import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
+import 'package:recipes_app/screens/book_screen/saveInDirectory.dart';
 import 'package:recipes_app/screens/groups/saveGroup.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'watchRecipeBody.dart';
@@ -364,7 +365,7 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
           color: Colors.red,
         ),
         label: Text(
-          widget.isSaveRecipe ? 'Unsave' : 'Save',
+          widget.isSaveRecipe ? 'Unsave' : 'Save to directory',
           style: TextStyle(fontFamily: 'Raleway', color: Colors.black),
         ),
         onPressed: () {
@@ -396,8 +397,7 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
                 topRight: const Radius.circular(25.0),
               ),
             ),
-            child: SaveGroup(
-                widget.uid, widget.currentRecipe.id, widget.currentRecipe)));
+            child: SaveInDirectory(widget.uid, widget.currentRecipe)));
   }
 
   Widget addNoteIcon() {

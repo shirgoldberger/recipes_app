@@ -68,6 +68,19 @@ class GroupFromDB {
 
     // delete group if no user there
     if (usersList.length == 0) {
+      QuerySnapshot recipeInGroup = await Firestore.instance
+          .collection('Group')
+          .document(groupId)
+          .collection('recipes')
+          .getDocuments();
+      for (int i = 0; i < recipeInGroup.documents.length; i++) {
+        db
+            .collection('Group')
+            .document(groupId)
+            .collection('recipes')
+            .document(recipeInGroup.documents[i].documentID)
+            .delete();
+      }
       db.collection('Group').document(groupId).delete();
     }
 

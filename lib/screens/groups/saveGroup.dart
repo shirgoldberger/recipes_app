@@ -10,15 +10,15 @@ import 'package:recipes_app/shared_screen/loading.dart';
 class SaveGroup extends StatefulWidget {
   String uid;
   String recipeId;
-  List<String> groupName = [];
-  List<String> groupName2 = [];
-  List<String> groupId = [];
+  // List<String> groupName = [];
+  // List<String> groupName2 = [];
+  // List<String> groupId = [];
   List<bool> isCheck = [];
   List<String> publish = [];
   bool doneLoad = false;
   bool check = false;
   List<Color> colors = [];
-  Map<String, bool> map = {};
+  Map<Pair, bool> map = {};
   Recipe recipe;
   Color saveColor = Colors.blueGrey[600];
   IconData iconSave = Icons.favorite_border;
@@ -34,6 +34,13 @@ class SaveGroup extends StatefulWidget {
   _SaveGroupState createState() => _SaveGroupState();
 }
 
+class Pair<T1, T2> {
+  final String groupId;
+  final String groupName;
+
+  Pair(this.groupId, this.groupName);
+}
+
 class _SaveGroupState extends State<SaveGroup> {
   Future<void> getGroups() async {
     QuerySnapshot snap = await Firestore.instance
@@ -41,36 +48,39 @@ class _SaveGroupState extends State<SaveGroup> {
         .document(widget.uid)
         .collection('groups')
         .getDocuments();
-    snap.documents.forEach((element) async {
-      setState(() {
-        widget.groupId.add(element.data['groupId']);
-        widget.groupName.add(element.data['groupName']);
-        widget.map.addAll({element.data['groupName']: false});
-        widget.isCheck.add(false);
-        widget.colors.add(Colors.blueGrey[400]);
-      });
+    for (int i = 0; i < snap.documents.length; i++) {
+      // widget.groupId.add(snap.documents[i].data['groupId']);
+      // widget.groupName.add(snap.documents[i].data['groupName']);
+      Pair p = Pair(snap.documents[i].data['groupId'],
+          snap.documents[i].data['groupName']);
+      widget.map.addAll({p: false});
+      widget.isCheck.add(false);
+      widget.colors.add(Colors.blueGrey[400]);
 
       QuerySnapshot snap2 = await Firestore.instance
           .collection('Group')
-          .document(element.data['groupId'])
+          .document(snap.documents[i].data['groupId'])
           .collection('recipes')
           .getDocuments();
 
       if (snap2.documents.length != 0) {
         snap2.documents.forEach((element2) async {
           if (element2.data['recipeId'] == widget.recipeId) {
-            setState(() {
-              widget.map.update(element.data['groupName'], (value) => true);
-              widget.publish.add(element.data['groupName']);
-            });
+            widget.map.update(p, (value) => true);
+            widget.publish.add(snap.documents[i].data['groupName']);
           }
         });
       }
-    });
+    }
 
     setState(() {
       widget.doneLoad = true;
     });
+    print("------------------------------");
+
+    print("------------------------------");
+
+    print(widget.map);
   }
 
   @override
@@ -114,8 +124,9 @@ class _SaveGroupState extends State<SaveGroup> {
                         label: Text(
                             widget.map.values.elementAt(index)
                                 ? "Un save in " +
-                                    widget.map.keys.elementAt(index)
-                                : "Save in " + widget.map.keys.elementAt(index),
+                                    widget.map.keys.elementAt(index).groupName
+                                : "Save in " +
+                                    widget.map.keys.elementAt(index).groupName,
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'DescriptionFont')),
@@ -167,10 +178,11 @@ class _SaveGroupState extends State<SaveGroup> {
   }
 
   void publishInGroup(int index) async {
+    print("999");
     final db = Firestore.instance;
     QuerySnapshot recipes = await db
         .collection('Group')
-        .document(widget.groupId[index])
+        .document(widget.map.keys.elementAt(index).groupId)
         .collection('recipes')
         .getDocuments();
     for (int i = 0; i < recipes.documents.length; i++) {
@@ -179,9 +191,13 @@ class _SaveGroupState extends State<SaveGroup> {
         return;
       }
     }
+    print("8888");
+
+    print("3");
+    print(widget.map.values.elementAt(index));
     await db
         .collection('Group')
-        .document(widget.groupId[index])
+        .document(widget.map.keys.elementAt(index).groupId)
         .collection('recipes')
         .add({'userId': widget.recipe.writerUid, 'recipeId': widget.recipeId});
     String id;
@@ -195,7 +211,7 @@ class _SaveGroupState extends State<SaveGroup> {
         List publishGroup = [];
         List loadList = currentRecipe2.data['saveInGroup'] ?? [];
         publishGroup.addAll(loadList);
-        publishGroup.add(widget.groupId[index]);
+        publishGroup.add(widget.map.keys.elementAt(index).groupId);
         db
             .collection('publish recipe')
             .document(id)
@@ -209,14 +225,14 @@ class _SaveGroupState extends State<SaveGroup> {
 
     QuerySnapshot snap = await Firestore.instance
         .collection('Group')
-        .document(widget.groupId[index])
+        .document(widget.map.keys.elementAt(index).groupId)
         .collection('recipes')
         .getDocuments();
     snap.documents.forEach((element) async {
       if (element.data['recipeId'] == widget.recipeId) {
         db
             .collection('Group')
-            .document(widget.groupId[index])
+            .document(widget.map.keys.elementAt(index).groupId)
             .collection('recipes')
             .document(element.documentID)
             .delete();
@@ -233,7 +249,7 @@ class _SaveGroupState extends State<SaveGroup> {
         List publishGroup = [];
         List loadList = currentRecipe2.data['saveInGroup'] ?? [];
         publishGroup.addAll(loadList);
-        publishGroup.remove(widget.groupId[index]);
+        publishGroup.remove(widget.map.keys.elementAt(index).groupId);
         db
             .collection('publish recipe')
             .document(id)

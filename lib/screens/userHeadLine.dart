@@ -69,7 +69,7 @@ class _UserHeadLineState extends State<UserHeadLine> {
                         bottomRight: Radius.circular(8.0),
                       ),
                       child: Image(
-                        height: 80,
+                        height: 60,
                         image: (widget.image == null)
                             ? ExactAssetImage(noImagePath)
                             : (widget.image),

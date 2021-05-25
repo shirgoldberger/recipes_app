@@ -44,6 +44,15 @@ class RecipeFromDB {
           .collection('stages')
           .add(recipe.stages[i].toJson(i));
     }
+    // var tags =
+    //     await db.collection('tags').document('xt0XXXOLgprfkO3QiANs').get();
+
+    // for (int i = 0; i < recipe.tags.length; i++) {
+    //   List tag = tags.data[recipe.tags[i]];
+    //   List copyTag = [];
+    //   copyTag.addAll(tag);
+    //   copyTag.
+    // }
   }
 
   static Recipe convertSnapshotToRecipe(DocumentSnapshot recipe) {
