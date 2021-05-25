@@ -36,7 +36,13 @@ class SearchPage extends StatefulWidget {
   bool recipePress = false;
   bool searchMode = false;
   Color recipePresColor = Colors.white;
-  Color userPressColor = Colors.grey[350];
+  Color userPressColor = mainButtonColor;
+  double widthUser = 140;
+  double highUser = 70;
+  double widthRecipe = 120;
+  double heifhRecipe = 50;
+  double sizeUser = 14;
+  double sizeRecipe = 12;
   @override
   _SearchPage createState() => _SearchPage();
 }
@@ -117,6 +123,10 @@ class _SearchPage extends State<SearchPage> {
         home: Scaffold(
       backgroundColor: Colors.blueGrey[50],
       appBar: AppBar(
+        title: Text(
+          'Search',
+          style: TextStyle(fontFamily: logoFont, color: Colors.white),
+        ),
         backgroundColor: Colors.blueGrey[700],
         elevation: 0.0,
         actions: <Widget>[],
@@ -160,29 +170,41 @@ class _SearchPage extends State<SearchPage> {
                       topRight: Radius.circular(30.0),
                       bottomLeft: Radius.circular(30.0),
                       bottomRight: Radius.circular(30.0)),
-                  child: FlatButton(
-                    onPressed: () => {
-                      setState(() {
-                        widget.userPress = false;
-                        widget.recipePress = true;
-                        widget.recipePresColor = Colors.grey[350];
-                        widget.userPressColor = Colors.white;
-                      })
-                    },
-                    color: widget.recipePresColor,
-                    padding: EdgeInsets.all(10.0),
-                    child: Row(
-                      // Replace with a Row for horizontal icon + text
-                      children: <Widget>[
-                        Icon(Icons.auto_stories),
-                        Text(
-                          "  Recipes  ",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'Raleway',
-                              fontSize: 12),
-                        )
-                      ],
+                  child: SizedBox(
+                    height: 50,
+                    width: 120,
+                    child: FlatButton(
+                      onPressed: () => {
+                        setState(() {
+                          widget.userPress = false;
+                          widget.recipePress = true;
+                          widget.recipePresColor = mainButtonColor;
+                          widget.userPressColor = Colors.white;
+                          widget.highUser = 50;
+                          widget.widthUser = 120;
+                          widget.heifhRecipe = 70;
+                          widget.widthRecipe = 140;
+                          widget.sizeRecipe = 14;
+                          widget.sizeUser = 12;
+                        })
+                      },
+                      color: widget.recipePresColor,
+                      padding: EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .center, //Center Row contents horizontally,
+                        // Replace with a Row for horizontal icon + text
+                        children: <Widget>[
+                          Icon(Icons.auto_stories),
+                          Text(
+                            "  Recipes  ",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'Raleway',
+                                fontSize: 12),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -195,29 +217,40 @@ class _SearchPage extends State<SearchPage> {
                       topRight: Radius.circular(30.0),
                       bottomLeft: Radius.circular(30.0),
                       bottomRight: Radius.circular(30.0)),
-                  child: FlatButton(
-                    onPressed: () => {
-                      setState(() {
-                        widget.userPress = true;
-                        widget.recipePress = false;
-                        widget.recipePresColor = Colors.white;
-                        widget.userPressColor = Colors.grey[350];
-                      })
-                    },
-                    color: widget.userPressColor,
-                    padding: EdgeInsets.all(10.0),
-                    child: Row(
-                      // Replace with a Row for horizontal icon + text
-                      children: <Widget>[
-                        Icon(Icons.person),
-                        Text(
-                          "  users  ",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'Raleway',
-                              fontSize: 12),
-                        )
-                      ],
+                  child: SizedBox(
+                    width: 120,
+                    height: 50,
+                    child: FlatButton(
+                      onPressed: () => {
+                        setState(() {
+                          widget.userPress = true;
+                          widget.recipePress = false;
+                          widget.recipePresColor = Colors.white;
+                          widget.userPressColor = mainButtonColor;
+                          widget.highUser = 70;
+                          widget.widthUser = 140;
+                          widget.heifhRecipe = 50;
+                          widget.widthRecipe = 120;
+                          widget.sizeRecipe = 12;
+                          widget.sizeUser = 14;
+                        })
+                      },
+                      color: widget.userPressColor,
+                      padding: EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        // Replace with a Row for horizontal icon + text
+                        children: <Widget>[
+                          Icon(Icons.person),
+                          Text(
+                            "  users  ",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'Raleway',
+                                fontSize: 12),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -581,7 +614,7 @@ class _SearchPage extends State<SearchPage> {
 
   Widget searchWidget() {
     return Container(
-      width: 300,
+      width: 350,
       height: 60,
       child: TextFormField(
         decoration: InputDecoration(

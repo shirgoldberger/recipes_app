@@ -5,29 +5,32 @@ import 'package:recipes_app/config.dart';
 class Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[350],
-      child: Center(
-          child: SingleChildScrollView(
-        child: new Column(
-          children: <Widget>[
-            SpinKitThreeBounce(
-              color: Colors.grey[600],
-              size: 50.0,
-            ),
-            heightBox(20),
-            Text(
-              'Loading...',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontFamily: logoFont,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800]),
-            )
-          ],
-        ),
-      )),
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        color: Colors.grey[350],
+        child: Center(
+            child: SingleChildScrollView(
+          child: new Column(
+            children: <Widget>[
+              SpinKitThreeBounce(
+                color: Colors.grey[600],
+                size: 50.0,
+              ),
+              heightBox(20),
+              Text(
+                'Loading...',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontFamily: logoFont,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[800]),
+              )
+            ],
+          ),
+        )),
+      ),
     );
   }
 }

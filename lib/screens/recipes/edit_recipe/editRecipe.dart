@@ -83,9 +83,6 @@ class _EditRecipeState extends State<EditRecipe> {
   }
 
   void sortStages() {
-    for (int i = 0; i < widget.stages.length; i++) {
-      print(widget.stages[i].i);
-    }
     widget.stages.sort((a, b) => a.i.compareTo(b.i));
     // List<Stages> stageCopy = [];
     // stageCopy.addAll(widget.stages);
@@ -222,7 +219,8 @@ class _EditRecipeState extends State<EditRecipe> {
     );
     await saveThisRecipe();
     Navigator.pop(dialogContext);
-    Navigator.pop(context, widget.current);
+    Navigator.pop(
+        context, {"recipe": widget.current, "image": widget.recipeImage});
   }
 
   Future<void> saveThisRecipe() async {

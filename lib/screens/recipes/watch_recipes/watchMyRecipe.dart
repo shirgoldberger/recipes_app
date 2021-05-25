@@ -256,9 +256,10 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
   void updateRecipe(var r) {
     if (r != null) {
       setState(() {
-        widget.currentRecipe = r;
-        widget.ingredients = r.ingredients;
-        widget.stages = r.stages;
+        widget.currentRecipe = r["recipe"];
+        widget.ingredients = r["recipe"].ingredients;
+        widget.stages = r["recipe"].stages;
+        widget.image = r["image"];
       });
     }
   }
