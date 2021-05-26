@@ -250,10 +250,11 @@ class _HomeLogInState extends State<HomeLogIn> {
             TextButton(
               child: Text('yes- delete'),
               onPressed: () async {
-                await _auth.deleteAccount();
-                await UserFromDB.deleteUser(widget.uid);
-                await RecipeFromDB.deletePublushRecipesOfUser(widget.uid);
                 await GroupFromDB.deleteUserFromAllGroups(widget.uid);
+                await RecipeFromDB.deletePublushRecipesOfUser(widget.uid);
+                await UserFromDB.deleteUser(widget.uid);
+                await _auth.deleteAccount();
+
                 Phoenix.rebirth(context);
               },
             ),

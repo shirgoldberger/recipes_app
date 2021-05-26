@@ -8,8 +8,11 @@ class ChangeDirectoryName extends StatefulWidget {
   Directory directory;
   String uid;
   bool done = false;
+  String error = '';
+  String originalName = "";
   ChangeDirectoryName(Directory _directory, String _uid) {
     this.directory = _directory;
+    this.originalName = directory.name;
     this.uid = _uid;
   }
 
@@ -18,7 +21,7 @@ class ChangeDirectoryName extends StatefulWidget {
 }
 
 class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
-  String error = '';
+  // String error = '';
   String emailTocheck = '';
   @override
   Widget build(BuildContext context) {
@@ -39,7 +42,7 @@ class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
 
   Widget errorText() {
     return Text(
-      error,
+      widget.error,
       style: TextStyle(color: Colors.black),
     );
   }
@@ -77,12 +80,18 @@ class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
 
   // database function //
   Future<void> saveName() async {
-    print("999999999");
+    bool found = false;
+    if (widget.directory.name == widget.originalName) {
+      found = true;
+      setState(() {
+        widget.error = "this is the same name";
+      });
+      return;
+    }
+
     final db = Firestore.instance;
     if (widget.directory.name != "") {
-      print("55");
       if (widget.done) {
-        print("666");
         QuerySnapshot snap = await db
             .collection('users')
             .document(widget.uid)
@@ -91,23 +100,26 @@ class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
         print(snap.documents.toString());
         for (int i = 0; i < snap.documents.length; i++) {
           String name = snap.documents[i].data['name'] ?? '';
-          print("name");
+
           if (name == widget.directory.name) {
-            print("2");
+            found = true;
             setState(() {
-              error = "You have directory with this name";
+              widget.error = "You have directory with this name";
               return;
             });
           }
         }
-        db
-            .collection('users')
-            .document(widget.uid)
-            .collection('Directory')
-            .document(widget.directory.id)
-            .updateData({'name': widget.directory.name});
+        if (!found) {
+          db
+              .collection('users')
+              .document(widget.uid)
+              .collection('Directory')
+              .document(widget.directory.id)
+              .updateData({'name': widget.directory.name});
+
+          Navigator.pop(context, widget.directory);
+        }
       }
-      Navigator.pop(context, widget.directory);
     }
   }
 }

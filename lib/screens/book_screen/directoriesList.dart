@@ -112,6 +112,13 @@ class _DirectoriesListState extends State<DirectoriesList> {
                 widget.directories.removeWhere((element) => element.id == d.id);
               });
             }
+            if (value != null) {
+              setState(() {
+                widget.directories
+                    .firstWhere((element) => element.id == d.id)
+                    .name = value;
+              });
+            }
           });
         },
         padding: EdgeInsets.all(15.0),

@@ -70,7 +70,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
         color: appBarTextColor,
-        onPressed: () => Navigator.pop(context, false),
+        onPressed: () => Navigator.pop(context, widget.directory.name),
       ),
     );
   }

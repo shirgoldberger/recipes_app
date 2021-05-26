@@ -73,7 +73,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
       elevation: 0.0,
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
-        onPressed: () => Navigator.pop(context, false),
+        onPressed: () => Navigator.pop(context, widget.groupName),
       ),
     );
   }

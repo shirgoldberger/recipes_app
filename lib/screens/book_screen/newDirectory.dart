@@ -8,6 +8,7 @@ class NewDirectory extends StatefulWidget {
   String uid;
   List<Directory> directories;
   String error2 = "";
+  String errorDirectoryName = '';
 
   NewDirectory(String _uid, List<Directory> _directories) {
     this.uid = _uid;
@@ -23,7 +24,7 @@ class _NewDirectoryState extends State<NewDirectory> {
   List<String> userFullNames = [];
   String directoryName = "";
   String error = '';
-  String errorDirectoryName = '';
+  //String errorDirectoryName = '';
   bool findUser = false;
   String emailTocheck;
   final _formKey = GlobalKey<FormState>();
@@ -99,13 +100,16 @@ class _NewDirectoryState extends State<NewDirectory> {
       },
       onChanged: (val) {
         setState(() => directoryName = val);
+        setState(() {
+          widget.errorDirectoryName = "";
+        });
       },
     );
   }
 
   Widget errorText() {
     return Text(
-      errorDirectoryName,
+      widget.errorDirectoryName,
       style: TextStyle(color: errorColor),
     );
   }
@@ -113,7 +117,7 @@ class _NewDirectoryState extends State<NewDirectory> {
   Widget saveDirectoryWidget() {
     if (directoryName.length > 20) {
       setState(() {
-        errorDirectoryName = 'Group name is limited to 20 characters';
+        widget.errorDirectoryName = 'Group name is limited to 20 characters';
       });
       return FlatButton.icon(
           icon: Icon(
@@ -123,9 +127,9 @@ class _NewDirectoryState extends State<NewDirectory> {
           label: Text('SAVE', style: TextStyle(color: Colors.white)),
           onPressed: null);
     } else {
-      setState(() {
-        errorDirectoryName = '';
-      });
+      // setState(() {
+      //   widget.errorDirectoryName = '';
+      // });
       return FlatButton.icon(
           icon: Icon(
             Icons.save,
@@ -135,13 +139,17 @@ class _NewDirectoryState extends State<NewDirectory> {
           onPressed: () async {
             if ((directoryName == null) || (directoryName == "")) {
               setState(() {
-                errorDirectoryName = "Fill directory name!";
+                widget.errorDirectoryName = "Fill directory name!";
               });
             } else if (checkDirectoryName(directoryName)) {
               setState(() {
-                errorDirectoryName = 'You have directory with this name';
+                //  print("error");
+                widget.errorDirectoryName = 'You have directory with this name';
               });
             } else {
+              setState(() {
+                widget.errorDirectoryName = "";
+              });
               List<String> a = [];
               print(widget.uid);
               await Firestore.instance

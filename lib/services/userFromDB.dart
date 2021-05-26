@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:universal_html/html.dart';
 
 class UserFromDB {
@@ -98,6 +99,46 @@ class UserFromDB {
             .document(element.documentID)
             .delete();
       });
+    }
+    //delete directory:
+    QuerySnapshot d = await db
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .getDocuments();
+    for (int i = 0; i < d.documents.length; i++) {
+      await db
+          .collection('users')
+          .document(uid)
+          .collection('Directory')
+          .document(d.documents[i].documentID)
+          .delete();
+    }
+    //delete groups:
+    QuerySnapshot g = await db
+        .collection('users')
+        .document(uid)
+        .collection('groups')
+        .getDocuments();
+    for (int i = 0; i < g.documents.length; i++) {
+      await db
+          .collection('users')
+          .document(uid)
+          .collection('groups')
+          .document(g.documents[i].documentID)
+          .delete();
+    }
+    //delete recipes:
+    QuerySnapshot r = await db
+        .collection('users')
+        .document(uid)
+        .collection('recipes')
+        .getDocuments();
+    for (int i = 0; i < g.documents.length; i++) {
+      String publish = r.documents[i].data['publishID'] ?? "";
+      String recipeID = r.documents[i].data['recipeID'] ?? "";
+
+      RecipeFromDB.deleteRecipe(publish, recipeID, uid);
     }
     await db.collection('users').document(uid).delete();
   }

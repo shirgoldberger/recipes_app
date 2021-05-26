@@ -85,7 +85,14 @@ class _GroupListState extends State<GroupList> {
                         builder: (context) => GroupRecipeList(
                             widget.groupId[index],
                             widget.groupName[index],
-                            widget.uid)));
+                            widget.uid))).then((value) => {
+                      if (value != null)
+                        {
+                          setState(() {
+                            widget.groupName[index] = value;
+                          })
+                        }
+                    });
               }),
         ),
         Column(
