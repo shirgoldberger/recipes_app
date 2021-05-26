@@ -22,7 +22,6 @@ class DataBaseService {
   Future updateUserData(String firstName, String lastName, String phone,
       int age, String email, String imagePath) async {
     Map<String, int> tags = {
-      'choose recipe tag': 0,
       'fish': 0,
       'meat': 0,
       'dairy': 0,
