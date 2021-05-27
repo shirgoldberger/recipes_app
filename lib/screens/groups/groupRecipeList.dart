@@ -80,7 +80,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
 
   Widget noRecipesText() {
     return Text(
-      "thers is no recipes in this group - lets add some recipes...",
+      "there is no recipes in this group - lets add some recipes...",
       style: TextStyle(
           fontFamily: 'Raleway', fontSize: 30, color: Colors.blueGrey[800]),
       textAlign: TextAlign.center,

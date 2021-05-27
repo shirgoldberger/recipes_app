@@ -41,6 +41,7 @@ class _ChangeNameGroupState extends State<ChangeNameGroup> {
 
   Widget nameBox() {
     return TextFormField(
+      initialValue: widget.groupName,
       decoration: InputDecoration(
         hintText: widget.groupName,
       ),

@@ -136,7 +136,8 @@ class _GroupListState extends State<GroupList> {
   }
 
   Widget emptyMessage() {
-    return Text("you dont have any group// kets create new one!",
+    return Text("you dont have groups, lets create a new one!",
+        textAlign: TextAlign.center,
         style: TextStyle(fontSize: 25, fontFamily: 'Raleway'));
   }
 

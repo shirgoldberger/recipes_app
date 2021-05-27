@@ -38,6 +38,8 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
   getGroups() async {
     setState(() {
       widget.directorys = [];
+      widget.isCheck = [];
+      widget.colors = [];
     });
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
@@ -339,6 +341,7 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
   }
 
   Future<void> saveInDirectory(int index) async {
+    bool found = false;
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(widget.uid)
@@ -357,11 +360,44 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
             .collection('Directory')
             .document(element.documentID)
             .updateData({'Recipes': copyRecipes});
+        found = true;
       }
     });
+    if (!found) {
+      getGroups();
+      _showAlertDialogError('Something worng. this directory maybe deleted');
+    }
+  }
+
+  Future<void> _showAlertDialogError(String error) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(error),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> unSaveInDirectory(int index) async {
+    bool found = false;
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(widget.uid)
@@ -370,6 +406,7 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
     snap.documents.forEach((element) async {
       String name = element.data['name'];
       if (name == widget.directorys[index].name) {
+        found = true;
         Map<dynamic, dynamic> recipes = element.data['Recipes'] ?? {};
         Map<String, String> copyRecipes = new Map<String, String>.from(recipes);
         copyRecipes.remove(widget.recipe.id);
@@ -382,5 +419,9 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
             .updateData({'Recipes': copyRecipes});
       }
     });
+    if (!found) {
+      getGroups();
+      _showAlertDialogError('Something worng. this directory maybe deleted');
+    }
   }
 }

@@ -20,7 +20,6 @@ class AddParticipent extends StatefulWidget {
 }
 
 class _AddParticipentState extends State<AddParticipent> {
-  List usersID = [];
   String error = '';
   bool findUser = false;
   String emailTocheck = '';
@@ -88,21 +87,21 @@ class _AddParticipentState extends State<AddParticipent> {
       mailCheck = element.data['Email'] ?? '';
 
       if (mailCheck == email) {
-        if (!usersID.contains(element.documentID)) {
+        if (!widget.userId.contains(element.documentID)) {
           findUser = true;
 
-          usersID.add(element.documentID);
+          widget.userId.add(element.documentID);
 
           await db
               .collection('Group')
               .document(widget.groupId)
-              .updateData({'users': usersID});
+              .updateData({'users': widget.userId});
           await db
               .collection('users')
               .document(element.documentID)
               .collection('groups')
               .add({'groupName': widget.groupName, 'groupId': widget.groupId});
-          Navigator.pop(context, {'a': usersID, 'b': widget.groupName});
+          Navigator.pop(context, {'a': widget.userId, 'b': widget.groupName});
         } else {
           setState(() {
             error = "this user alrady exicst";
@@ -117,7 +116,7 @@ class _AddParticipentState extends State<AddParticipent> {
       });
     }
     if (email == '') {
-      Navigator.pop(context, {'a': usersID, 'b': widget.groupName});
+      Navigator.pop(context, {'a': widget.userId, 'b': widget.groupName});
     }
     findUser = false;
   }

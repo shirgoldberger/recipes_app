@@ -48,8 +48,6 @@ class WatchRecipeBody extends StatefulWidget {
     this.levelString = _levelString;
     this.uid = _uid;
     this.recipeImage = _image;
-    print(this.ing);
-    print(this.stages);
   }
 
   @override
@@ -100,7 +98,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
 
   void getUserImage() async {
     if (!widget.isGettingImage) {
-      if (widget.userImage != null || widget.imagePath == "") {
+      if (widget.userImage != null) {
         return;
       }
       DocumentSnapshot writer = await Firestore.instance
@@ -252,7 +250,8 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
               onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => UserRecipeList(widget.uid)))),
+                      builder: (context) =>
+                          UserRecipeList(widget.current.writerUid)))),
           backgroundColor: backgroundColor,
           radius: 40,
           backgroundImage: ExactAssetImage(noImagePath));
@@ -263,7 +262,8 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => UserRecipeList(widget.uid)))),
+                        builder: (context) =>
+                            UserRecipeList(widget.current.writerUid)))),
             backgroundColor: backgroundColor,
             radius: 30,
             backgroundImage: widget.userImage);
@@ -351,7 +351,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   Widget ingredients() {
     return Center(
       child: Container(
-        width: 400,
+        width: 450,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),

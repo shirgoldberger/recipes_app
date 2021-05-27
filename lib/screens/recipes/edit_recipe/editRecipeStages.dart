@@ -56,6 +56,7 @@ class _EditRecipeStagesState extends State<EditRecipeStages> {
                                   child: SizedBox(
                                       height: 37.0,
                                       child: TextFormField(
+                                        initialValue: widget.stages[i].s,
                                         decoration: InputDecoration(
                                           hintText: widget.stages[i].s,
                                         ),

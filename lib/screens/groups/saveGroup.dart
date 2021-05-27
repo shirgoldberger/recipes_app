@@ -10,9 +10,6 @@ import 'package:recipes_app/shared_screen/loading.dart';
 class SaveGroup extends StatefulWidget {
   String uid;
   String recipeId;
-  // List<String> groupName = [];
-  // List<String> groupName2 = [];
-  // List<String> groupId = [];
   List<bool> isCheck = [];
   List<String> publish = [];
   bool doneLoad = false;
@@ -50,8 +47,6 @@ class _SaveGroupState extends State<SaveGroup> {
         .collection('groups')
         .getDocuments();
     for (int i = 0; i < snap.documents.length; i++) {
-      // widget.groupId.add(snap.documents[i].data['groupId']);
-      // widget.groupName.add(snap.documents[i].data['groupName']);
       Pair p = Pair(snap.documents[i].data['groupId'],
           snap.documents[i].data['groupName']);
       widget.map.addAll({p: false});
@@ -77,11 +72,6 @@ class _SaveGroupState extends State<SaveGroup> {
     setState(() {
       widget.doneLoad = true;
     });
-    print("------------------------------");
-
-    print("------------------------------");
-
-    print(widget.map);
   }
 
   @override

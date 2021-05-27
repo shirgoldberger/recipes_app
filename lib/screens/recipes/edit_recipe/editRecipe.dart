@@ -86,18 +86,10 @@ class _EditRecipeState extends State<EditRecipe> {
 
   void sortStages() {
     widget.stages.sort((a, b) => a.i.compareTo(b.i));
-    // List<Stages> stageCopy = [];
-    // stageCopy.addAll(widget.stages);
-    // for (int i = 0; i < stageCopy.length; i++) {
-    //   setState(() {
-    //     widget.stages[stageCopy[i].i] = stageCopy[i];
-    //   });
-    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    // getImage(context);
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -683,7 +675,11 @@ class _EditRecipeState extends State<EditRecipe> {
   String makeTags() {
     String tag = '';
     for (int i = 0; i < widget.current.tags.length; i++) {
-      tag += "#" + widget.current.tags[i] + " ,";
+      if (i != widget.current.tags.length - 1) {
+        tag += "#" + widget.current.tags[i] + " ,";
+      } else {
+        tag += "#" + widget.current.tags[i];
+      }
     }
     return tag;
   }

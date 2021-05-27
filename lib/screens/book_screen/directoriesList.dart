@@ -114,9 +114,12 @@ class _DirectoriesListState extends State<DirectoriesList> {
             }
             if (value != null) {
               setState(() {
-                widget.directories
-                    .firstWhere((element) => element.id == d.id)
-                    .name = value;
+                Directory directory = widget.directories.firstWhere(
+                    (element) => element.id == d.id,
+                    orElse: () => null);
+                if (directory != null) {
+                  directory.name = value;
+                }
               });
             }
           });

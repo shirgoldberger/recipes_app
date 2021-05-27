@@ -26,10 +26,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: _title,
-      home: MyStatefulWidget(),
-    );
+    try {
+      return MaterialApp(
+        title: _title,
+        home: MyStatefulWidget(),
+      );
+    } catch (e) {
+      print("we have a problem !");
+    }
   }
 }
 
