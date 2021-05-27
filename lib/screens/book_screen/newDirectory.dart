@@ -63,9 +63,11 @@ class _NewDirectoryState extends State<NewDirectory> {
     return AppBar(
         title: Text(
           'New Directory',
-          style: TextStyle(fontFamily: logoFont),
+          style: TextStyle(
+            fontFamily: logoFont,
+          ),
         ),
-        backgroundColor: appBarBackgroundColor,
+        backgroundColor: Colors.grey[700],
         actions: <Widget>[
           // ignore: deprecated_member_use
           saveDirectoryWidget()
@@ -76,7 +78,7 @@ class _NewDirectoryState extends State<NewDirectory> {
     return Text(
       'let\'s create a new directory!',
       style: TextStyle(
-          fontFamily: 'Raleway', fontSize: 25, color: Colors.blueGrey[800]),
+          fontFamily: 'Raleway', fontSize: 20, color: Colors.blueGrey[800]),
       textAlign: TextAlign.center,
     );
   }
@@ -143,7 +145,6 @@ class _NewDirectoryState extends State<NewDirectory> {
               });
             } else if (checkDirectoryName(directoryName)) {
               setState(() {
-                //  print("error");
                 widget.errorDirectoryName = 'You have directory with this name';
               });
             } else {

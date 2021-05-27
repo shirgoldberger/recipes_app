@@ -129,9 +129,11 @@ class _DirectoriesListState extends State<DirectoriesList> {
   }
 
   void getDirectoryRecipes(Directory d) async {
-    List<Recipe> recipes = await RecipeFromDB.getDirectoryRecipesList(
-        widget.uid,
-        widget.directories.firstWhere((element) => element.id == d.id).id);
+    String id =
+        widget.directories.firstWhere((element) => element.id == d.id).id ??
+            null;
+    List<Recipe> recipes =
+        await RecipeFromDB.getDirectoryRecipesList(widget.uid, id);
     widget.directories
         .firstWhere((element) => element.id == d.id)
         .initRecipes(recipes);

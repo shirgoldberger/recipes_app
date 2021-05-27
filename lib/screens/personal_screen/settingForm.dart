@@ -76,7 +76,7 @@ class _SettingFormState extends State<SettingForm> {
                   resizeToAvoidBottomInset: false,
                 ));
           } else {
-            Loading();
+            return Loading();
           }
         });
   }
@@ -196,7 +196,8 @@ class _SettingFormState extends State<SettingForm> {
               changeNameInRecipes(userData);
             }
 
-            Navigator.pop(context, widget.imagePath);
+            Navigator.pop(
+                context, {"path": widget.imagePath, "image": widget.m});
           }
         });
   }

@@ -30,6 +30,7 @@ class WatchRecipeBody extends StatefulWidget {
   String timeText = '';
   int likeAmount;
   bool isGettingImage = false;
+  bool init = false;
 
   WatchRecipeBody(
       Recipe _current,
@@ -95,17 +96,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     }
   }
 
-  // void getImage(BuildContext context) async {
-  //   if (widget.userImage != null || widget.imagePath == "") {
-  //     return;
-  //   }
-  //   String downloadUrl = await FireStorageService.loadFromStorage(
-  //       context, "uploads/" + widget.imagePath);
-  //   setState(() {
-  //     widget.userImage = NetworkImage(downloadUrl);
-  //   });
-  // }
-
   void getUserImage() async {
     if (!widget.isGettingImage) {
       if (widget.userImage != null || widget.imagePath == "") {
@@ -118,21 +108,29 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
       widget.imagePath = writer.data['imagePath'];
       String downloadUrl = await FireStorageService.loadFromStorage(
           context, "uploads/" + widget.imagePath);
-      setState(() {
-        widget.userImage = NetworkImage(downloadUrl);
-        widget.isGettingImage = true;
-      });
+      if (downloadUrl != null) {
+        setState(() {
+          widget.userImage = NetworkImage(downloadUrl);
+          widget.isGettingImage = true;
+        });
+      }
     }
   }
 
   initLikeIcon() async {
+    if (widget.init) {
+      return;
+    }
     var publishRecipe = await Firestore.instance
         .collection('publish recipe')
         .document(widget.current.publish)
         .get();
     List users = publishRecipe.data['likes'] ?? [];
     if (users.contains(widget.uid)) {
-      widget.isLikeRecipe = true;
+      setState(() {
+        widget.isLikeRecipe = true;
+        widget.init = true;
+      });
     }
   }
 
@@ -157,6 +155,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     getUserImage();
     if (widget.current.publish != '') {
       getLikesList();
+      initLikeIcon();
     }
     return new Container(
         child: ListView(children: [

@@ -11,7 +11,7 @@ String uploadImagePath = 'lib/images/upload_image.png';
 
 // colors
 Color backgroundColor = Colors.blueGrey[50];
-Color appBarBackgroundColor = Colors.blueGrey[100];
+Color appBarBackgroundColor = Colors.blueGrey[900];
 Color titleColor = Colors.blueGrey[800];
 Color borderColor = Colors.blueGrey;
 Color mainButtonColor = Colors.blueGrey[500];

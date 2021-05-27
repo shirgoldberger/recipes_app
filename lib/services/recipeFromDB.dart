@@ -454,6 +454,9 @@ class RecipeFromDB {
 
   static Future<List<Recipe>> getDirectoryRecipesList(
       String uid, String directoryId) async {
+    if (directoryId == null) {
+      return [];
+    }
     List<Recipe> directoryRecipes = [];
     DocumentSnapshot directory = await Firestore.instance
         .collection('users')

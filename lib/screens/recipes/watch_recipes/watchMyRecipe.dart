@@ -56,8 +56,6 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
   @override
   void initState() {
     super.initState();
-    print("watch my recipe");
-    // makeList();
   }
 
   @override

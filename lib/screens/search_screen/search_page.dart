@@ -11,8 +11,14 @@ import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
 import 'package:recipes_app/screens/userHeadLine.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
-import 'searchAlgorithm.dart';
 import '../recipes/watch_recipes/watchRecipe.dart';
+
+class Pair<T1, T2> {
+  final String user;
+  final String recipe;
+
+  Pair(this.user, this.recipe);
+}
 
 // ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
@@ -55,22 +61,6 @@ class _SearchPage extends State<SearchPage> {
     super.initState();
     getuser();
   }
-
-  // void a() async {
-  //   setState(() {
-  //     widget.doneLoadCounter = 0;
-  //   });
-  //   if (widget.getUser) {
-  //     await myFriends(widget.uid);
-  //     tagsRecipe(widget.uid);
-  //     getPopularRecipes();
-  //   } else {
-  //     getPopularRecipes();
-  //     setState(() {
-  //       widget.doneLoadCounter = 2;
-  //     });
-  //   }
-  // }
 
   void getuser() async {
     setState(() {
@@ -127,9 +117,6 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    // if (widget.doneLoadCounter != 3) {
-    //   return Loading();
-    // } else {
     return MaterialApp(
         home: Scaffold(
       backgroundColor: Colors.blueGrey[50],
@@ -149,18 +136,24 @@ class _SearchPage extends State<SearchPage> {
         box,
         searchWidget(),
         box,
-        widget.doneLoadCounter != 3
-            ? Container(
-                child: Center(
-                child: SpinKitCircle(
-                  color: Colors.grey[600],
-                  size: 50.0,
-                ),
-              ))
-            : Center(
-                child:
-                    (widget.searchMode) ? searchButtomWidget() : recipeGrid(),
-              ),
+        Center(
+          child: (widget.searchMode)
+              ? searchButtomWidget()
+              : (widget.doneLoadCounter != 3
+                  ? Column(
+                      children: [
+                        Container(
+                            child: Center(
+                          child: SpinKitCircle(
+                            color: Colors.grey[600],
+                            size: 50.0,
+                          ),
+                        )),
+                        Text('Search recipes for you...')
+                      ],
+                    )
+                  : recipeGrid()),
+        ),
       ])))),
       resizeToAvoidBottomInset: false,
     ));
@@ -279,7 +272,7 @@ class _SearchPage extends State<SearchPage> {
         color: Colors.blue,
         onRefresh: refresh,
         child: Container(
-          height: 600,
+          height: 2000,
           child: GridView.count(
             physics: AlwaysScrollableScrollPhysics(),
             crossAxisCount: 3,
@@ -290,8 +283,6 @@ class _SearchPage extends State<SearchPage> {
                     width: 500,
                     child: Card(
                       shape: RoundedRectangleBorder(side: BorderSide.none),
-                      // child: RecipeHeadLineSearch(
-                      //     widget.recipes[index], true),
                       child: _buildOneItem(index),
                     ));
               }
@@ -457,10 +448,6 @@ class _SearchPage extends State<SearchPage> {
               .getDocuments();
 
           for (int i = 0; i < snap3.documents.length; i++) {
-            // if (i > 4) {
-            //   break;
-            // }
-
             String uid2 = snap3.documents[i].data['userID'];
             String recipeId2 = snap3.documents[i].data['recipeID'];
 

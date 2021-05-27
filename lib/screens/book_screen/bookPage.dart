@@ -13,14 +13,11 @@ import 'newDirectory.dart';
 
 // ignore: must_be_immutable
 class RecipesBookPage extends StatefulWidget {
-  static String tag = 'book-page';
   bool done = false;
   List<Recipe> savedRecipe = [];
   List<Recipe> myRecipe = [];
   List<Directory> directorys = [];
   int doneLoadSavedRecipe = 0;
-  static const TextStyle optionStyle = TextStyle(
-      fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueGrey);
   String user;
   RecipesBookPage(String _user) {
     user = _user;
@@ -94,7 +91,6 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
         style: TextStyle(
             color: Colors.grey[600],
             fontWeight: FontWeight.w900,
-            //fontStyle: FontStyle.italic,
             fontFamily: 'Raleway',
             fontSize: 25));
   }
@@ -184,8 +180,6 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
             );
             await loadCreatesdRecipe();
             Navigator.pop(dialogContext);
-
-            print("push");
             Navigator.push(
                 context,
                 MaterialPageRoute(

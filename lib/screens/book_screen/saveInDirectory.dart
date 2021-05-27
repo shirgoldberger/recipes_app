@@ -21,7 +21,6 @@ class SaveInDirectory extends StatefulWidget {
   Recipe recipe;
   Color saveColor = Colors.blueGrey[600];
   IconData iconSave = Icons.favorite_border;
-  // String saveString = 'save for yourself';
   List<Directory> directorys = [];
   bool isMyRecipe;
 
@@ -82,7 +81,6 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
       if ((recipe == widget.recipe.id) && (user == widget.recipe.writerUid)) {
         setState(() {
           widget.iconSave = Icons.favorite;
-          // widget.saveString = "un save for yourself";
           widget.saveColor = Colors.grey[300];
         });
       }
@@ -99,7 +97,6 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
       }
       return Loading();
     } else {
-      //print(widget.isCheck);
       return Column(children: <Widget>[
         Padding(padding: EdgeInsets.only(top: 20.0)),
         Text(
@@ -123,36 +120,6 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
           ),
         ),
         heightBox(20),
-        // ClipRRect(
-        //     borderRadius: BorderRadius.only(
-        //         topLeft: Radius.circular(30.0),
-        //         topRight: Radius.circular(30.0),
-        //         bottomLeft: Radius.circular(30.0),
-        //         bottomRight: Radius.circular(30.0)),
-        //     // ignore: deprecated_member_use
-        //     child: FlatButton.icon(
-        //         color: widget.saveColor,
-        //         icon: Icon(widget.iconSave, color: Colors.white),
-        //         label: Text(widget.saveString,
-        //             style: TextStyle(color: Colors.white)),
-        //         onPressed: () {
-        //           if (widget.saveString == 'save for yourself') {
-        //             setState(() {
-        //               widget.iconSave = Icons.favorite;
-        //               widget.saveString = "un save for yourself";
-        //               widget.saveColor = Colors.grey[300];
-        //               saveRecipe();
-        //             });
-        //           } else {
-        //             setState(() {
-        //               unSaveRecipe();
-
-        //               widget.iconSave = Icons.favorite_border;
-        //               widget.saveString = "save for yourself";
-        //               widget.saveColor = Colors.blueGrey[600];
-        //             });
-        //           }
-        //         })),
         Expanded(
             child: ListView.builder(
                 itemCount: widget.directorys.length,
@@ -178,7 +145,6 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
                                   color: Colors.white,
                                   fontFamily: 'DescriptionFont')),
                           onPressed: () {
-                            // saveInDirectory(index);
                             if (widget.isCheck[index]) {
                               unSaveInDirectory(index);
                               setState(() {

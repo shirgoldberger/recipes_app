@@ -37,7 +37,7 @@ class WatchRecipe extends StatefulWidget {
   String levelString = '';
   Color timeColor;
   String timeString = '';
-  var uid;
+  String uid;
 
   @override
   _WatchRecipeState createState() => _WatchRecipeState();
@@ -48,11 +48,12 @@ class _WatchRecipeState extends State<WatchRecipe> {
   @override
   void initState() {
     super.initState();
-    getuser();
-    makeList();
   }
 
   void getuser() async {
+    if (widget.uid != null) {
+      return;
+    }
     final FirebaseAuth auth = FirebaseAuth.instance;
     final FirebaseUser user = await auth.currentUser();
     if (user != null) {
@@ -62,27 +63,29 @@ class _WatchRecipeState extends State<WatchRecipe> {
     }
   }
 
+  changeState() async {
+    await getuser();
+    makeList();
+    setLevels();
+  }
+
   @override
   Widget build(BuildContext context) {
-    setLevels();
+    changeState();
     if (!widget.done) {
       return Loading();
     } else {
-      print(widget.directory);
       if (widget.home) {
         // 3
-        print("WatchPublishRecipe");
         return WatchPublishRecipe(widget.uid, widget.current, widget.levelColor,
             widget.levelString, widget.ing, widget.stages, widget.image);
       } else {
         if (widget.uid == widget.current.writerUid) {
           // 1
-          print("WatchMyRecipe");
           return WatchMyRecipe(widget.uid, widget.current, widget.levelColor,
               widget.levelString, widget.ing, widget.stages, widget.image);
         } else {
           // 2
-          print("WatchSaveRecipe");
           if (widget.directory == "favorite") {
             return WatchFavoriteRecipe(
                 widget.uid,

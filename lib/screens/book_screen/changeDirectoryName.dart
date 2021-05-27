@@ -21,8 +21,6 @@ class ChangeDirectoryName extends StatefulWidget {
 }
 
 class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
-  // String error = '';
-  String emailTocheck = '';
   @override
   Widget build(BuildContext context) {
     return Container(

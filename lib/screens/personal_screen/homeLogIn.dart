@@ -53,10 +53,12 @@ class _HomeLogInState extends State<HomeLogIn> {
     }
     String downloadUrl = await FireStorageService.loadFromStorage(
         context, "uploads/" + imagePath);
-    setState(() {
-      imagePath = downloadUrl.toString();
-      image = NetworkImage(imagePath);
-    });
+    if (downloadUrl != null) {
+      setState(() {
+        imagePath = downloadUrl.toString();
+        image = NetworkImage(imagePath);
+      });
+    }
   }
 
   @override
@@ -204,7 +206,7 @@ class _HomeLogInState extends State<HomeLogIn> {
 
   Widget profilePicture() {
     // there is no image yet
-    if (imagePath == "") {
+    if (image == null) {
       return CircleAvatar(
           backgroundColor: backgroundColor,
           radius: 40,
@@ -243,7 +245,8 @@ class _HomeLogInState extends State<HomeLogIn> {
                   MaterialPageRoute(
                       builder: (context) => SettingForm(widget.uid, image)))
               .then((value) => setState(() {
-                    imagePath = value;
+                    imagePath = value["path"];
+                    image = value["image"];
                   }));
         });
   }

@@ -46,8 +46,6 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
     snap.documents.forEach((element) async {
       String name = element.data['name'] ?? '';
       List recipes = element.data['Recipes'] ?? [];
-      print(name);
-      print(recipes);
       Directory d = Directory(name: name, recipes: recipes);
       setState(() {
         widget.directorys.add(d);
@@ -96,7 +94,6 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
 
       return Loading();
     } else {
-      //print(widget.isCheck);
       return Column(children: <Widget>[
         new Padding(padding: EdgeInsets.only(top: 20.0)),
         new Text(
@@ -336,7 +333,6 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
   }
 
   Future<void> saveInDirectory(int index) async {
-    print("1");
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(widget.uid)
@@ -345,12 +341,10 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
     snap.documents.forEach((element) async {
       String name = element.data['name'];
       if (name == widget.directorys[index].name) {
-        print("2");
         List recipes = element.data['Recipes'] ?? [];
         List copyRecipes = [];
         copyRecipes.addAll(recipes);
         copyRecipes.add(widget.recipe.publish);
-        print(copyRecipes);
         Future<void> snap = Firestore.instance
             .collection('users')
             .document(widget.uid)

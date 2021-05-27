@@ -63,7 +63,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
     return AppBar(
       title: Text(
         widget.directory.name,
-        style: TextStyle(fontFamily: 'Raleway', color: appBarTextColor),
+        style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
       ),
       backgroundColor: appBarBackgroundColor,
       elevation: 0.0,
