@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:recipes_app/config.dart';
+import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
@@ -54,7 +54,7 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
       setState(() {
         widget.directorys.add(d);
       });
-      if (recipes.keys.contains(widget.recipe.writerUid)) {
+      if (recipes.keys.contains(widget.recipe.id)) {
         setState(() {
           widget.isCheck.add(true);
           widget.colors.add(Colors.grey[400]);
@@ -160,95 +160,10 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
                                 widget.colors[index] = Colors.grey[400];
                               });
                             }
-                            //   if (widget.map.values.elementAt(index)) {
-                            //     setState(() {
-                            //       widget.isCheck[index] = false;
-                            //       widget.colors[index] = Colors.blueGrey[400];
-                            //       widget.map.update(
-                            //           widget.map.keys.elementAt(index),
-                            //           (value) => false);
-                            //     });
-                            //     unPublishGroup(index);
-                            //   } else {
-                            //     publishInGroup(index);
-                            //     setState(() {
-                            //       widget.isCheck[index] = true;
-                            //       widget.colors[index] = Colors.grey;
-                            //       widget.map.update(
-                            //           widget.map.keys.elementAt(index),
-                            //           (value) => true);
-                            //     });
-                            //   }
-                            // },
                           }));
                 }))
       ]);
     }
-  }
-
-  void publishInGroup(int index) async {
-    final db = Firestore.instance;
-    await db
-        .collection('Group')
-        .document(widget.groupId[index])
-        .collection('recipes')
-        .add({'userId': widget.recipe.writerUid, 'recipeId': widget.recipeId});
-    String id;
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.recipe.id) {
-        id = element.documentID;
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        List publishGroup = [];
-        List loadList = currentRecipe2.data['saveInGroup'] ?? [];
-        publishGroup.addAll(loadList);
-        publishGroup.add(widget.groupId[index]);
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'saveInGroup': publishGroup});
-      }
-    });
-  }
-
-  Future<void> unPublishGroup(int index) async {
-    final db = Firestore.instance;
-
-    QuerySnapshot snap = await Firestore.instance
-        .collection('Group')
-        .document(widget.groupId[index])
-        .collection('recipes')
-        .getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.recipeId) {
-        db
-            .collection('Group')
-            .document(widget.groupId[index])
-            .collection('recipes')
-            .document(element.documentID)
-            .delete();
-      }
-    });
-    String id;
-    QuerySnapshot snap2 =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap2.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.recipe.id) {
-        id = element.documentID;
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        List publishGroup = [];
-        List loadList = currentRecipe2.data['saveInGroup'] ?? [];
-        publishGroup.addAll(loadList);
-        publishGroup.remove(widget.groupId[index]);
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'saveInGroup': publishGroup});
-      }
-    });
   }
 
   void saveRecipe() async {
@@ -298,46 +213,6 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
         }
       });
     }
-  }
-
-  Future<void> unSaveRecipe() async {
-    final db = Firestore.instance;
-    QuerySnapshot allDocuments = await db
-        .collection('users')
-        .document(widget.uid)
-        .collection('saved recipe')
-        .getDocuments();
-    String delete;
-    allDocuments.documents.forEach((doc) {
-      if (doc.data['recipeID'] == widget.recipe.id) {
-        delete = doc.documentID.toString();
-      }
-      db
-          .collection('users')
-          .document(widget.uid)
-          .collection('saved recipe')
-          .document(delete)
-          .delete();
-    });
-
-    String id;
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.recipe.id) {
-        id = element.documentID;
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        List publishGroup = [];
-        List loadList = currentRecipe2.data['saveUser'] ?? [];
-        publishGroup.addAll(loadList);
-        publishGroup.remove(widget.uid);
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'saveUser': publishGroup});
-      }
-    });
   }
 
   Future<void> saveInDirectory(int index) async {

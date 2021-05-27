@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/directory.dart';
-import '../../config.dart';
+import 'package:recipes_app/services/userFromDB.dart';
+import '../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class ChangeDirectoryName extends StatefulWidget {
@@ -76,7 +77,6 @@ class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
         });
   }
 
-  // database function //
   Future<void> saveName() async {
     bool found = false;
     if (widget.directory.name == widget.originalName) {
@@ -86,19 +86,12 @@ class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
       });
       return;
     }
-
-    final db = Firestore.instance;
     if (widget.directory.name != "") {
       if (widget.done) {
-        QuerySnapshot snap = await db
-            .collection('users')
-            .document(widget.uid)
-            .collection('Directory')
-            .getDocuments();
-        print(snap.documents.toString());
-        for (int i = 0; i < snap.documents.length; i++) {
-          String name = snap.documents[i].data['name'] ?? '';
-
+        QuerySnapshot directories =
+            await UserFromDB.getUserDirectories(widget.uid);
+        for (int i = 0; i < directories.documents.length; i++) {
+          String name = directories.documents[i].data['name'] ?? '';
           if (name == widget.directory.name) {
             found = true;
             setState(() {
@@ -108,13 +101,8 @@ class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
           }
         }
         if (!found) {
-          db
-              .collection('users')
-              .document(widget.uid)
-              .collection('Directory')
-              .document(widget.directory.id)
-              .updateData({'name': widget.directory.name});
-
+          UserFromDB.changeDirectoryName(
+              widget.uid, widget.directory.id, widget.directory.name);
           Navigator.pop(context, widget.directory);
         }
       }

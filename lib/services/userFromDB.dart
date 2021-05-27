@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
-import 'package:universal_html/html.dart';
 
 class UserFromDB {
   static final db = Firestore.instance;
@@ -142,5 +142,71 @@ class UserFromDB {
       RecipeFromDB.deleteRecipe(publish, recipeID, uid, tags, writerId);
     }
     await db.collection('users').document(uid).delete();
+  }
+
+  static Future getUserDirectories(String uid) async {
+    QuerySnapshot directories = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .getDocuments();
+    return directories;
+  }
+
+  static Future getUserSavedRecipes(String uid) async {
+    QuerySnapshot savedRecipes = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('saved recipe')
+        .getDocuments();
+    return savedRecipes;
+  }
+
+  static getUserRecipes(String uid) async {
+    QuerySnapshot recipes = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('recipes')
+        .getDocuments();
+    return recipes;
+  }
+
+  static changeDirectoryName(String uid, String id, String newName) async {
+    await db
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .document(id)
+        .updateData({'name': newName});
+  }
+
+  static deleteDirectory(String uid, String directoryId) async {
+    await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .document(directoryId)
+        .delete();
+  }
+
+  static Future<void> deleteFromDirectory(
+      String uid, Directory d, int index) async {
+    DocumentSnapshot directory = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .document(d.id)
+        .get();
+
+    Map<dynamic, dynamic> recipes = directory.data['Recipes'] ?? {};
+    Map<dynamic, dynamic> copyRecipes = Map<dynamic, dynamic>.from(recipes);
+    copyRecipes.remove(d.recipes[index].id);
+    d.recipes.removeAt(index);
+    await db
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .document(d.id)
+        .updateData({'Recipes': copyRecipes});
   }
 }

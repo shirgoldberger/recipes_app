@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:recipes_app/services/auth.dart';
-import '../../config.dart';
+import '../../shared_screen/config.dart';
 
 class ForgetPassword extends StatefulWidget {
   AuthService auth;

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:recipes_app/config.dart';
+import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';

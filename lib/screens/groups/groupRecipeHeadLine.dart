@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
-import '../../config.dart';
+import '../../shared_screen/config.dart';
 import '../recipes/watch_recipes/watchRecipeGroup.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 

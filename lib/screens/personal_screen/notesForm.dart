@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:recipes_app/config.dart';
+import 'package:recipes_app/shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class NotesForm extends StatefulWidget {
@@ -13,7 +13,6 @@ class NotesForm extends StatefulWidget {
   bool doneLoad = false;
 
   NotesForm(List _notes, String _uid, String _docId, String _currentId) {
-    print("notes form");
     if (_notes != null) {
       this.notes = _notes.cast<String>().toList();
     } else {

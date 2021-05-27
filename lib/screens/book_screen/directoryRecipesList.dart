@@ -5,14 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/book_screen/changeDirectoryName.dart';
-import 'package:recipes_app/screens/groups/changeNameGroup.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
-import 'package:recipes_app/services/groupFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
-
-import '../../config.dart';
-import '../personal_screen/homeLogIn.dart';
-import 'package:recipes_app/shared_screen/loading.dart';
+import '../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class DirectoryRecipesList extends StatefulWidget {
@@ -47,7 +42,6 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
     return Scaffold(
         backgroundColor: backgroundColor,
         appBar: appBar(),
-        drawerDragStartBehavior: DragStartBehavior.down,
         endDrawer: widget.toDelete ? leftMenu() : null,
         body: Column(
             children: (widget.directory.recipes.length == 0)
@@ -68,7 +62,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
       backgroundColor: appBarBackgroundColor,
       elevation: 0.0,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back),
+        icon: Icon(Icons.arrow_back, color: Colors.white),
         color: appBarTextColor,
         onPressed: () => Navigator.pop(context, widget.directory.name),
       ),
@@ -93,7 +87,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
             child: Row(
               children: [
                 Container(
-                    width: widget.toDelete ? 330 : 395,
+                    width: 395,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.white,
@@ -107,34 +101,11 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
     );
   }
 
-  Future<void> deleteFromDirectory(int index) async {
-    DocumentSnapshot directory = await Firestore.instance
-        .collection('users')
-        .document(widget.uid)
-        .collection('Directory')
-        .document(widget.directory.id)
-        .get();
-
-    List recipes = directory.data['Recipes'] ?? [];
-    List copyRecipes = [];
-    copyRecipes.addAll(recipes);
-    copyRecipes.remove(widget.directory.recipes[index].publish);
-    // widget.directory.recipesId.removeWhere(
-    //     (element) => element == widget.directory.recipes[index].publish);
-    widget.directory.recipes.removeAt(index);
-    Firestore.instance
-        .collection('users')
-        .document(widget.uid)
-        .collection('Directory')
-        .document(widget.directory.id)
-        .updateData({'Recipes': copyRecipes});
-  }
-
   Widget deleteButtom() {
     return Visibility(
       visible: widget.toDelete,
       child: ButtonTheme(
-          minWidth: 250.0,
+          minWidth: 200.0,
           height: 50.0,
           // ignore: deprecated_member_use
           child: FlatButton.icon(
@@ -147,7 +118,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
                 "Delete Directory",
                 style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
               ),
-              onPressed: delete)),
+              onPressed: () => _showAlertDialog(context))),
     );
   }
 
@@ -176,12 +147,11 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
     return Drawer(
       child: Container(
         color: appBarBackgroundColor,
-        width: MediaQuery.of(context).size.width * 0.5,
+        width: MediaQuery.of(context).size.width * 0.3,
         child: Drawer(
           child: ListView(
-            padding: EdgeInsets.zero,
             children: <Widget>[
-              profileDetails(),
+              directoreName(),
               Column(children: [
                 box,
                 deleteButtom(),
@@ -195,15 +165,16 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
     );
   }
 
-  Widget profileDetails() {
+  Widget directoreName() {
     // ignore: missing_required_param
     return UserAccountsDrawerHeader(
         decoration: BoxDecoration(
           color: appBarBackgroundColor,
         ),
         arrowColor: appBarBackgroundColor,
-        accountName: Text(widget.directory.name,
-            style: TextStyle(fontSize: 15, fontFamily: 'frik')));
+        accountName: Text(widget.directory.name + " Directory",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 15, fontFamily: 'Raleway')));
   }
 
   Future<void> editName() async {
@@ -225,14 +196,46 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
   }
 
   void delete() async {
-    await Firestore.instance
-        .collection('users')
-        .document(widget.uid)
-        .collection('Directory')
-        .document(widget.directory.id)
-        .delete();
+    UserFromDB.deleteDirectory(widget.uid, widget.directory.id);
     Navigator.of(context).pop();
-    Navigator.pop(context, "delete");
+    // Navigator.pop(context, "delete");
+  }
+
+  Future<void> _showAlertDialog(BuildContext context1) async {
+    BuildContext dialogContenst;
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        dialogContenst = context;
+        return AlertDialog(
+          title: Text('Delete'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to delete this directory?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('yes- delete'),
+              onPressed: () async {
+                delete();
+                Navigator.pop(dialogContenst);
+                Navigator.pop(context1, "delete");
+              },
+            ),
+            TextButton(
+              child: Text('no- go back'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> updateName(var value) async {
@@ -241,76 +244,8 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
         setState(() {
           widget.directory.name = value;
         });
-        final db = Firestore.instance;
-        // await GroupFromDB.updateGroupName(widget.groupId, value, widget.userId);
-        db
-            .collection('Group')
-            .document(widget.directory.id)
-            .updateData({'groupName': widget.directory.name});
-
-        for (int i = 0; i < widget.userId.length; i++) {
-          QuerySnapshot a = await Firestore.instance
-              .collection('users')
-              .document(widget.userId[i])
-              .collection('groups')
-              .getDocuments();
-          a.documents.forEach((element) {
-            if (element.data['groupId'] == widget.directory.id) {
-              db
-                  .collection('users')
-                  .document(widget.userId[i])
-                  .collection('groups')
-                  .document(element.documentID)
-                  .updateData({'groupName': widget.directory.name});
-            }
-          });
-        }
-      }
-    }
-  }
-
-  Future<void> cameBack(var value) async {
-    if (value["a"] != null) {
-      if (widget.userId.toString() != value["a"].toString()) {
-        setState(() {
-          widget.userId = value["a"];
-        });
-        String firstName = await UserFromDB.getUserFirstName(
-            widget.userId[widget.userId.length - 1]);
-        String lastName = await UserFromDB.getUserLastName(
-            widget.userId[widget.userId.length - 1]);
-        setState(() {
-          widget.usersName.add(firstName + " " + lastName);
-        });
-      }
-    }
-
-    if (value["b"] != widget.directory.name) {
-      final db = Firestore.instance;
-      setState(() {
-        widget.directory.name = value["b"];
-      });
-      db
-          .collection('Group')
-          .document(widget.directory.id)
-          .updateData({'groupName': widget.directory.name});
-
-      for (int i = 0; i < widget.userId.length; i++) {
-        QuerySnapshot a = await Firestore.instance
-            .collection('users')
-            .document(widget.userId[i])
-            .collection('groups')
-            .getDocuments();
-        a.documents.forEach((element) {
-          if (element.data['groupId'] == widget.directory.id) {
-            db
-                .collection('users')
-                .document(widget.userId[i])
-                .collection('groups')
-                .document(element.documentID)
-                .updateData({'groupName': widget.directory.name});
-          }
-        });
+        UserFromDB.changeDirectoryName(
+            widget.uid, widget.directory.id, widget.directory.name);
       }
     }
   }

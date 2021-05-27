@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/screens/groups/GroupList.dart';
+import 'package:recipes_app/screens/personal_screen/converts.dart';
 import 'package:recipes_app/services/groupFromDB.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
@@ -9,7 +10,7 @@ import 'settingForm.dart';
 import '../groups/newGroup.dart';
 import '../../services/auth.dart';
 import '../../services/fireStorageService.dart';
-import '../../config.dart';
+import '../../shared_screen/config.dart';
 import '../recipes/create_recipe/mainCreateRecipe.dart';
 
 // ignore: must_be_immutable
@@ -185,6 +186,21 @@ class _HomeLogInState extends State<HomeLogIn> {
         style: TextStyle(fontFamily: logoFont),
       ),
       backgroundColor: appBarBackgroundColor,
+      actions: [convertsIcon()],
+    );
+  }
+
+  Widget convertsIcon() {
+    return FlatButton.icon(
+      icon: Icon(
+        Icons.change_circle,
+        color: Colors.white,
+      ),
+      label: Text("Weight\nConversion",
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white, fontSize: 10)),
+      onPressed: () => Navigator.push(
+          context, MaterialPageRoute(builder: (context) => Converts())),
     );
   }
 

@@ -4,7 +4,7 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/screens/personal_screen/homeLogIn.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 import '../forgetPassword.dart';
 import 'package:email_validator/email_validator.dart';
 

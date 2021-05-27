@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/addRecipeStages.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class AddRecipeIngredients extends StatefulWidget {
@@ -156,7 +156,9 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
       "Milliliter",
       "Liter",
       "Cup",
-      "Box"
+      "Box",
+      "Teaspoon",
+      "Tablespoon"
     ];
 
     return DropdownButton(

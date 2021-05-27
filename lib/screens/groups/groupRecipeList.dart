@@ -7,7 +7,7 @@ import 'package:recipes_app/screens/groups/changeNameGroup.dart';
 import 'package:recipes_app/screens/groups/groupRecipeHeadLine.dart';
 import 'package:recipes_app/services/groupFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
-import '../../config.dart';
+import '../../shared_screen/config.dart';
 import 'ParticipentsWatch.dart';
 import 'addParticipent.dart';
 import '../personal_screen/homeLogIn.dart';

@@ -4,7 +4,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recipes_app/screens/personal_screen/uploadImage.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/addRecipeIngredients.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 import 'dart:io';
 
 // ignore: must_be_immutable

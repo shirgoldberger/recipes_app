@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/screens/userRecipeList.dart';
 import 'package:recipes_app/services/mobileStorage.dart';
 
-import '../config.dart';
+import '../shared_screen/config.dart';
 
 class UserHeadLine extends StatefulWidget {
   UserHeadLine(String _uid) {

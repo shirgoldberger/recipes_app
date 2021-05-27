@@ -7,7 +7,7 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class FinishCreateRecipe extends StatefulWidget {

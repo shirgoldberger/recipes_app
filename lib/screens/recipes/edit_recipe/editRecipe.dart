@@ -7,7 +7,7 @@ import 'package:recipes_app/screens/personal_screen/uploadImage.dart';
 import 'package:recipes_app/screens/recipes/edit_recipe/editRecipeIngredients.dart';
 import 'package:recipes_app/screens/recipes/edit_recipe/editRecipeLevel.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 import 'editRecipeNotes.dart';
 import 'editRecipeStages.dart';
 import 'editRecipeTags.dart';
@@ -410,49 +410,52 @@ class _EditRecipeState extends State<EditRecipe> {
 
   Widget ingredients() {
     return new Center(
-      child: new Container(
-        width: 450,
-        decoration: new BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            new Padding(padding: EdgeInsets.only(top: 20.0)),
-            new Text(
-              'Ingredients:',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w900,
-                  fontStyle: FontStyle.italic,
-                  fontFamily: 'Raleway',
-                  fontSize: 27),
-            ),
-            new Padding(padding: EdgeInsets.only(top: 10.0)),
-            for (var i = 0; i < widget.ingredients.length; i++)
-              Row(
-                children: [
-                  Text(
+        child: new Container(
+      width: 450,
+      // height: 300,
+      decoration: new BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          new Padding(padding: EdgeInsets.only(top: 20.0)),
+          new Text(
+            'Ingredients:',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic,
+                fontFamily: 'Raleway',
+                fontSize: 27),
+          ),
+          new Padding(padding: EdgeInsets.only(top: 10.0)),
+          ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
+              itemCount: widget.ingredients.length,
+              itemBuilder: (context, i) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
                     widget.ingredients[i].count.toString() +
                         " " +
                         widget.ingredients[i].unit.toString() +
                         " " +
                         widget.ingredients[i].name.toString(),
-                    textAlign: TextAlign.left,
                     style: TextStyle(
                         color: Colors.black,
                         fontFamily: 'Raleway',
                         fontSize: 20),
                   ),
-                ],
-              ),
-            editIngredients(),
-            new Padding(padding: EdgeInsets.only(top: 20.0)),
-          ],
-        ),
+                );
+              }),
+          editIngredients()
+        ],
       ),
-    );
+    ));
   }
 
   setLevels() {
@@ -482,11 +485,8 @@ class _EditRecipeState extends State<EditRecipe> {
                   {
                     setState(() {
                       widget.ingredients = value;
-                      print("change");
                     })
                   }
-                else
-                  {print("else" + widget.ingredients.length.toString())}
               }),
       elevation: 0.2,
       child: Icon(
@@ -510,11 +510,8 @@ class _EditRecipeState extends State<EditRecipe> {
                   {
                     setState(() {
                       widget.stages = value;
-                      print("change");
                     })
                   }
-                else
-                  {print("else" + widget.ingredients.length.toString())}
               }),
       elevation: 0.2,
       child: Icon(
@@ -563,11 +560,8 @@ class _EditRecipeState extends State<EditRecipe> {
                   {
                     setState(() {
                       widget.current.notes = value;
-                      print("change");
                     })
                   }
-                else
-                  {print("else" + widget.ingredients.length.toString())}
               }),
       elevation: 0.2,
       child: Icon(
@@ -683,21 +677,4 @@ class _EditRecipeState extends State<EditRecipe> {
     }
     return tag;
   }
-
-  //   Future<void> _showLikesList() async {
-  //   showModalBottomSheet(
-  //       context: context,
-  //       isScrollControlled: true,
-  //       backgroundColor: Colors.transparent,
-  //       builder: (context) => Container(
-  //           height: MediaQuery.of(context).size.height * 0.75,
-  //           decoration: new BoxDecoration(
-  //             color: Colors.blueGrey[50],
-  //             borderRadius: new BorderRadius.only(
-  //               topLeft: const Radius.circular(25.0),
-  //               topRight: const Radius.circular(25.0),
-  //             ),
-  //           ),
-  //           child: LikesList(widget.current)));
-  // }
 }

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:recipes_app/models/recipe.dart';
-import '../config.dart';
+import '../shared_screen/config.dart';
 
 class RecipeFromDB {
   static final db = Firestore.instance;
@@ -57,7 +57,6 @@ class RecipeFromDB {
 
   static Recipe convertSnapshotToRecipe(DocumentSnapshot recipe) {
     var id = recipe.documentID;
-    print(id);
     String name = recipe.data['name'] ?? '';
     String description = recipe.data['description'] ?? '';
     String level = recipe.data['level'] ?? '0';
@@ -374,8 +373,6 @@ class RecipeFromDB {
       for (int j = 0; j < userSavedRecipes.documents.length; j++) {
         String recipesToCheck =
             userSavedRecipes.documents[j].data['recipeID'] ?? "";
-        print(recipesToCheck);
-        print(recipeId);
         if (recipesToCheck == recipeId) {
           await db
               .collection('users')

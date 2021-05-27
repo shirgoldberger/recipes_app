@@ -7,7 +7,7 @@ import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/screens/recipes/watch_recipes/watchFavoriteRecipe.dart';
 import 'watchMyRecipe.dart';
 import 'watchPublishRecipe.dart';
-import 'watchSaveRecipe.dart';
+import 'watchDirectoryRecipe.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
 //הסבר כללי לגבי העמוד הזה-
@@ -145,8 +145,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
   }
 
   Future<void> makeList() async {
-    print("make list");
-
     if (!widget.done) {
       setState(() {
         widget.ing = [];

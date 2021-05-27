@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/services/database.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:recipes_app/services/userFromDB.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -29,8 +27,6 @@ class AuthService {
       FirebaseUser user = result.user;
       return _userFromFirebaseUser(user);
     } catch (e) {
-      print(e.toString());
-      print("sign in anon 1");
       return null;
     }
   }
@@ -40,8 +36,6 @@ class AuthService {
     try {
       return await _auth.signOut();
     } catch (e) {
-      print(e.toString());
-      print("sign out 2");
       return null;
     }
   }
@@ -74,8 +68,6 @@ class AuthService {
       }
       return _userFromFirebaseUser(user);
     } catch (e) {
-      print("erorr: " + e.toString());
-      print("signInWithEmailAndPass  3");
       return e.toString();
     }
   }
@@ -94,10 +86,7 @@ class AuthService {
       await DataBaseService(user.uid)
           .updateUserData(user.email, '', '', 0, user.email, '');
       return _userFromFirebaseUser(user);
-    } catch (e) {
-      print("errorrrrrr");
-      print("handleSignIn 4");
-    }
+    } catch (e) {}
   }
 
   Future deleteAccount() async {

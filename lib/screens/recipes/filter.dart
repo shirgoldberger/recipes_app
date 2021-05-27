@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 
-import '../../config.dart';
+import '../../shared_screen/config.dart';
 
 class Filter extends StatefulWidget {
   String easyButtom = 'easy';

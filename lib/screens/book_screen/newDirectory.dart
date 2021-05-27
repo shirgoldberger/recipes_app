@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:recipes_app/config.dart';
+import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/directory.dart';
 
 // ignore: must_be_immutable
@@ -152,7 +152,6 @@ class _NewDirectoryState extends State<NewDirectory> {
                 widget.errorDirectoryName = "";
               });
               Map<dynamic, dynamic> a = {};
-              print(widget.uid);
               await Firestore.instance
                   .collection('users')
                   .document(widget.uid)

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/setRecipeDetails.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class MainCreateRecipe extends StatefulWidget {

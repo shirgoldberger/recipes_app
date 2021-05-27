@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,7 @@ import 'package:recipes_app/screens/personal_screen/logIn/logInWrapper.dart';
 import 'package:recipes_app/screens/search_screen/search_page.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
-import 'config.dart';
+import 'shared_screen/config.dart';
 import 'models/user.dart';
 import 'package:provider/provider.dart';
 import 'package:connectivity/connectivity.dart';
@@ -26,14 +25,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    try {
-      return MaterialApp(
-        title: _title,
-        home: MyStatefulWidget(),
-      );
-    } catch (e) {
-      print("we have a problem !");
-    }
+    return MaterialApp(
+      title: _title,
+      home: MyStatefulWidget(),
+    );
   }
 }
 

@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/ingredient.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class EditRecipeIngredients extends StatefulWidget {
@@ -12,7 +12,6 @@ class EditRecipeIngredients extends StatefulWidget {
     uid = _uid;
     ingredients = [];
     ingredients.addAll(_ingredients);
-    print(_ingredients);
   }
   @override
   _EditRecipeIngredientsState createState() => _EditRecipeIngredientsState();
@@ -127,7 +126,9 @@ class _EditRecipeIngredientsState extends State<EditRecipeIngredients> {
       "Milliliter",
       "Liter",
       "Cup",
-      "Box"
+      "Box",
+      "Teaspoon",
+      "Tablespoon"
     ];
 
     return DropdownButton(

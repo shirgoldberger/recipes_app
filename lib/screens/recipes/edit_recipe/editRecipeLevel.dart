@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:recipes_app/models/ingredient.dart';
-import 'package:recipes_app/models/stage.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class EditRecipeLevel extends StatefulWidget {
@@ -19,8 +16,6 @@ class EditRecipeLevel extends StatefulWidget {
   EditRecipeLevel(int _level, int _time) {
     this.level = _level;
     this.time = _time;
-    print(time);
-    print(level);
   }
 
   @override
@@ -126,8 +121,6 @@ class _EditRecipeLevelState extends State<EditRecipeLevel> {
   }
 
   setLevels() {
-    print("set");
-    print(widget.level);
     if (widget.level == 1) {
       setState(() {
         widget.easyColor = Colors.green[400];

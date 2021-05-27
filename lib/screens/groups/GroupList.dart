@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'groupRecipeList.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
-import 'package:recipes_app/config.dart';
+import 'package:recipes_app/shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class GroupList extends StatefulWidget {
@@ -158,9 +158,7 @@ class _GroupListState extends State<GroupList> {
         ),
       ),
       // ),
-      onPressed: () {
-        print('Tapped');
-      },
+      onPressed: () {},
     );
     // return Text(widget.groupName[index],
     //     style: TextStyle(fontSize: 25, fontFamily: 'Raleway'));

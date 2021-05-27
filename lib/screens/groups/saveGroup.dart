@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:recipes_app/config.dart';
+import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/book_screen/saveInDirectory.dart';
 
@@ -169,7 +169,6 @@ class _SaveGroupState extends State<SaveGroup> {
   }
 
   void publishInGroup(int index) async {
-    print("999");
     final db = Firestore.instance;
     QuerySnapshot recipes = await db
         .collection('Group')
@@ -182,10 +181,6 @@ class _SaveGroupState extends State<SaveGroup> {
         return;
       }
     }
-    print("8888");
-
-    print("3");
-    print(widget.map.values.elementAt(index));
     await db
         .collection('Group')
         .document(widget.map.keys.elementAt(index).groupId)

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/stage.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 import 'addRecipeNotes.dart';
 
 // ignore: must_be_immutable

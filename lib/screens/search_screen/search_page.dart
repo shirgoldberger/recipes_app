@@ -5,11 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:recipes_app/config.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
 import 'package:recipes_app/screens/userHeadLine.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
+import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../recipes/watch_recipes/watchRecipe.dart';
 

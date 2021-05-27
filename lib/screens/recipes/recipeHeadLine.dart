@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recipes_app/config.dart';
+import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'watch_recipes/watchRecipe.dart';
 import 'package:recipes_app/services/fireStorageService.dart';

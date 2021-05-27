@@ -6,7 +6,7 @@ import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/stage.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/finishCreateRecipe.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class AddRecipeNotes extends StatefulWidget {

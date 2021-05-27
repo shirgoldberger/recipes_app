@@ -99,16 +99,16 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
         widget.levelColor = Colors.blue[900];
         widget.levelString = "hard";
       }
-
-      //מצב שני 2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
       return Scaffold(
           backgroundColor: Colors.blueGrey[50],
           appBar: AppBar(
               backgroundColor: Colors.blueGrey[700],
               elevation: 0.0,
               title: Text(
-                'watch this recipe',
-                style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+                'watch Recipe',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontFamily: 'Raleway', color: Colors.white, fontSize: 20),
               ),
               actions: <Widget>[
                 FlatButton.icon(
@@ -117,17 +117,61 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
                       color: Colors.white,
                     ),
                     label: Text(
-                      'delete',
-                      style:
-                          TextStyle(fontFamily: 'Raleway', color: Colors.white),
+                      'Delete\nfrom group',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontFamily: 'Raleway',
+                          color: Colors.white,
+                          fontSize: 10),
                     ),
                     onPressed: () {
-                      deleteFromGroupRecipe();
+                      _showAlertDialog(context);
                     }),
               ]),
           body: WatchRecipeBody(widget.current, widget.ing, widget.stages,
               widget.levelColor, widget.levelString, widget.uid, widget.image));
     }
+  }
+
+  Future<void> _showAlertDialog(BuildContext context1) async {
+    BuildContext dialogContenst;
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        dialogContenst = context;
+        return AlertDialog(
+          title: Text('Delete'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to delete this recipe from group?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('yes- delete'),
+              onPressed: () async {
+                deleteFromGroupRecipe();
+                int count = 0;
+                Navigator.pop(dialogContenst);
+                Navigator.of(context1).pop();
+                Navigator.popUntil(context1, (route) {
+                  return count++ == 1;
+                });
+              },
+            ),
+            TextButton(
+              child: Text('no- go back'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> makeList() async {
@@ -217,7 +261,5 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
             .delete();
       }
     });
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => HomeLogIn(widget.uid)));
   }
 }

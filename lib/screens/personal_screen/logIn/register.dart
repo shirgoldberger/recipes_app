@@ -2,7 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 import "package:password_validator/password_validator.dart";
 
 class Register extends StatefulWidget {

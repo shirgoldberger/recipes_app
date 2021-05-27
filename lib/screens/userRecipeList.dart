@@ -6,7 +6,7 @@ import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
-import '../config.dart';
+import '../shared_screen/config.dart';
 
 class UserRecipeList extends StatefulWidget {
   UserRecipeList(String _uid) {

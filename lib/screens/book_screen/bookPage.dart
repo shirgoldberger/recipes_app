@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:recipes_app/config.dart';
+import 'package:recipes_app/services/userFromDB.dart';
+import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/services/database.dart';
@@ -213,16 +214,14 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
 
   void getdirectory() async {
     widget.directorys = [];
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(widget.user)
-        .collection('Directory')
-        .getDocuments();
+    QuerySnapshot directories =
+        await UserFromDB.getUserDirectories(widget.user);
 
-    for (int i = 0; i < snap.documents.length; i++) {
-      String name = snap.documents[i].data['name'] ?? '';
-      Map<dynamic, dynamic> recipes = snap.documents[i].data['Recipes'] ?? {};
-      String id = snap.documents[i].documentID.toString();
+    for (int i = 0; i < directories.documents.length; i++) {
+      String name = directories.documents[i].data['name'] ?? '';
+      Map<dynamic, dynamic> recipes =
+          directories.documents[i].data['Recipes'] ?? {};
+      String id = directories.documents[i].documentID.toString();
 
       Directory d = Directory(id: id, name: name, recipesId: recipes);
       setState(() {
@@ -241,23 +240,17 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
     String uid;
     String recipeId;
 
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(widget.user)
-        .collection('saved recipe')
-        .getDocuments();
+    QuerySnapshot savedRecipes =
+        await UserFromDB.getUserSavedRecipes(widget.user);
 
-    if (snap.documents.length == 0) {
+    if (savedRecipes.documents.length == 0) {
       setState(() {
         widget.doneLoadSavedRecipe = 2;
       });
     }
-    int i = 0;
-    for (int i = 0; i < snap.documents.length; i++) {
-      uid = snap.documents[i].data['userID'] ?? '';
-      recipeId = snap.documents[i].data['recipeID'] ?? '';
-      // print(i);
-
+    for (int i = 0; i < savedRecipes.documents.length; i++) {
+      uid = savedRecipes.documents[i].data['userID'] ?? '';
+      recipeId = savedRecipes.documents[i].data['recipeID'] ?? '';
       Recipe r = await RecipeFromDB.getRecipeOfUser(uid, recipeId);
 
       bool check = false;
@@ -272,7 +265,7 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
         });
       }
       i++;
-      if ((i) == snap.documents.length) {
+      if ((i) == savedRecipes.documents.length) {
         setState(() {
           widget.doneLoadSavedRecipe++;
         });
@@ -299,20 +292,11 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
     setState(() {
       widget.myRecipe = [];
     });
-    QuerySnapshot snap2 = await Firestore.instance
-        .collection('users')
-        .document(widget.user)
-        .collection('recipes')
-        .getDocuments();
-    int j = 0;
-    for (int i = 0; i < snap2.documents.length; i++) {
-      // print(snap2.documents[i].documentID + "aaaa");
-      Recipe r = RecipeFromDB.convertSnapshotToRecipe(snap2.documents[i]);
-
+    QuerySnapshot recipes = await UserFromDB.getUserRecipes(widget.user);
+    for (int i = 0; i < recipes.documents.length; i++) {
+      Recipe r = RecipeFromDB.convertSnapshotToRecipe(recipes.documents[i]);
       setState(() {
         widget.myRecipe.add(r);
-        print(r.id);
-        // print(r);
       });
     }
   }

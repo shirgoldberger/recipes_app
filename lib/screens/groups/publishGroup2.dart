@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
-import '../../config.dart';
+import '../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class PublishGroup2 extends StatefulWidget {

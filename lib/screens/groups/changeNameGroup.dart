@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../config.dart';
+import '../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
 class ChangeNameGroup extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:recipes_app/config.dart';
+import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/recipes/recipesFolder.dart';
 import 'package:recipes_app/services/dataBaseAllRecipe.dart';

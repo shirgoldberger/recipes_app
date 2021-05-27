@@ -6,7 +6,7 @@ import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/screens/personal_screen/likesList.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
-import '../../../config.dart';
+import '../../../shared_screen/config.dart';
 import '../../userRecipeList.dart';
 
 // ignore: must_be_immutable
@@ -244,7 +244,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   Widget picture() {
     // there is no image yet
     if (widget.imagePath == "") {
-      print("no image");
       return CircleAvatar(
           child: TextButton(
               onPressed: () => Navigator.push(
@@ -357,6 +356,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(padding: EdgeInsets.only(top: 20.0)),
@@ -370,30 +370,44 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                   fontSize: 27),
             ),
             new Padding(padding: EdgeInsets.only(top: 10.0)),
-            for (var i = 0; i < widget.ing.length; i++)
-              Row(
-                children: [
-                  Checkbox(
-                      value: widget._isChecked[i],
-                      onChanged: (val) {
-                        setState(() {
-                          widget._isChecked[i] = val;
-                        });
-                      }),
-                  Text(
-                    widget.ing[i].count.toString() +
-                        " " +
-                        widget.ing[i].unit.toString() +
-                        " " +
-                        widget.ing[i].name.toString(),
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'DescriptionFont',
-                        fontSize: 20),
-                  ),
-                ],
-              ),
+            ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                padding:
+                    EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
+                itemCount: widget.ing.length,
+                itemBuilder: (context, i) {
+                  return Stack(
+                      // crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Checkbox(
+                            value: widget._isChecked[i],
+                            onChanged: (val) {
+                              setState(() {
+                                widget._isChecked[i] = val;
+                              });
+                            }),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "        " +
+                                widget.ing[i].count.toString() +
+                                " " +
+                                widget.ing[i].unit.toString() +
+                                " " +
+                                widget.ing[i].name.toString(),
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'DescriptionFont',
+                                fontSize: 20),
+                          ),
+                        )
+                      ]);
+                }),
             new Padding(padding: EdgeInsets.only(top: 20.0)),
           ],
         ),

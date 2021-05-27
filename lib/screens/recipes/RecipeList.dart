@@ -5,7 +5,7 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/recipes/filter.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
 
-import '../../config.dart';
+import '../../shared_screen/config.dart';
 
 class RecipeList extends StatefulWidget {
   RecipeList(Map<String, List> map, String head, bool home) {
