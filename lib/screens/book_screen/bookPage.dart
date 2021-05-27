@@ -227,7 +227,7 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
 
     for (int i = 0; i < snap.documents.length; i++) {
       String name = snap.documents[i].data['name'] ?? '';
-      List recipes = snap.documents[i].data['Recipes'] ?? [];
+      Map<dynamic, dynamic> recipes = snap.documents[i].data['Recipes'] ?? {};
       String id = snap.documents[i].documentID.toString();
 
       Directory d = Directory(id: id, name: name, recipesId: recipes);

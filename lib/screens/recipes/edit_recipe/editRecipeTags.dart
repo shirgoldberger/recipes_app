@@ -131,7 +131,13 @@ class _EditRecipeTagsState extends State<EditRecipeTags> {
       backgroundColor:
           this.widget.tags.length != 0 ? Colors.green : Colors.grey,
       onPressed: () {
-        if (this.widget.tags.length != 0) {
+        bool check = false;
+        for (int i = 0; i < widget.tags.length; i++) {
+          if (widget.tags[i] == 'choose recipe tag') {
+            check = true;
+          }
+        }
+        if ((this.widget.tags.length != 0) && (!check)) {
           Navigator.pop(context, widget.tags);
         }
       },

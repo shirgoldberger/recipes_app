@@ -73,17 +73,17 @@ class _HomeLogInState extends State<HomeLogIn> {
         body: Container(
             padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
             child: ListView(children: <Widget>[
-              box,
               title(),
               box,
               newRecipeButtom(),
               box,
-              box,
               Column(children: [
-                newGroupButtom2(),
+                coffe1(),
+                //   newGroupButtom2(),
                 box,
                 widthBox(70),
-                watchGroupButtom2(),
+                coffe2(),
+                //  watchGroupButtom2(),
               ]),
             ])),
       );
@@ -92,41 +92,88 @@ class _HomeLogInState extends State<HomeLogIn> {
   }
 
   Widget newRecipeButtom() {
-    return Center(
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                  offset: const Offset(3.0, 3.0),
-                  blurRadius: 5.0,
-                  color: Colors.grey[600],
-                  spreadRadius: 2.0)
-            ]),
-        child: Material(
-          elevation: 4.0,
-          shape: CircleBorder(),
-          clipBehavior: Clip.hardEdge,
-          color: Colors.transparent,
-          child: Ink.image(
-            image: AssetImage('lib/images/new recipe.jpg'),
-            fit: BoxFit.cover,
-            width: 260.0,
-            height: 260.0,
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            MainCreateRecipe(name, widget.uid)));
-              },
-            ),
-          ),
+    return InkWell(
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-      ),
-    );
+        borderRadius: BorderRadius.circular(5),
+        highlightColor: Colors.blueGrey,
+        child: Container(
+          width: 250,
+          height: 220,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.blueGrey[50],
+            image: DecorationImage(
+                image: ExactAssetImage('lib/images/aaa.JPG'),
+                fit: BoxFit.cover),
+          ),
+          child: FlatButton(
+            onPressed: () async {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          MainCreateRecipe(name, widget.uid)));
+            },
+          ),
+        ));
+  }
+
+  Widget coffe1() {
+    return InkWell(
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        borderRadius: BorderRadius.circular(5),
+        highlightColor: Colors.blueGrey,
+        child: Container(
+          width: 370,
+          height: 120,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.blueGrey[50],
+            image: DecorationImage(
+                image: ExactAssetImage('lib/images/coffe1.JPG'),
+                fit: BoxFit.cover),
+          ),
+          child: FlatButton(
+            onPressed: () async {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NewGroup(widget.uid)));
+            },
+          ),
+        ));
+  }
+
+  Widget coffe2() {
+    return InkWell(
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        borderRadius: BorderRadius.circular(5),
+        highlightColor: Colors.blueGrey,
+        child: Container(
+          width: 370,
+          height: 120,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.blueGrey[50],
+            image: DecorationImage(
+                image: ExactAssetImage('lib/images/coffe2.JPG'),
+                fit: BoxFit.cover),
+          ),
+          child: FlatButton(
+            onPressed: () async {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => GroupList(widget.uid)));
+            },
+          ),
+        ));
   }
 
   Widget appBar() {
@@ -276,7 +323,7 @@ class _HomeLogInState extends State<HomeLogIn> {
         "Hello " + name + "!",
         textAlign: TextAlign.center,
         style: TextStyle(
-            color: Colors.grey[600],
+            color: Colors.brown[900],
             fontWeight: FontWeight.w900,
             //fontStyle: FontStyle.italic,
             fontFamily: 'Raleway',

@@ -283,30 +283,12 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
   Future<void> deleteFromSavedRecipe(
     String id,
   ) async {
-    print(widget.directory);
-    final db = Firestore.instance;
     await RecipeFromDB.deleteFromDirectoryRecipe(
         widget.uid,
         widget.currentRecipe.writerUid,
         widget.currentRecipe.id,
+        widget.currentRecipe.publish,
         widget.directory);
-
-    // QuerySnapshot snap = await Firestore.instance
-    //     .collection('users')
-    //     .document(id)
-    //     .collection('saved recipe')
-    //     .getDocuments();
-    // snap.documents.forEach((element) async {
-    //   String recipeIdfromSnap = element.data['recipeID'];
-    //   if (recipeIdfromSnap == widget.currentRecipe.id) {
-    //     db
-    //         .collection('users')
-    //         .document(id)
-    //         .collection('saved recipe')
-    //         .document(element.documentID)
-    //         .delete();
-    //   }
-    // });
     int count = 0;
     Navigator.popUntil(context, (route) {
       return count++ == 3;

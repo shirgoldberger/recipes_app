@@ -150,7 +150,7 @@ class _NewDirectoryState extends State<NewDirectory> {
               setState(() {
                 widget.errorDirectoryName = "";
               });
-              List<String> a = [];
+              Map<dynamic, dynamic> a = {};
               print(widget.uid);
               await Firestore.instance
                   .collection('users')

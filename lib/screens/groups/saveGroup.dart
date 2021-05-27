@@ -23,11 +23,12 @@ class SaveGroup extends StatefulWidget {
   Color saveColor = Colors.blueGrey[600];
   IconData iconSave = Icons.favorite_border;
   String saveString = "";
-
-  SaveGroup(String _uid, String _recipeId, Recipe _recipe) {
+  bool isMyRecipe;
+  SaveGroup(String _uid, String _recipeId, Recipe _recipe, bool _isMyRecipe) {
     this.uid = _uid;
     this.recipeId = _recipeId;
     this.recipe = _recipe;
+    this.isMyRecipe = _isMyRecipe;
   }
 
   @override
@@ -272,7 +273,8 @@ class _SaveGroupState extends State<SaveGroup> {
                 topRight: const Radius.circular(25.0),
               ),
             ),
-            child: SaveInDirectory(widget.uid, widget.recipe)));
+            child:
+                SaveInDirectory(widget.uid, widget.recipe, widget.isMyRecipe)));
   }
 
   void saveRecipe() async {

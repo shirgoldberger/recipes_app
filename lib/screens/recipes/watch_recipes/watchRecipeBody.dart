@@ -18,7 +18,7 @@ class WatchRecipeBody extends StatefulWidget {
   String levelString = '';
   Color timeColor;
   String timeString = '';
-  String imagePath = "";
+  String imagePath;
   NetworkImage userImage;
   NetworkImage recipeImage;
   List<bool> _isChecked = [];
@@ -29,6 +29,7 @@ class WatchRecipeBody extends StatefulWidget {
   String publishRecipeId;
   String timeText = '';
   int likeAmount;
+  bool isGettingImage = false;
 
   WatchRecipeBody(
       Recipe _current,
@@ -56,7 +57,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   @override
   void initState() {
     super.initState();
-    getUserImage();
     sortStages();
     sortIngredients();
     setTimeText();
@@ -95,25 +95,34 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     }
   }
 
-  void getImage(BuildContext context) async {
-    if (widget.userImage != null || widget.imagePath == "") {
-      return;
-    }
-    String downloadUrl = await FireStorageService.loadFromStorage(
-        context, "uploads/" + widget.imagePath);
-    setState(() {
-      widget.userImage = NetworkImage(downloadUrl);
-    });
-  }
+  // void getImage(BuildContext context) async {
+  //   if (widget.userImage != null || widget.imagePath == "") {
+  //     return;
+  //   }
+  //   String downloadUrl = await FireStorageService.loadFromStorage(
+  //       context, "uploads/" + widget.imagePath);
+  //   setState(() {
+  //     widget.userImage = NetworkImage(downloadUrl);
+  //   });
+  // }
 
   void getUserImage() async {
-    DocumentSnapshot writer = await Firestore.instance
-        .collection('users')
-        .document(widget.current.writerUid)
-        .get();
-    setState(() {
+    if (!widget.isGettingImage) {
+      if (widget.userImage != null || widget.imagePath == "") {
+        return;
+      }
+      DocumentSnapshot writer = await Firestore.instance
+          .collection('users')
+          .document(widget.current.writerUid)
+          .get();
       widget.imagePath = writer.data['imagePath'];
-    });
+      String downloadUrl = await FireStorageService.loadFromStorage(
+          context, "uploads/" + widget.imagePath);
+      setState(() {
+        widget.userImage = NetworkImage(downloadUrl);
+        widget.isGettingImage = true;
+      });
+    }
   }
 
   initLikeIcon() async {
@@ -125,23 +134,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     if (users.contains(widget.uid)) {
       widget.isLikeRecipe = true;
     }
-    // for (int i = 0; i < publishRecipes.documents.length; i++) {
-    //   // the current publish recipe
-    //   if (publishRecipes.documents[i].data['recipeId'] == widget.current.id) {
-    //     widget.publishRecipeId =
-    //         publishRecipes.documents[i].documentID.toString();
-    //     DocumentSnapshot currentUser = await Firestore.instance
-    //         .collection("users")
-    //         .document(widget.uid)
-    //         .get();
-    //     List userLikes = currentUser.data['likes'] ?? [];
-    //     if (userLikes.contains(widget.publishRecipeId)) {
-    //       setState(() {
-    //         widget.isLikeRecipe = true;
-    //       });
-    //     }
-    //   }
-    // }
   }
 
   void sortStages() {
@@ -158,19 +150,11 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     setState(() {
       widget.ing.sort((a, b) => a.index.compareTo(b.index));
     });
-    // for(int i=0; i<widget.ing.length; i++){
-    //   if(widget.ing[i].count.toString().contains(".0")){
-    //     setState(() {
-    //       widget.ing[i].count=widget.ing[i].count.toInt().
-    //     });
-    //   }
-    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    getImage(context);
-    // getRecipeImage(context);
+    getUserImage();
     if (widget.current.publish != '') {
       getLikesList();
     }
@@ -247,6 +231,8 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     for (int i = 0; i < widget.current.tags.length; i++) {
       if (i != widget.current.tags.length - 1) {
         tag += "#" + widget.current.tags[i] + " ,";
+      } else {
+        tag += "#" + widget.current.tags[i];
       }
     }
     return tag;

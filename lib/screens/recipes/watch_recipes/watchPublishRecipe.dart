@@ -156,8 +156,8 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
                 topRight: const Radius.circular(25.0),
               ),
             ),
-            child: SaveGroup(
-                widget.uid, widget.currentRecipe.id, widget.currentRecipe)));
+            child: SaveGroup(widget.uid, widget.currentRecipe.id,
+                widget.currentRecipe, false)));
   }
 
   Future<void> _pressLikeRecipe() async {

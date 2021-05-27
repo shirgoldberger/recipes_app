@@ -142,8 +142,39 @@ class RecipeFromDB {
         .getDocuments();
     for (int i = 0; i < userRecipes.documents.length; i++) {
       String publishId = await userRecipes.documents[i].data['publishID'] ?? "";
+      String writerId = await userRecipes.documents[i].data['writerUid'] ?? "";
+      String recipeId = await userRecipes.documents[i].data['recipeID'] ?? "";
       if (publishId != "") {
         deletePublishRecipe(publishId);
+        deletePublishRecipeFromAllDirectories(writerId, recipeId);
+      }
+    }
+  }
+
+  static deletePublishRecipeFromAllDirectories(
+      String writerId, String recipeId) async {
+    QuerySnapshot users = await db.collection('users').getDocuments();
+    for (int i = 0; i < users.documents.length; i++) {
+      QuerySnapshot userDirectories = await Firestore.instance
+          .collection('users')
+          .document(users.documents[i].documentID)
+          .collection('Directory')
+          .getDocuments();
+      for (int j = 0; j < userDirectories.documents.length; j++) {
+        Map<dynamic, dynamic> directoryRecipes =
+            userDirectories.documents[j].data['Recipes'] ?? {};
+        Map<String, String> copyRecipes =
+            new Map<String, String>.from(directoryRecipes);
+
+        if (copyRecipes.keys.contains(writerId)) {
+          copyRecipes.remove(writerId);
+          await db
+              .collection('users')
+              .document(users.documents[i].documentID)
+              .collection('Directory')
+              .document(userDirectories.documents[j].documentID)
+              .updateData({'Recipes': copyRecipes});
+        }
       }
     }
   }
@@ -172,15 +203,15 @@ class RecipeFromDB {
   }
 
   static Future<void> deleteFromDirectoryRecipe(String uid, String recipeUserid,
-      String recipeId, String directoryId) async {
-    //get publish id
-    DocumentSnapshot publishRecipe = await Firestore.instance
-        .collection('users')
-        .document(recipeUserid)
-        .collection('recipes')
-        .document(recipeId)
-        .get();
-    String publishID = publishRecipe.data['publishID'];
+      String recipeId, String publishId, String directoryId) async {
+    // //get publish id
+    // DocumentSnapshot publishRecipe = await Firestore.instance
+    //     .collection('users')
+    //     .document(recipeUserid)
+    //     .collection('recipes')
+    //     .document(recipeId)
+    //     .get();
+    // String publishID = publishRecipe.data['publishID'];
     //delete from directory
     DocumentSnapshot directory = await Firestore.instance
         .collection('users')
@@ -188,12 +219,12 @@ class RecipeFromDB {
         .collection('Directory')
         .document(directoryId)
         .get();
-    List recipes = directory.data['Recipes'];
+    Map<dynamic, dynamic> recipes = directory.data['Recipes'] ?? {};
 
     //remove recipe from list
-    List copyRecipe = [];
-    copyRecipe.addAll(recipes);
-    copyRecipe.remove(publishID);
+    Map<String, String> copyRecipe = new Map<dynamic, dynamic>.from(recipes);
+    ;
+    copyRecipe.remove(recipeUserid);
     Firestore.instance
         .collection('users')
         .document(uid)
@@ -250,8 +281,8 @@ class RecipeFromDB {
     }
   }
 
-  static Future<void> deleteRecipe(
-      String publish, String recipeId, String uid) async {
+  static Future<void> deleteRecipe(String publish, String recipeId, String uid,
+      List tags, String writerId) async {
     // publish recipe
     if (publish != '') {
       DocumentSnapshot publishRecipe = await Firestore.instance
@@ -259,11 +290,53 @@ class RecipeFromDB {
           .document(publish)
           .get();
       List users = publishRecipe.data['saveUser'] ?? [];
-      deleteRecipeFromAllUsers(users, recipeId);
+      deleteRecipeFromAllUsers(users, recipeId, writerId);
+      deleteRecipeFromUserDirectory(recipeId, uid);
+      deleteRcipeFromTags(tags, publish);
       deletePublishRecipe(publish);
     }
     deleteRecipeFromAllGroups(recipeId);
     deleteRecipeFromUser(uid, recipeId);
+  }
+
+  static deleteRecipeFromUserDirectory(String recipeId, String uid) async {
+    QuerySnapshot userDirectories = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('Directory')
+        .getDocuments();
+    for (int i = 0; i < userDirectories.documents.length; i++) {
+      Map<dynamic, dynamic> recipes =
+          userDirectories.documents[i].data['Recipes'] ?? {};
+
+      Map<String, String> copyRecipes = new Map<String, String>.from(recipes);
+
+      if (copyRecipes.keys.contains(recipeId)) {
+        copyRecipes.remove(recipeId);
+        await db
+            .collection('users')
+            .document(uid)
+            .collection('Directory')
+            .document(userDirectories.documents[i].documentID)
+            .updateData({'Recipes': copyRecipes});
+      }
+    }
+  }
+
+  static Future deleteRcipeFromTags(List tagsList, String publishId) async {
+    final db = Firestore.instance;
+    var tags =
+        await db.collection('tags').document('xt0XXXOLgprfkO3QiANs').get();
+    for (int i = 0; i < tagsList.length; i++) {
+      List tag = tags.data[tagsList[i]];
+      List copyTag = [];
+      copyTag.addAll(tag);
+      copyTag.remove(publishId);
+      db
+          .collection('tags')
+          .document('xt0XXXOLgprfkO3QiANs')
+          .updateData({tagsList[i]: copyTag});
+    }
   }
 
   static Future deleteRecipeFromAllGroups(String recipeId) async {
@@ -290,7 +363,8 @@ class RecipeFromDB {
     }
   }
 
-  static Future deleteRecipeFromAllUsers(List users, String recipeId) async {
+  static Future deleteRecipeFromAllUsers(
+      List users, String recipeId, String writerId) async {
     for (int i = 0; i < users.length; i++) {
       QuerySnapshot userSavedRecipes = await Firestore.instance
           .collection('users')
@@ -305,6 +379,28 @@ class RecipeFromDB {
               .collection('saved recipe')
               .document(userSavedRecipes.documents[j].documentID)
               .delete();
+        }
+      }
+
+      QuerySnapshot userDirectories = await Firestore.instance
+          .collection('users')
+          .document(users[i])
+          .collection('Directory')
+          .getDocuments();
+      for (int j = 0; j < userDirectories.documents.length; j++) {
+        Map<dynamic, dynamic> directoryRecipes =
+            userDirectories.documents[j].data['Recipes'] ?? {};
+        Map<String, String> copyRecipes =
+            new Map<String, String>.from(directoryRecipes);
+
+        if (copyRecipes.keys.contains(recipeId)) {
+          copyRecipes.remove(recipeId);
+          await db
+              .collection('users')
+              .document(users[i])
+              .collection('Directory')
+              .document(userDirectories.documents[j].documentID)
+              .updateData({'Recipes': copyRecipes});
         }
       }
     }
@@ -359,18 +455,16 @@ class RecipeFromDB {
   static Future<List<Recipe>> getDirectoryRecipesList(
       String uid, String directoryId) async {
     List<Recipe> directoryRecipes = [];
-    DocumentSnapshot recipesList = await Firestore.instance
+    DocumentSnapshot directory = await Firestore.instance
         .collection('users')
         .document(uid)
         .collection('Directory')
         .document(directoryId)
         .get();
-    List list = recipesList.data['Recipes'] ?? [];
-    for (String publishId in list) {
-      var publishRecipe =
-          await db.collection('publish recipe').document(publishId).get();
-      String writerId = await publishRecipe.data['userID'] ?? "";
-      String recipeId = await publishRecipe.data['recipeId'] ?? "";
+    Map<dynamic, dynamic> list = directory.data['Recipes'] ?? {};
+    for (int i = 0; i < list.length; i++) {
+      String writerId = list.values.elementAt(i);
+      String recipeId = list.keys.elementAt(i);
       Recipe r = await getRecipeOfUser(writerId, recipeId);
       directoryRecipes.add(r);
     }

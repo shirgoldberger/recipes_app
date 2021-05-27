@@ -23,10 +23,12 @@ class SaveInDirectory extends StatefulWidget {
   IconData iconSave = Icons.favorite_border;
   // String saveString = 'save for yourself';
   List<Directory> directorys = [];
+  bool isMyRecipe;
 
-  SaveInDirectory(String _uid, Recipe _recipe) {
+  SaveInDirectory(String _uid, Recipe _recipe, bool _isMyRecipe) {
     this.uid = _uid;
     this.recipe = _recipe;
+    this.isMyRecipe = _isMyRecipe;
   }
 
   @override
@@ -46,14 +48,12 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
 
     snap.documents.forEach((element) async {
       String name = element.data['name'] ?? '';
-      List recipes = element.data['Recipes'] ?? [];
-      print(name);
-      print(recipes);
+      Map<dynamic, dynamic> recipes = element.data['Recipes'] ?? {};
       Directory d = Directory(name: name, recipesId: recipes);
       setState(() {
         widget.directorys.add(d);
       });
-      if (recipes.contains(widget.recipe.publish)) {
+      if (recipes.keys.contains(widget.recipe.writerUid)) {
         setState(() {
           widget.isCheck.add(true);
           widget.colors.add(Colors.grey[400]);
@@ -94,7 +94,9 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
     if (!widget.doneLoad) {
       getGroups();
       initFavotite();
-      saveRecipe();
+      if (!widget.isMyRecipe) {
+        saveRecipe();
+      }
       return Loading();
     } else {
       //print(widget.isCheck);
@@ -176,7 +178,7 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
                                   color: Colors.white,
                                   fontFamily: 'DescriptionFont')),
                           onPressed: () {
-                            saveInDirectory(index);
+                            // saveInDirectory(index);
                             if (widget.isCheck[index]) {
                               unSaveInDirectory(index);
                               setState(() {
@@ -379,13 +381,11 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
     snap.documents.forEach((element) async {
       String name = element.data['name'];
       if (name == widget.directorys[index].name) {
-        print("2");
-        List recipes = element.data['Recipes'] ?? [];
-        List copyRecipes = [];
-        copyRecipes.addAll(recipes);
-        copyRecipes.add(widget.recipe.publish);
-        print(copyRecipes);
-        Future<void> snap = Firestore.instance
+        Map<dynamic, dynamic> recipes = element.data['Recipes'] ?? {};
+        Map<dynamic, dynamic> copyRecipes =
+            new Map<String, String>.from(recipes);
+        copyRecipes[widget.recipe.id] = widget.recipe.writerUid;
+        Firestore.instance
             .collection('users')
             .document(widget.uid)
             .collection('Directory')
@@ -404,12 +404,11 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
     snap.documents.forEach((element) async {
       String name = element.data['name'];
       if (name == widget.directorys[index].name) {
-        List recipes = element.data['Recipes'] ?? [];
-        List copyRecipes = [];
-        copyRecipes.addAll(recipes);
-        copyRecipes.remove(widget.recipe.publish);
+        Map<dynamic, dynamic> recipes = element.data['Recipes'] ?? {};
+        Map<String, String> copyRecipes = new Map<String, String>.from(recipes);
+        copyRecipes.remove(widget.recipe.id);
 
-        Future<void> snap = Firestore.instance
+        Firestore.instance
             .collection('users')
             .document(widget.uid)
             .collection('Directory')

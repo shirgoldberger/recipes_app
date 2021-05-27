@@ -370,15 +370,7 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
         ),
         onPressed: () {
           if (widget.uid != null) {
-            if (widget.uid != widget.currentRecipe.writerUid) {
-              _showSavedGroup();
-            } else {
-              _showAlertDialog2(
-                  'You can not save this recipe because you wrote it!');
-            }
-          } else {
-            _showAlertDialog2(
-                'you can not save this recipe - please first register or sign in to the app and try again');
+            _showSavedGroup();
           }
         });
   }
@@ -397,7 +389,7 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
                 topRight: const Radius.circular(25.0),
               ),
             ),
-            child: SaveInDirectory(widget.uid, widget.currentRecipe)));
+            child: SaveInDirectory(widget.uid, widget.currentRecipe, false)));
   }
 
   Widget addNoteIcon() {

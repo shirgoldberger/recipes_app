@@ -101,15 +101,6 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
                     child: ClipRRect(
                         child: RecipeHeadLine(widget.directory.recipes[index],
                             false, widget.directoryToFo))),
-                Visibility(
-                  visible: widget.toDelete,
-                  child: IconButton(
-                      onPressed: () async {
-                        await deleteFromDirectory(index);
-                        setState(() {});
-                      },
-                      icon: Icon(Icons.delete)),
-                )
               ],
             ));
       },
