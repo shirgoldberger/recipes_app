@@ -29,7 +29,8 @@ class EditRecipe extends StatefulWidget {
       List<Stages> _stages,
       List<IngredientsModel> _ingredients,
       String _levelString,
-      Color _levelColor) {
+      Color _levelColor,
+      NetworkImage _image) {
     uid = _uid;
     current = _current;
     stages = _stages;
@@ -38,6 +39,7 @@ class EditRecipe extends StatefulWidget {
     levelString = _levelString;
     levelColor = _levelColor;
     imagePath = current.imagePath;
+    recipeImage = _image;
   }
 
   @override
@@ -48,33 +50,33 @@ class _EditRecipeState extends State<EditRecipe> {
   @override
   void initState() {
     super.initState();
-    getUserImage();
+    // getUserImage();
     sortStages();
     sortIngredients();
     setTimeText();
   }
 
-  void getImage(BuildContext context) async {
-    if (widget.recipeImage != null || widget.imagePath == "") {
-      return;
-    }
-    String downloadUrl = await FireStorageService.loadFromStorage(
-        context, "uploads/" + widget.imagePath);
-    setState(() {
-      widget.imagePath = downloadUrl.toString();
-      widget.recipeImage = NetworkImage(downloadUrl);
-    });
-  }
+  // void getImage(BuildContext context) async {
+  //   if (widget.recipeImage != null || widget.imagePath == "") {
+  //     return;
+  //   }
+  //   String downloadUrl = await FireStorageService.loadFromStorage(
+  //       context, "uploads/" + widget.imagePath);
+  //   setState(() {
+  //     widget.imagePath = downloadUrl.toString();
+  //     widget.recipeImage = NetworkImage(downloadUrl);
+  //   });
+  // }
 
-  void getUserImage() async {
-    DocumentSnapshot user = await Firestore.instance
-        .collection('users')
-        .document(widget.current.writerUid)
-        .get();
-    setState(() {
-      widget.imagePath = user.data['imagePath'];
-    });
-  }
+  // void getUserImage() async {
+  //   DocumentSnapshot user = await Firestore.instance
+  //       .collection('users')
+  //       .document(widget.current.writerUid)
+  //       .get();
+  //   setState(() {
+  //     widget.imagePath = user.data['imagePath'];
+  //   });
+  // }
 
   void sortIngredients() {
     setState(() {
@@ -95,7 +97,7 @@ class _EditRecipeState extends State<EditRecipe> {
 
   @override
   Widget build(BuildContext context) {
-    getImage(context);
+    // getImage(context);
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -219,8 +221,11 @@ class _EditRecipeState extends State<EditRecipe> {
     );
     await saveThisRecipe();
     Navigator.pop(dialogContext);
-    Navigator.pop(
-        context, {"recipe": widget.current, "image": widget.recipeImage});
+    Navigator.pop(context, {
+      "recipe": widget.current,
+      "image": widget.recipeImage,
+      "imagePath": widget.imagePath
+    });
   }
 
   Future<void> saveThisRecipe() async {

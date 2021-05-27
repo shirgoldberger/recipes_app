@@ -30,7 +30,7 @@ class WatchMyRecipe extends StatefulWidget {
   // username and id that like current recipe
   Map<String, String> usersLikes;
   NetworkImage image;
-
+  String imagePath;
   WatchMyRecipe(
       String _uid,
       Recipe _currentRecipe,
@@ -46,6 +46,7 @@ class WatchMyRecipe extends StatefulWidget {
     this.ingredients = _ing;
     this.stages = _stages;
     this.image = _image;
+    this.imagePath = currentRecipe.imagePath;
   }
 
   @override
@@ -65,7 +66,14 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(context, {
+              "name": widget.currentRecipe.name,
+              "writer": widget.currentRecipe.writer,
+              "level": widget.currentRecipe.level,
+              "time": widget.currentRecipe.time,
+              "image": widget.image,
+              "imagePath": widget.imagePath
+            }),
           ),
           backgroundColor: appBarBackgroundColor,
           elevation: 0.0,
@@ -179,7 +187,8 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
                       widget.stages,
                       widget.ingredients,
                       widget.levelString,
-                      widget.levelColor))).then((value) => updateRecipe(value));
+                      widget.levelColor,
+                      widget.image))).then((value) => updateRecipe(value));
         });
   }
 
@@ -190,7 +199,26 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
         widget.ingredients = r["recipe"].ingredients;
         widget.stages = r["recipe"].stages;
         widget.image = r["image"];
+        widget.imagePath = r["imagePath"];
       });
+      switch (widget.currentRecipe.level) {
+        case 1:
+          widget.levelColor = Colors.green[400];
+          widget.levelString = 'Easy';
+          break;
+        case 2:
+          widget.levelColor = Colors.yellow[400];
+          widget.levelString = 'Medium';
+          break;
+        case 3:
+          widget.levelColor = Colors.pink[400];
+          widget.levelString = 'Hard';
+          break;
+        case 0:
+          widget.levelColor = Colors.grey[400];
+          widget.levelString = 'Easy';
+          break;
+      }
     }
   }
 
