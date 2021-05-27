@@ -18,7 +18,7 @@ class WatchRecipeBody extends StatefulWidget {
   String levelString = '';
   Color timeColor;
   String timeString = '';
-  String imagePath;
+  String imagePath = "";
   NetworkImage userImage;
   NetworkImage recipeImage;
   List<bool> _isChecked = [];
@@ -48,6 +48,8 @@ class WatchRecipeBody extends StatefulWidget {
     this.levelString = _levelString;
     this.uid = _uid;
     this.recipeImage = _image;
+    print(this.ing);
+    print(this.stages);
   }
 
   @override
@@ -105,7 +107,11 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
           .collection('users')
           .document(widget.current.writerUid)
           .get();
-      widget.imagePath = writer.data['imagePath'];
+      widget.imagePath = writer.data['imagePath'] ?? "";
+      if (widget.imagePath == "") {
+        return;
+      }
+
       String downloadUrl = await FireStorageService.loadFromStorage(
           context, "uploads/" + widget.imagePath);
       if (downloadUrl != null) {
@@ -240,6 +246,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   Widget picture() {
     // there is no image yet
     if (widget.imagePath == "") {
+      print("no image");
       return CircleAvatar(
           child: TextButton(
               onPressed: () => Navigator.push(

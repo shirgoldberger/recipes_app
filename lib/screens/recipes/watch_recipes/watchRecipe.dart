@@ -46,8 +46,10 @@ class WatchRecipe extends StatefulWidget {
 class _WatchRecipeState extends State<WatchRecipe> {
   var i;
   @override
-  void initState() {
+  initState() {
     super.initState();
+    getuser();
+    makeList();
   }
 
   void getuser() async {
@@ -65,14 +67,16 @@ class _WatchRecipeState extends State<WatchRecipe> {
 
   changeState() async {
     await getuser();
-    makeList();
+    await makeList();
     setLevels();
   }
 
   @override
   Widget build(BuildContext context) {
-    changeState();
+    setLevels();
     if (!widget.done) {
+      //  getuser();
+      // changeState();
       return Loading();
     } else {
       if (widget.home) {
@@ -141,7 +145,13 @@ class _WatchRecipeState extends State<WatchRecipe> {
   }
 
   Future<void> makeList() async {
+    print("make list");
+
     if (!widget.done) {
+      setState(() {
+        widget.ing = [];
+        widget.stages = [];
+      });
       if (widget.current.saveInUser) {
         String uid = widget.current.writerUid;
 
@@ -152,18 +162,17 @@ class _WatchRecipeState extends State<WatchRecipe> {
             .document(widget.current.id.toString())
             .collection('ingredients')
             .getDocuments();
-
-        snap.documents.forEach((element) {
-          var i = element.data['count'] ?? 0.0;
+        for (int j = 0; j < snap.documents.length; j++) {
+          var i = snap.documents[j].data['count'] ?? 0.0;
 
           setState(() {
             widget.ing.add(IngredientsModel.antherConstactor(
-                element.data['name'] ?? '',
+                snap.documents[j].data['name'] ?? '',
                 i.toDouble(),
-                element.data['unit'] ?? '',
-                element.data['index'] ?? 0));
+                snap.documents[j].data['unit'] ?? '',
+                snap.documents[j].data['index'] ?? 0));
           });
-        });
+        }
         QuerySnapshot snap2 = await Firestore.instance
             .collection('users')
             .document(uid)
@@ -171,39 +180,13 @@ class _WatchRecipeState extends State<WatchRecipe> {
             .document(widget.current.id.toString())
             .collection('stages')
             .getDocuments();
-        snap2.documents.forEach((element1) {
+        for (int i = 0; i < snap2.documents.length; i++) {
           setState(() {
             widget.stages.add(Stages.antheeConstractor(
-                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
+                snap2.documents[i].data['stage'] ?? '',
+                snap2.documents[i].data['number'] ?? ''));
           });
-        });
-      } else {
-        QuerySnapshot snap = await Firestore.instance
-            .collection('recipes')
-            .document(widget.current.id)
-            .collection('ingredients')
-            .getDocuments();
-        snap.documents.forEach((element) {
-          var count = element.data['count'] ?? 0;
-          setState(() {
-            widget.ing.add(IngredientsModel.antherConstactor(
-                element.data['name'] ?? '',
-                count.toDouble(),
-                element.data['unit'] ?? '',
-                element.data['index'] ?? 0));
-          });
-        });
-        QuerySnapshot snap2 = await Firestore.instance
-            .collection('recipes')
-            .document(widget.current.id)
-            .collection('stages')
-            .getDocuments();
-        snap2.documents.forEach((element1) {
-          setState(() {
-            widget.stages.add(Stages.antheeConstractor(
-                element1.data['stage'] ?? '', element1.data['number'] ?? ''));
-          });
-        });
+        }
       }
       setState(() {
         widget.done = true;

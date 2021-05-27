@@ -372,7 +372,11 @@ class RecipeFromDB {
           .collection('saved recipe')
           .getDocuments();
       for (int j = 0; j < userSavedRecipes.documents.length; j++) {
-        if (userSavedRecipes.documents[j].data['recipeId'] == recipeId) {
+        String recipesToCheck =
+            userSavedRecipes.documents[j].data['recipeID'] ?? "";
+        print(recipesToCheck);
+        print(recipeId);
+        if (recipesToCheck == recipeId) {
           await db
               .collection('users')
               .document(users[i])
