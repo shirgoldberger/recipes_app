@@ -71,7 +71,7 @@ class _SearchPage extends State<SearchPage> {
       widget.popularRecipes = [];
     });
     final FirebaseAuth auth = FirebaseAuth.instance;
-    await auth.currentUser().then((value) {
+    await auth.currentUser().then((value) async {
       if (value != null) {
         setState(() {
           widget.uid = value.uid;
@@ -80,9 +80,9 @@ class _SearchPage extends State<SearchPage> {
         });
       } else {
         setState(() {
-          widget.doneLoadCounter = 2;
+          //  widget.doneLoadCounter = 2;
         });
-        getPopularRecipes();
+        await getPopularRecipes();
         unitRecipesList();
       }
     });
@@ -90,7 +90,8 @@ class _SearchPage extends State<SearchPage> {
 
   Future<void> changeState() async {
     if (widget.getUser) {
-      await myFriends(widget.uid);
+      List<Pair> myFreiendsRecipe = await myFriends(widget.uid);
+      //convertToRecipe(myFreiendsRecipe, 1);
       await tagsRecipe(widget.uid);
       await getPopularRecipes();
       unitRecipesList();
@@ -117,6 +118,7 @@ class _SearchPage extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    //  print(widget.doneLoadCounter);
     return MaterialApp(
         home: Scaffold(
       backgroundColor: Colors.blueGrey[50],
@@ -139,7 +141,7 @@ class _SearchPage extends State<SearchPage> {
         Center(
           child: (widget.searchMode)
               ? searchButtomWidget()
-              : (widget.doneLoadCounter != 3
+              : (widget.doneLoadCounter < 1
                   ? Column(
                       children: [
                         Container(
@@ -404,7 +406,7 @@ class _SearchPage extends State<SearchPage> {
   }
 
   //algo funcs
-  Future<void> myFriends(String uid) async {
+  Future<List<Pair>> myFriends(String uid) async {
     List<Pair> myFreiendsRecipe = [];
 
     widget.listusers = [];
@@ -417,9 +419,9 @@ class _SearchPage extends State<SearchPage> {
 
     if (snap.documents.length == 0) {
       setState(() {
-        widget.doneLoadCounter++;
+        //widget.doneLoadCounter++;
       });
-      return;
+      return myFreiendsRecipe;
     }
     snap.documents.forEach((element) async {
       String groupId = element.data['groupId'];
@@ -450,17 +452,20 @@ class _SearchPage extends State<SearchPage> {
           for (int i = 0; i < snap3.documents.length; i++) {
             String uid2 = snap3.documents[i].data['userID'];
             String recipeId2 = snap3.documents[i].data['recipeID'];
-
+            print("a");
             myFreiendsRecipe.add(Pair(uid2, recipeId2));
           }
         }
-
+        //return myFreiendsRecipe;
+        // convertToRecipe(myFreiendsRecipe, 1);
         convertToRecipe(myFreiendsRecipe, 1);
       }
     });
   }
 
   Future<void> convertToRecipe(List<Pair> pair, int cameFrom) async {
+    //print("b");
+    print(cameFrom.toString() + "   bcame from");
     for (int i = 0; i < pair.length; i++) {
       String uid = pair[i].user;
       String recipeId = pair[i].recipe;
@@ -552,22 +557,28 @@ class _SearchPage extends State<SearchPage> {
       }
     }
     setState(() {
-      widget.doneLoadCounter++;
+      print("plus");
+
+      // widget.doneLoadCounter++;
+      // print(widget.doneLoadCounter);
     });
   }
 
   Future<void> tagsRecipe(String uid) async {
+    //   print("seder 1");
     widget.listTags = [];
     DocumentSnapshot snap =
         await Firestore.instance.collection("users").document(uid).get();
     Map<dynamic, dynamic> tagsCount = snap.data['tags'];
     var sortedKeys = tagsCount.keys.toList(growable: false)
       ..sort((k1, k2) => tagsCount[k1].compareTo(tagsCount[k2]));
+    //   print("seder 2");
     LinkedHashMap sorted = new LinkedHashMap.fromIterable(sortedKeys,
         key: (k) => k, value: (k) => tagsCount[k]);
     // String maxValue = sorted.keys.elementAt(sorted.length - 1);
 
     // sorted.remove(sorted.keys.elementAt(sorted.length - 1));
+    //   print("seder 3");
     for (int i = (sorted.length - 1); i >= 0; i--) {
       String maxValue = sorted.keys.elementAt(i);
       DocumentSnapshot snap3 = await Firestore.instance
@@ -585,10 +596,11 @@ class _SearchPage extends State<SearchPage> {
         widget.listTags.add(Pair(uid2, recipeId2));
       }
 
-      convertToRecipe(widget.listTags, 2);
+      // convertToRecipe(widget.listTags, 2);
       // maxValue = sorted.keys.elementAt(sorted.length - 1);
       // sorted.remove(sorted.keys.elementAt(sorted.length - 1));
     }
+    convertToRecipe(widget.listTags, 2);
   }
 
   //popular
