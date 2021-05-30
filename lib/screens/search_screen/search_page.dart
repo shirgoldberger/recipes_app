@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +8,10 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
 import 'package:recipes_app/screens/userHeadLine.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/shared_screen/config.dart';
-import 'package:recipes_app/shared_screen/loading.dart';
 import '../recipes/watch_recipes/watchRecipe.dart';
+import 'dart:math';
 
 class Pair<T1, T2> {
   final String user;
@@ -23,7 +23,7 @@ class Pair<T1, T2> {
 // ignore: must_be_immutable
 class SearchPage extends StatefulWidget {
   bool home;
-  int doneLoadCounter = 0;
+  bool doneLoadCounter = false;
   bool doneGetUser = false;
   String uid;
   bool getUser = false;
@@ -34,9 +34,6 @@ class SearchPage extends StatefulWidget {
   List<Recipe> friendsRecipes = [];
   List<Recipe> tagsRecipes = [];
   List<Recipe> popularRecipes = [];
-  Map<String, int> amountLikesOfRecipe = {};
-  Map<String, int> amountGroupsOfRecipe = {};
-  Map<String, int> amountUsersOfRecipe = {};
   List<Pair> popular = [];
   List<String> usersId = [];
 
@@ -46,12 +43,11 @@ class SearchPage extends StatefulWidget {
   bool searchMode = false;
   Color recipePresColor = Colors.white;
   Color userPressColor = mainButtonColor;
-  double widthUser = 140;
-  double highUser = 70;
-  double widthRecipe = 120;
-  double heifhRecipe = 50;
-  double sizeUser = 14;
-  double sizeRecipe = 12;
+
+  bool doneFriends = false;
+  bool doneTags = false;
+  bool donePopular = false;
+
   @override
   _SearchPage createState() => _SearchPage();
 }
@@ -64,7 +60,7 @@ class _SearchPage extends State<SearchPage> {
 
   void getuser() async {
     setState(() {
-      widget.doneLoadCounter = 0;
+      widget.doneLoadCounter = false;
       widget.recipes = [];
       widget.friendsRecipes = [];
       widget.tagsRecipes = [];
@@ -79,9 +75,6 @@ class _SearchPage extends State<SearchPage> {
           changeState();
         });
       } else {
-        setState(() {
-          //  widget.doneLoadCounter = 2;
-        });
         await getPopularRecipes();
         unitRecipesList();
       }
@@ -90,11 +83,9 @@ class _SearchPage extends State<SearchPage> {
 
   Future<void> changeState() async {
     if (widget.getUser) {
-      List<Pair> myFreiendsRecipe = await myFriends(widget.uid);
-      //convertToRecipe(myFreiendsRecipe, 1);
-      await tagsRecipe(widget.uid);
-      await getPopularRecipes();
-      unitRecipesList();
+      myFriends(widget.uid);
+      tagsRecipe(widget.uid);
+      getPopularRecipes();
     }
   }
 
@@ -112,13 +103,15 @@ class _SearchPage extends State<SearchPage> {
   }
 
   Future<bool> refresh() async {
-    await Future.delayed(Duration(seconds: 1), getuser);
+    await Future.delayed(Duration(seconds: 0), getuser);
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    //  print(widget.doneLoadCounter);
+    if (widget.doneFriends && widget.doneTags && widget.donePopular) {
+      unitRecipesList();
+    }
     return MaterialApp(
         home: Scaffold(
       backgroundColor: Colors.blueGrey[50],
@@ -138,28 +131,105 @@ class _SearchPage extends State<SearchPage> {
         box,
         searchWidget(),
         box,
-        Center(
-          child: (widget.searchMode)
-              ? searchButtomWidget()
-              : (widget.doneLoadCounter < 1
-                  ? Column(
-                      children: [
-                        Container(
-                            child: Center(
-                          child: SpinKitCircle(
-                            color: Colors.grey[600],
-                            size: 50.0,
-                          ),
-                        )),
-                        Text('Search recipes for you...')
-                      ],
-                    )
-                  : recipeGrid()),
-        ),
+        widget.doneLoadCounter
+            ? ((widget.searchMode)
+                ? Center(child: searchButtomWidget())
+                : Center(child: recipeGrid()))
+            : Column(
+                children: [
+                  Container(
+                      child: Center(
+                    child: SpinKitCircle(
+                      color: Colors.grey[600],
+                      size: 50.0,
+                    ),
+                  )),
+                  Text('Search recipes for you...')
+                ],
+              ),
       ])))),
       resizeToAvoidBottomInset: false,
     ));
-    // }
+  }
+
+  Widget recipeGrid() {
+    return RefreshIndicator(
+        color: Colors.blue,
+        onRefresh: refresh,
+        child: Container(
+          height: (((widget.recipes.length * 200) / 3) - 300).toDouble(),
+          child: GridView.count(
+            physics: ScrollPhysics(),
+            crossAxisCount: 3,
+            children: List.generate(widget.recipes.length, (index) {
+              if (!widget.searchMode) {
+                return Container(
+                    height: 500,
+                    width: 500,
+                    child: Card(
+                      shape: RoundedRectangleBorder(side: BorderSide.none),
+                      child: _buildOneItem(index),
+                    ));
+              }
+            }),
+          ),
+        ));
+  }
+
+  Widget _buildOneItem(int index) {
+    if (widget.recipes.length <= index) {
+      return Container();
+    }
+    return FutureBuilder(
+        future: _getImage(context, widget.recipes[index].imagePath),
+        // ignore: missing_return
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done)
+            return InkWell(
+                customBorder: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                // borderRadius: BorderRadius.circular(5),
+                highlightColor: Colors.blueGrey,
+                child: Container(
+                    width: 190,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      // borderRadius: BorderRadius.circular(10),
+                      color: Colors.blueGrey[50],
+                      image: DecorationImage(
+                          image: snapshot.data == null
+                              ? ExactAssetImage(noImagePath)
+                              // : Image.network(snapshot.data.url),
+                              : snapshot.data,
+                          fit: BoxFit.cover),
+                    ),
+                    child: FlatButton(
+                      onPressed: () async {
+                        widget.recipes[index] =
+                            await RecipeFromDB.getRecipeOfUser(
+                                widget.recipes[index].writerUid,
+                                widget.recipes[index].id);
+
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WatchRecipe(
+                                    widget.recipes[index],
+                                    true,
+                                    snapshot.data,
+                                    "")));
+                      },
+                    )));
+          if (snapshot.connectionState == ConnectionState.waiting)
+            return Container(
+                child: Center(
+              child: SpinKitCircle(
+                color: Colors.grey[600],
+                size: 50.0,
+              ),
+            ));
+        });
   }
 
   Widget searchButtomWidget() {
@@ -186,12 +256,6 @@ class _SearchPage extends State<SearchPage> {
                           widget.recipePress = true;
                           widget.recipePresColor = mainButtonColor;
                           widget.userPressColor = Colors.white;
-                          widget.highUser = 50;
-                          widget.widthUser = 120;
-                          widget.heifhRecipe = 70;
-                          widget.widthRecipe = 140;
-                          widget.sizeRecipe = 14;
-                          widget.sizeUser = 12;
                         })
                       },
                       color: widget.recipePresColor,
@@ -233,12 +297,6 @@ class _SearchPage extends State<SearchPage> {
                           widget.recipePress = false;
                           widget.recipePresColor = Colors.white;
                           widget.userPressColor = mainButtonColor;
-                          widget.highUser = 70;
-                          widget.widthUser = 140;
-                          widget.heifhRecipe = 50;
-                          widget.widthRecipe = 120;
-                          widget.sizeRecipe = 12;
-                          widget.sizeUser = 14;
                         })
                       },
                       color: widget.userPressColor,
@@ -269,34 +327,12 @@ class _SearchPage extends State<SearchPage> {
     );
   }
 
-  Widget recipeGrid() {
-    return RefreshIndicator(
-        color: Colors.blue,
-        onRefresh: refresh,
-        child: Container(
-          height: 2000,
-          child: GridView.count(
-            physics: AlwaysScrollableScrollPhysics(),
-            crossAxisCount: 3,
-            children: List.generate(widget.recipes.length, (index) {
-              if (!widget.searchMode) {
-                return Container(
-                    height: 500,
-                    width: 500,
-                    child: Card(
-                      shape: RoundedRectangleBorder(side: BorderSide.none),
-                      child: _buildOneItem(index),
-                    ));
-              }
-            }),
-          ),
-        ));
-  }
-
   Widget searchUsersWidget() {
     return Container(
+        height: (((widget.usersId.length * 150)) - 300).toDouble(),
         child: ListView.builder(
             shrinkWrap: true,
+            physics: ScrollPhysics(),
             padding: EdgeInsets.only(top: 1, bottom: 1, left: 5, right: 5),
             itemCount: widget.usersId.length,
             itemBuilder: (context, index) {
@@ -322,10 +358,12 @@ class _SearchPage extends State<SearchPage> {
   }
 
   Widget searcRecipesWidget() {
-    //recipes
+    // recipes
     return Container(
+        height: (widget.recipesSearch.length * 150).toDouble(),
         child: ListView.builder(
             shrinkWrap: true,
+            physics: ScrollPhysics(),
             padding: EdgeInsets.only(top: 1, bottom: 1, left: 5, right: 5),
             itemCount: widget.recipesSearch.length,
             itemBuilder: (context, index) {
@@ -349,371 +387,7 @@ class _SearchPage extends State<SearchPage> {
                           child: RecipeHeadLine(
                               widget.recipesSearch[index], true, ""))));
             }));
-
-    // child: UserHeadLine(
-    //     widget.listForWatch[index], widget.home))));
   }
-
-  Widget _buildOneItem(int index) {
-    if (widget.recipes.length <= index) {
-      return Container();
-    }
-    return FutureBuilder(
-        future: _getImage(context, widget.recipes[index].imagePath),
-        // ignore: missing_return
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done)
-            return InkWell(
-                customBorder: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                // borderRadius: BorderRadius.circular(5),
-                highlightColor: Colors.blueGrey,
-                child: Container(
-                    width: 190,
-                    height: 180,
-                    decoration: BoxDecoration(
-                      // borderRadius: BorderRadius.circular(10),
-                      color: Colors.blueGrey[50],
-                      image: DecorationImage(
-                          image: snapshot.data == null
-                              ? ExactAssetImage(noImagePath)
-                              // : Image.network(snapshot.data.url),
-                              : snapshot.data,
-                          fit: BoxFit.cover),
-                    ),
-                    child: FlatButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => WatchRecipe(
-                                    widget.recipes[index],
-                                    true,
-                                    snapshot.data,
-                                    "")));
-                      },
-                    )));
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return Container(
-                child: Center(
-              child: SpinKitCircle(
-                color: Colors.grey[600],
-                size: 50.0,
-              ),
-            ));
-        });
-  }
-
-  //algo funcs
-  Future<List<Pair>> myFriends(String uid) async {
-    List<Pair> myFreiendsRecipe = [];
-
-    widget.listusers = [];
-    int i = 0;
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(uid)
-        .collection('groups')
-        .getDocuments();
-
-    if (snap.documents.length == 0) {
-      setState(() {
-        //widget.doneLoadCounter++;
-      });
-      return myFreiendsRecipe;
-    }
-    snap.documents.forEach((element) async {
-      String groupId = element.data['groupId'];
-      DocumentSnapshot snapGroup =
-          await Firestore.instance.collection('Group').document(groupId).get();
-      List users = snapGroup.data['users'];
-
-      widget.listusers.addAll(users);
-      widget.listusers.remove(uid);
-
-      final seen = Set<String>();
-      final unique = widget.listusers.where((str) => seen.add(str)).toList();
-      setState(() {
-        widget.listusers = [];
-        widget.listusers.addAll(unique);
-      });
-
-      i++;
-
-      if (i == snap.documents.length) {
-        for (int i = 0; i < widget.listusers.length; i++) {
-          QuerySnapshot snap3 = await Firestore.instance
-              .collection('users')
-              .document(widget.listusers[i])
-              .collection('saved recipe')
-              .getDocuments();
-
-          for (int i = 0; i < snap3.documents.length; i++) {
-            String uid2 = snap3.documents[i].data['userID'];
-            String recipeId2 = snap3.documents[i].data['recipeID'];
-            print("a");
-            myFreiendsRecipe.add(Pair(uid2, recipeId2));
-          }
-        }
-        //return myFreiendsRecipe;
-        // convertToRecipe(myFreiendsRecipe, 1);
-        convertToRecipe(myFreiendsRecipe, 1);
-      }
-    });
-  }
-
-  Future<void> convertToRecipe(List<Pair> pair, int cameFrom) async {
-    //print("b");
-    print(cameFrom.toString() + "   bcame from");
-    for (int i = 0; i < pair.length; i++) {
-      String uid = pair[i].user;
-      String recipeId = pair[i].recipe;
-      DocumentSnapshot doc = await Firestore.instance
-          .collection('users')
-          .document(uid)
-          .collection('recipes')
-          .document(recipeId)
-          .get();
-      if (doc == null) {}
-      String n = doc.data['name'] ?? '';
-      String de = doc.data['description'] ?? '';
-      String level = doc.data['level'] ?? 0;
-      String time = doc.data['time'] ?? '0';
-      int timeI = int.parse(time);
-      String writer = doc.data['writer'] ?? '';
-      String writerUid = doc.data['writerUid'] ?? '';
-      String id = doc.data['recipeID'] ?? '';
-      //
-      String publish = doc.data['publishID'] ?? '';
-      String path = doc.data['imagePath'] ?? '';
-      int levlelInt = int.parse(level);
-      //tags
-      var tags = doc.data['tags'];
-      String tagString = tags.toString();
-      List<String> l = [];
-      if (tagString != "[]") {
-        String tag = tagString.substring(1, tagString.length - 1);
-        l = tag.split(',');
-        for (int i = 0; i < l.length; i++) {
-          if (l[i][0] == ' ') {
-            l[i] = l[i].substring(1, l[i].length);
-          }
-        }
-      }
-      //notes
-      var note = doc.data['tags'];
-      String noteString = note.toString();
-      List<String> nList = [];
-      if (noteString != "[]") {
-        String tag = noteString.substring(1, noteString.length - 1);
-        nList = tag.split(',');
-        for (int i = 0; i < nList.length; i++) {
-          if (nList[i][0] == ' ') {
-            nList[i] = nList[i].substring(1, nList[i].length);
-          }
-        }
-      }
-      Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
-          true, id, publish, path);
-      switch (cameFrom) {
-        case 1:
-          bool check = false;
-
-          for (int i = 0; i < widget.friendsRecipes.length; i++) {
-            if (widget.friendsRecipes[i].id == r.id) {
-              check = true;
-            }
-          }
-          if (!check) {
-            widget.friendsRecipes.add(r);
-          }
-          break;
-        case 2:
-          bool check = false;
-
-          for (int i = 0; i < widget.tagsRecipes.length; i++) {
-            if (widget.tagsRecipes[i].id == r.id) {
-              check = true;
-            }
-          }
-          if (!check) {
-            widget.tagsRecipes.add(r);
-          }
-          break;
-        case 3:
-          bool check = false;
-
-          for (int i = 0; i < widget.popularRecipes.length; i++) {
-            if (widget.popularRecipes[i].id == r.id) {
-              check = true;
-            }
-          }
-          if (!check) {
-            widget.popularRecipes.add(r);
-          }
-          break;
-        default:
-      }
-    }
-    setState(() {
-      print("plus");
-
-      // widget.doneLoadCounter++;
-      // print(widget.doneLoadCounter);
-    });
-  }
-
-  Future<void> tagsRecipe(String uid) async {
-    //   print("seder 1");
-    widget.listTags = [];
-    DocumentSnapshot snap =
-        await Firestore.instance.collection("users").document(uid).get();
-    Map<dynamic, dynamic> tagsCount = snap.data['tags'];
-    var sortedKeys = tagsCount.keys.toList(growable: false)
-      ..sort((k1, k2) => tagsCount[k1].compareTo(tagsCount[k2]));
-    //   print("seder 2");
-    LinkedHashMap sorted = new LinkedHashMap.fromIterable(sortedKeys,
-        key: (k) => k, value: (k) => tagsCount[k]);
-    // String maxValue = sorted.keys.elementAt(sorted.length - 1);
-
-    // sorted.remove(sorted.keys.elementAt(sorted.length - 1));
-    //   print("seder 3");
-    for (int i = (sorted.length - 1); i >= 0; i--) {
-      String maxValue = sorted.keys.elementAt(i);
-      DocumentSnapshot snap3 = await Firestore.instance
-          .collection('tags')
-          .document('xt0XXXOLgprfkO3QiANs')
-          .get();
-      List publishTecipe = snap3.data[maxValue];
-      for (int i = 0; i < publishTecipe.length; i++) {
-        DocumentSnapshot snap4 = await Firestore.instance
-            .collection('publish recipe')
-            .document(publishTecipe[i])
-            .get();
-        String uid2 = snap4.data['userID'];
-        String recipeId2 = snap4.data['recipeId'];
-        widget.listTags.add(Pair(uid2, recipeId2));
-      }
-
-      // convertToRecipe(widget.listTags, 2);
-      // maxValue = sorted.keys.elementAt(sorted.length - 1);
-      // sorted.remove(sorted.keys.elementAt(sorted.length - 1));
-    }
-    convertToRecipe(widget.listTags, 2);
-  }
-
-  //popular
-
-  Future<void> getPopularRecipes() async {
-    await getUserAmount();
-
-    await getGroupsAmount();
-
-    await getLikesAmount();
-    await getUserAndRecipe();
-
-    await convertToRecipe(widget.popular, 3);
-  }
-
-  getUserAndRecipe() async {
-    setState(() {
-      widget.amountGroupsOfRecipe = LinkedHashMap.fromEntries(
-          widget.amountGroupsOfRecipe.entries.toList().reversed);
-      widget.amountLikesOfRecipe = LinkedHashMap.fromEntries(
-          widget.amountLikesOfRecipe.entries.toList().reversed);
-      widget.amountUsersOfRecipe = LinkedHashMap.fromEntries(
-          widget.amountUsersOfRecipe.entries.toList().reversed);
-    });
-    bool doneLiles = false;
-    bool doneGroups = false;
-    bool doneUsers = false;
-    int i = 0;
-    while ((!doneUsers) || (!doneGroups) || (!doneLiles)) {
-      if (i < widget.amountLikesOfRecipe.length) {
-        await addToPopular(widget.amountLikesOfRecipe.keys.elementAt(i));
-      } else {
-        doneLiles = true;
-      }
-      if (i < widget.amountGroupsOfRecipe.length) {
-        await addToPopular(widget.amountGroupsOfRecipe.keys.elementAt(i));
-      } else {
-        doneGroups = true;
-      }
-      if (i < widget.amountUsersOfRecipe.length) {
-        await addToPopular(widget.amountUsersOfRecipe.keys.elementAt(i));
-      } else {
-        doneUsers = true;
-      }
-      i++;
-    }
-  }
-
-  Future<void> addToPopular(String docID) async {
-    var recipe = await Firestore.instance
-        .collection('publish recipe')
-        .document(docID)
-        .get();
-    String recipeId = recipe.data['recipeId'];
-    String userId = recipe.data['userID'];
-    setState(() {
-      widget.popular.add(Pair(userId, recipeId));
-    });
-  }
-
-  getUserAmount() async {
-    widget.amountUsersOfRecipe = {};
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    for (int i = 0; i < snap.documents.length; i++) {
-      String recipeId = snap.documents[i].documentID.toString();
-      List users = snap.documents[i].data['saveUser'] ?? [];
-      int amount = users.length;
-      widget.amountUsersOfRecipe[recipeId] = amount;
-    }
-    var sortedKeys = widget.amountUsersOfRecipe.keys.toList(growable: false)
-      ..sort((k1, k2) => widget.amountUsersOfRecipe[k1]
-          .compareTo(widget.amountUsersOfRecipe[k2]));
-    widget.amountUsersOfRecipe = new LinkedHashMap.fromIterable(sortedKeys,
-        key: (k) => k, value: (k) => widget.amountUsersOfRecipe[k]);
-  }
-
-  getGroupsAmount() async {
-    widget.amountGroupsOfRecipe = {};
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) {
-      String recipeId = element.documentID.toString();
-      List groups = element.data['saveInGroup'] ?? [];
-      int amount = groups.length;
-      widget.amountGroupsOfRecipe[recipeId] = amount;
-    });
-    var sortedKeys = widget.amountGroupsOfRecipe.keys.toList(growable: false)
-      ..sort((k1, k2) => widget.amountGroupsOfRecipe[k1]
-          .compareTo(widget.amountGroupsOfRecipe[k2]));
-    widget.amountGroupsOfRecipe = new LinkedHashMap.fromIterable(sortedKeys,
-        key: (k) => k, value: (k) => widget.amountGroupsOfRecipe[k]);
-  }
-
-  getLikesAmount() async {
-    widget.amountLikesOfRecipe = {};
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    // get amount of likes of all the publish recipes
-    snap.documents.forEach((element) {
-      String recipeId = element.documentID.toString();
-      List likes = element.data['likes'] ?? [];
-      int amount = likes.length;
-      widget.amountLikesOfRecipe[recipeId] = amount;
-    });
-    var sortedKeys = widget.amountLikesOfRecipe.keys.toList(growable: false)
-      ..sort((k1, k2) => widget.amountLikesOfRecipe[k1]
-          .compareTo(widget.amountLikesOfRecipe[k2]));
-    widget.amountLikesOfRecipe = new LinkedHashMap.fromIterable(sortedKeys,
-        key: (k) => k, value: (k) => widget.amountLikesOfRecipe[k]);
-  }
-
-  List<String> userId = [];
 
   Widget searchWidget() {
     return Container(
@@ -803,56 +477,21 @@ class _SearchPage extends State<SearchPage> {
     });
   }
 
+  List<String> userId = [];
+
   Future convertToRecipeForSearch(Pair pair) async {
     String uid = pair.user;
     String recipeId = pair.recipe;
-    DocumentSnapshot doc = await Firestore.instance
+
+    DocumentSnapshot recipe = await Firestore.instance
         .collection('users')
         .document(uid)
         .collection('recipes')
         .document(recipeId)
         .get();
-    String n = doc.data['name'] ?? '';
-    String de = doc.data['description'] ?? '';
-    String level = doc.data['level'] ?? 0;
-    String time = doc.data['time'] ?? '0';
-    int timeI = int.parse(time);
-    String writer = doc.data['writer'] ?? '';
-    String writerUid = doc.data['writerUid'] ?? '';
-    String id = doc.data['recipeID'] ?? '';
-    //
-    String publish = doc.data['publishID'] ?? '';
-    String path = doc.data['imagePath'] ?? '';
-    int levlelInt = int.parse(level);
-    //tags
-    var tags = doc.data['tags'];
-    String tagString = tags.toString();
-    List<String> l = [];
-    if (tagString != "[]") {
-      String tag = tagString.substring(1, tagString.length - 1);
-      l = tag.split(',');
-      for (int i = 0; i < l.length; i++) {
-        if (l[i][0] == ' ') {
-          l[i] = l[i].substring(1, l[i].length);
-        }
-      }
-    }
-    //notes
-    var note = doc.data['tags'];
-    String noteString = note.toString();
-    List<String> nList = [];
-    if (noteString != "[]") {
-      String tag = noteString.substring(1, noteString.length - 1);
-      nList = tag.split(',');
-      for (int i = 0; i < nList.length; i++) {
-        if (nList[i][0] == ' ') {
-          nList[i] = nList[i].substring(1, nList[i].length);
-        }
-      }
-    }
+    Recipe r = RecipeFromDB.convertSnapshotToRecipe(recipe);
     bool check = false;
-    Recipe r = Recipe(n, de, l, levlelInt, nList, writer, writerUid, timeI,
-        true, id, publish, path);
+
     for (int i = 0; i < widget.recipesSearch.length; i++) {
       if (widget.recipesSearch[i].id == r.id) {
         check = true;
@@ -862,6 +501,209 @@ class _SearchPage extends State<SearchPage> {
       setState(() {
         widget.recipesSearch.add(r);
       });
+    }
+  }
+
+  // *** algorithm functions *** //
+
+  Future myFriends(String uid) async {
+    List<Pair> myFreiendsRecipe = [];
+
+    widget.listusers = [];
+    int i = 0;
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('groups')
+        .getDocuments();
+
+    if (snap.documents.length == 0) {
+      return myFreiendsRecipe;
+    }
+    snap.documents.forEach((element) async {
+      String groupId = element.data['groupId'];
+      DocumentSnapshot snapGroup =
+          await Firestore.instance.collection('Group').document(groupId).get();
+      List users = snapGroup.data['users'];
+
+      widget.listusers.addAll(users);
+      widget.listusers.remove(uid);
+
+      final seen = Set<String>();
+      final unique = widget.listusers.where((str) => seen.add(str)).toList();
+      setState(() {
+        widget.listusers = [];
+        widget.listusers.addAll(unique);
+      });
+
+      i++;
+
+      if (i == snap.documents.length) {
+        for (int i = 0; i < widget.listusers.length; i++) {
+          QuerySnapshot snap3 = await Firestore.instance
+              .collection('users')
+              .document(widget.listusers[i])
+              .collection('saved recipe')
+              .getDocuments();
+
+          for (int i = 0; i < snap3.documents.length; i++) {
+            String uid2 = snap3.documents[i].data['userID'];
+            String recipeId2 = snap3.documents[i].data['recipeID'];
+            myFreiendsRecipe.add(Pair(uid2, recipeId2));
+          }
+        }
+        convertToRecipe(myFreiendsRecipe, 1);
+      }
+    });
+  }
+
+  Future<void> tagsRecipe(String uid) async {
+    widget.listTags = [];
+    DocumentSnapshot snap =
+        await Firestore.instance.collection("users").document(uid).get();
+    Map<dynamic, dynamic> tagsCount = snap.data['tags'];
+    var sortedKeys = tagsCount.keys.toList(growable: false)
+      ..sort((k1, k2) => tagsCount[k1].compareTo(tagsCount[k2]));
+    LinkedHashMap sorted = new LinkedHashMap.fromIterable(sortedKeys,
+        key: (k) => k, value: (k) => tagsCount[k]);
+    for (int i = (sorted.length - 1); i >= (sorted.length - 3); i--) {
+      String maxValue = sorted.keys.elementAt(i);
+      DocumentSnapshot snap3 = await Firestore.instance
+          .collection('tags')
+          .document('xt0XXXOLgprfkO3QiANs')
+          .get();
+      List publishTecipe = snap3.data[maxValue];
+      for (int i = 0; i < publishTecipe.length; i++) {
+        DocumentSnapshot snap4 = await Firestore.instance
+            .collection('publish recipe')
+            .document(publishTecipe[i])
+            .get();
+        String uid2 = snap4.data['userID'];
+        String recipeId2 = snap4.data['recipeId'];
+        widget.listTags.add(Pair(uid2, recipeId2));
+      }
+    }
+    convertToRecipe(widget.listTags, 2);
+  }
+
+  Future getPopularRecipes() async {
+    Map<String, double> amounts = {};
+    QuerySnapshot snap =
+        await Firestore.instance.collection('publish recipe').getDocuments();
+    for (int i = 0; i < snap.documents.length; i++) {
+      String recipeId = snap.documents[i].documentID.toString();
+      List users = snap.documents[i].data['saveUser'] ?? [];
+      int amountUsers = users.length;
+
+      List groups = snap.documents[i].data['saveInGroup'] ?? [];
+      int amountGroups = groups.length;
+
+      List likes = snap.documents[i].data['likes'] ?? [];
+      int amountLikes = likes.length;
+
+      amounts[recipeId] = (calculate(amountLikes) +
+              calculate(amountGroups) +
+              calculate(amountUsers)) /
+          3;
+    }
+    var sortedKeys = amounts.keys.toList(growable: false)
+      ..sort((k1, k2) => amounts[k1].compareTo(amounts[k2]));
+    amounts = new LinkedHashMap.fromIterable(sortedKeys,
+        key: (k) => k, value: (k) => amounts[k]);
+
+    for (int i = amounts.length - 1; i >= 0; i--) {
+      await addToPopular(amounts.keys.elementAt(i));
+    }
+    await convertToRecipe(widget.popular, 3);
+  }
+
+  Future<void> addToPopular(String docID) async {
+    var recipe = await Firestore.instance
+        .collection('publish recipe')
+        .document(docID)
+        .get();
+    String recipeId = recipe.data['recipeId'];
+    String userId = recipe.data['userID'];
+    setState(() {
+      widget.popular.add(Pair(userId, recipeId));
+    });
+  }
+
+  double calculate(int n) {
+    double e = exp(-n);
+    return (1 / (1 + e)) * 2 - 1;
+  }
+
+  Future convertToRecipe(List<Pair> pair, int cameFrom) async {
+    for (int i = 0; i < pair.length; i++) {
+      String writerId = pair[i].user;
+      String recipeId = pair[i].recipe;
+      DocumentSnapshot recipe = await Firestore.instance
+          .collection('users')
+          .document(writerId)
+          .collection('recipes')
+          .document(recipeId)
+          .get();
+      String path = recipe.data['imagePath'] ?? '';
+      Recipe r = Recipe.forSearchRecipe(recipeId, writerId, path);
+
+      switch (cameFrom) {
+        case 1:
+          bool check = false;
+
+          for (int i = 0; i < widget.friendsRecipes.length; i++) {
+            if (widget.friendsRecipes[i].id == r.id) {
+              check = true;
+            }
+          }
+          if (!check) {
+            widget.friendsRecipes.add(r);
+          }
+          break;
+        case 2:
+          bool check = false;
+
+          for (int i = 0; i < widget.tagsRecipes.length; i++) {
+            if (widget.tagsRecipes[i].id == r.id) {
+              check = true;
+            }
+          }
+          if (!check) {
+            widget.tagsRecipes.add(r);
+          }
+          break;
+        case 3:
+          bool check = false;
+
+          for (int i = 0; i < widget.popularRecipes.length; i++) {
+            if (widget.popularRecipes[i].id == r.id) {
+              check = true;
+            }
+          }
+          if (!check) {
+            widget.popularRecipes.add(r);
+          }
+          break;
+        default:
+      }
+    }
+    switch (cameFrom) {
+      case 1:
+        setState(() {
+          widget.doneFriends = true;
+        });
+        break;
+      case 2:
+        setState(() {
+          widget.doneTags = true;
+        });
+        break;
+      case 3:
+        setState(() {
+          widget.donePopular = true;
+        });
+        break;
+      default:
     }
   }
 
@@ -927,8 +769,13 @@ class _SearchPage extends State<SearchPage> {
       }
       i++;
       setState(() {
-        widget.doneLoadCounter = 3;
+        widget.doneLoadCounter = true;
       });
     }
+    setState(() {
+      widget.doneFriends = false;
+      widget.donePopular = false;
+      widget.doneTags = false;
+    });
   }
 }

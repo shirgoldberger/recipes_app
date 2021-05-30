@@ -81,6 +81,8 @@ class RecipeFromDB {
         }
       }
     }
+
+    // notes
     List nList = recipe.data['notes'];
     List<String> noteList = [];
     for (int i = 0; i < nList.length; i++) {
@@ -203,15 +205,6 @@ class RecipeFromDB {
 
   static Future<void> deleteFromDirectoryRecipe(String uid, String recipeUserid,
       String recipeId, String publishId, String directoryId) async {
-    // //get publish id
-    // DocumentSnapshot publishRecipe = await Firestore.instance
-    //     .collection('users')
-    //     .document(recipeUserid)
-    //     .collection('recipes')
-    //     .document(recipeId)
-    //     .get();
-    // String publishID = publishRecipe.data['publishID'];
-    //delete from directory
     DocumentSnapshot directory = await Firestore.instance
         .collection('users')
         .document(uid)
@@ -473,5 +466,13 @@ class RecipeFromDB {
       directoryRecipes.add(r);
     }
     return directoryRecipes;
+  }
+
+  static getPublishRecipe(String id) async {
+    DocumentSnapshot publishRecipe = await Firestore.instance
+        .collection('publish recipe')
+        .document(id)
+        .get();
+    return publishRecipe;
   }
 }

@@ -209,4 +209,11 @@ class UserFromDB {
         .document(d.id)
         .updateData({'Recipes': copyRecipes});
   }
+
+  static Future getUserTags(String uid) async {
+    DocumentSnapshot snap =
+        await Firestore.instance.collection("users").document(uid).get();
+    Map<dynamic, dynamic> tagsCount = snap.data['tags'];
+    return tagsCount;
+  }
 }

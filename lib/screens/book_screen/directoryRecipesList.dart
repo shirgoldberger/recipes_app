@@ -2,12 +2,15 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/book_screen/changeDirectoryName.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
+import 'package:recipes_app/services/database.dart';
 import 'package:recipes_app/services/userFromDB.dart';
 import '../../shared_screen/config.dart';
+import 'myRecipes.dart';
 
 // ignore: must_be_immutable
 class DirectoryRecipesList extends StatefulWidget {
@@ -39,18 +42,25 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: appBar(),
-        endDrawer: widget.toDelete ? leftMenu() : null,
-        body: Column(
-            children: (widget.directory.recipes.length == 0)
-                ? <Widget>[box, noRecipesText()]
-                : [
-                    Expanded(
-                      child: recipesList(),
-                    )
-                  ]));
+    if (widget.directory.name == "My Recipes") {
+      return StreamProvider<List<Recipe>>.value(
+          value: DataBaseService(widget.uid).recipe,
+          child: MyRecipes(
+              Directory(name: "My Recipes"), widget.uid, false, null));
+    } else {
+      return Scaffold(
+          backgroundColor: backgroundColor,
+          appBar: appBar(),
+          endDrawer: widget.toDelete ? leftMenu() : null,
+          body: Column(
+              children: (widget.directory.recipes.length == 0)
+                  ? <Widget>[box, noRecipesText()]
+                  : [
+                      Expanded(
+                        child: recipesList(),
+                      )
+                    ]));
+    }
   }
 
   Widget appBar() {
@@ -71,7 +81,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
 
   Widget noRecipesText() {
     return Text(
-      "there is no recipes in this group - lets add some recipes...",
+      "there is no recipes in this directory - lets add some recipes...",
       style: TextStyle(
           fontFamily: 'Raleway', fontSize: 30, color: appBarTextColor),
       textAlign: TextAlign.center,

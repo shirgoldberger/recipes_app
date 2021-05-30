@@ -62,6 +62,12 @@ class _DirectoriesListState extends State<DirectoriesList> {
         setState(() {});
       },
     );
+    // return ListView.builder(
+    //     padding: EdgeInsets.only(left: 6.0, right: 6.0),
+    //     itemCount: widget.directories.length,
+    //     itemBuilder: (context, index) {
+    //       return directoryTitle(index);
+    //     });
   }
 
   Widget directoryTitle(Directory d) {
@@ -91,6 +97,7 @@ class _DirectoriesListState extends State<DirectoriesList> {
           );
           await getDirectoryRecipes(d);
           Navigator.pop(dialogContext);
+
           Navigator.push(
               context,
               MaterialPageRoute(

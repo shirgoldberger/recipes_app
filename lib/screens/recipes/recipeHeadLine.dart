@@ -125,42 +125,44 @@ class _RecipeHeadLineState extends State<RecipeHeadLine> {
   }
 
   void updateRecipe(var r) {
-    widget.recipe.name = r["name"];
-    widget.recipe.writer = r["writer"];
-    widget.recipe.level = r["level"];
-    switch (widget.recipe.level) {
-      case 1:
-        widget.circleColor = Colors.green[400];
-        widget.level = 'Easy';
-        break;
-      case 2:
-        widget.circleColor = Colors.yellow[400];
-        widget.level = 'Medium';
-        break;
-      case 3:
-        widget.circleColor = Colors.pink[400];
-        widget.level = 'Hard';
-        break;
-      case 0:
-        widget.circleColor = Colors.grey[400];
-        widget.level = 'Easy';
-        break;
+    if (r != null) {
+      widget.recipe.name = r["name"];
+      widget.recipe.writer = r["writer"];
+      widget.recipe.level = r["level"];
+      switch (widget.recipe.level) {
+        case 1:
+          widget.circleColor = Colors.green[400];
+          widget.level = 'Easy';
+          break;
+        case 2:
+          widget.circleColor = Colors.yellow[400];
+          widget.level = 'Medium';
+          break;
+        case 3:
+          widget.circleColor = Colors.pink[400];
+          widget.level = 'Hard';
+          break;
+        case 0:
+          widget.circleColor = Colors.grey[400];
+          widget.level = 'Easy';
+          break;
+      }
+      widget.recipe.time = r["time"];
+      switch (widget.recipe.time) {
+        case 1:
+          widget.time = 'Until half-hour';
+          break;
+        case 2:
+          widget.time = 'Until hour';
+          break;
+        case 3:
+          widget.time = 'Over an hour';
+          break;
+      }
+      widget.image = r["image"];
+      widget.imagePath = r["imagePath"];
+      setState(() {});
     }
-    widget.recipe.time = r["time"];
-    switch (widget.recipe.time) {
-      case 1:
-        widget.time = 'Until half-hour';
-        break;
-      case 2:
-        widget.time = 'Until hour';
-        break;
-      case 3:
-        widget.time = 'Over an hour';
-        break;
-    }
-    widget.image = r["image"];
-    widget.imagePath = r["imagePath"];
-    setState(() {});
   }
 
   void _getImage(BuildContext context) async {

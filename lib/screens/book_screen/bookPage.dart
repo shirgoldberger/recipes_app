@@ -71,7 +71,7 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
                             'lib/images/favorite.JPG', "favorites"),
                         widthBox(10),
                         categoryButtomICreate(
-                            'lib/images/i_created.JPG', "I created"),
+                            'lib/images/i_created.JPG', "My Recipes"),
                       ],
                     ),
                     heightBox(10),
@@ -188,7 +188,7 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
                         Directory(recipes: widget.myRecipe, name: name),
                         widget.user,
                         false,
-                        "favorite")));
+                        "")));
           })),
     );
   }

@@ -150,6 +150,11 @@ class _AddRecipeNotesState extends State<AddRecipeNotes> {
     setState(() {
       notes.removeAt(i);
     });
+    if (notes.length == 0) {
+      setState(() {
+        widget.error = "";
+      });
+    }
   }
 
   Widget nextLevelButton() {

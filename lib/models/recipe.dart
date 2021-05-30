@@ -48,8 +48,9 @@ class Recipe {
     this.imagePath = _imagePath;
   }
 
-  Recipe.forSearchRecipe(String _id, String _path) {
+  Recipe.forSearchRecipe(String _id, String uid, String _path) {
     this.id = _id;
+    this.writerUid = uid;
     this.imagePath = _path;
   }
 

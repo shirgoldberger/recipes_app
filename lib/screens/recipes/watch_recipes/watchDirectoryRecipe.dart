@@ -377,16 +377,19 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
 
   Widget addNoteIcon() {
     // ignore: deprecated_member_use
-    return FlatButton.icon(
-        icon: Icon(
-          Icons.note_add,
-        ),
-        label: Text(
-          'add note',
-          style: TextStyle(fontFamily: 'Raleway'),
-        ),
-        onPressed: () {
-          _showNotesPanel(widget.uid);
-        });
+    return Visibility(
+      visible: widget.uid != widget.currentRecipe.writerUid,
+      child: FlatButton.icon(
+          icon: Icon(
+            Icons.note_add,
+          ),
+          label: Text(
+            'add note',
+            style: TextStyle(fontFamily: 'Raleway'),
+          ),
+          onPressed: () {
+            _showNotesPanel(widget.uid);
+          }),
+    );
   }
 }

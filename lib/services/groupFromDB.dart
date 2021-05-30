@@ -154,4 +154,13 @@ class GroupFromDB {
       }
     }
   }
+
+  static getUserGroups(String uid) async {
+    QuerySnapshot groups = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('groups')
+        .getDocuments();
+    return groups;
+  }
 }

@@ -84,7 +84,8 @@ class _WatchRecipeState extends State<WatchRecipe> {
         return WatchPublishRecipe(widget.uid, widget.current, widget.levelColor,
             widget.levelString, widget.ing, widget.stages, widget.image);
       } else {
-        if (widget.uid == widget.current.writerUid) {
+        if (widget.uid == widget.current.writerUid &&
+            widget.directory == null) {
           // 1
           return WatchMyRecipe(widget.uid, widget.current, widget.levelColor,
               widget.levelString, widget.ing, widget.stages, widget.image);
