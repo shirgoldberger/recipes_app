@@ -1,3 +1,5 @@
+/// the home page - recipes by tags ///
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/shared_screen/config.dart';

@@ -3,7 +3,6 @@ import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
-
 import 'directoryRecipesList.dart';
 
 // ignore: must_be_immutable
@@ -62,12 +61,6 @@ class _DirectoriesListState extends State<DirectoriesList> {
         setState(() {});
       },
     );
-    // return ListView.builder(
-    //     padding: EdgeInsets.only(left: 6.0, right: 6.0),
-    //     itemCount: widget.directories.length,
-    //     itemBuilder: (context, index) {
-    //       return directoryTitle(index);
-    //     });
   }
 
   Widget directoryTitle(Directory d) {
@@ -118,6 +111,9 @@ class _DirectoriesListState extends State<DirectoriesList> {
                     (element) => element.id == d.id,
                     orElse: () => null);
                 if (directory != null) {
+                  widget.directories
+                      .firstWhere((element) => element.id == d.id)
+                      .name = value;
                   directory.name = value;
                 }
               });

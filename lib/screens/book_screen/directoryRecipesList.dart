@@ -1,6 +1,4 @@
 import 'dart:ui';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/models/directory.dart';
@@ -43,6 +41,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
   @override
   Widget build(BuildContext context) {
     if (widget.directory.name == "My Recipes") {
+      // ignore: missing_required_param
       return StreamProvider<List<Recipe>>.value(
           value: DataBaseService(widget.uid).recipe,
           child: MyRecipes(
@@ -81,7 +80,7 @@ class _DirectoryRecipesListState extends State<DirectoryRecipesList> {
 
   Widget noRecipesText() {
     return Text(
-      "there is no recipes in this directory - lets add some recipes...",
+      "There is no recipes in this directory - lets add some recipes...",
       style: TextStyle(
           fontFamily: 'Raleway', fontSize: 30, color: appBarTextColor),
       textAlign: TextAlign.center,

@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
-import 'package:recipes_app/screens/userHeadLine.dart';
+import 'package:recipes_app/screens/search_screen/userHeadLine.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/shared_screen/config.dart';
@@ -68,6 +68,9 @@ class _SearchPage extends State<SearchPage> {
     });
     final FirebaseAuth auth = FirebaseAuth.instance;
     await auth.currentUser().then((value) async {
+      if (!mounted) {
+        return;
+      }
       if (value != null) {
         setState(() {
           widget.uid = value.uid;
@@ -75,7 +78,11 @@ class _SearchPage extends State<SearchPage> {
           changeState();
         });
       } else {
-        await getPopularRecipes();
+        await getPopularRecipes().then((value) {
+          if (!mounted) {
+            return;
+          }
+        });
         unitRecipesList();
       }
     });
@@ -614,7 +621,11 @@ class _SearchPage extends State<SearchPage> {
     for (int i = amounts.length - 1; i >= 0; i--) {
       await addToPopular(amounts.keys.elementAt(i));
     }
-    await convertToRecipe(widget.popular, 3);
+    await convertToRecipe(widget.popular, 3).then((value) {
+      if (!mounted) {
+        return;
+      }
+    });
   }
 
   Future<void> addToPopular(String docID) async {
@@ -624,6 +635,9 @@ class _SearchPage extends State<SearchPage> {
         .get();
     String recipeId = recipe.data['recipeId'];
     String userId = recipe.data['userID'];
+    if (!mounted) {
+      return;
+    }
     setState(() {
       widget.popular.add(Pair(userId, recipeId));
     });
@@ -689,16 +703,25 @@ class _SearchPage extends State<SearchPage> {
     }
     switch (cameFrom) {
       case 1:
+        if (!mounted) {
+          return;
+        }
         setState(() {
           widget.doneFriends = true;
         });
         break;
       case 2:
+        if (!mounted) {
+          return;
+        }
         setState(() {
           widget.doneTags = true;
         });
         break;
       case 3:
+        if (!mounted) {
+          return;
+        }
         setState(() {
           widget.donePopular = true;
         });

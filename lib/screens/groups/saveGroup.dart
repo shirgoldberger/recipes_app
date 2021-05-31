@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/services/groupFromDB.dart';
 import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/book_screen/saveInDirectory.dart';
-
 import 'package:recipes_app/shared_screen/loading.dart';
 
 // ignore: must_be_immutable
@@ -17,7 +17,6 @@ class SaveGroup extends StatefulWidget {
   List<Color> colors = [];
   Map<Pair, bool> map = {};
   Recipe recipe;
-  Color saveColor = Colors.blueGrey[600];
   IconData iconSave = Icons.favorite_border;
   String saveString = "";
   bool isMyRecipe;
@@ -40,112 +39,65 @@ class Pair<T1, T2> {
 }
 
 class _SaveGroupState extends State<SaveGroup> {
-  Future<void> getGroups() async {
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(widget.uid)
-        .collection('groups')
-        .getDocuments();
-    for (int i = 0; i < snap.documents.length; i++) {
-      Pair p = Pair(snap.documents[i].data['groupId'],
-          snap.documents[i].data['groupName']);
-      widget.map.addAll({p: false});
-      widget.isCheck.add(false);
-      widget.colors.add(Colors.blueGrey[400]);
-
-      QuerySnapshot snap2 = await Firestore.instance
-          .collection('Group')
-          .document(snap.documents[i].data['groupId'])
-          .collection('recipes')
-          .getDocuments();
-
-      if (snap2.documents.length != 0) {
-        snap2.documents.forEach((element2) async {
-          if (element2.data['recipeId'] == widget.recipeId) {
-            widget.map.update(p, (value) => true);
-            widget.publish.add(snap.documents[i].data['groupName']);
-          }
-        });
-      }
-    }
-
-    setState(() {
-      widget.doneLoad = true;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     if (!widget.doneLoad) {
       getGroups();
-
       return Loading();
     } else {
       return Column(children: <Widget>[
         new Padding(padding: EdgeInsets.only(top: 20.0)),
         saveToYourself(),
         heightBox(20),
-        Text(
-          'Choose group to save this recipe:',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w900,
-              fontFamily: 'Raleway',
-              fontSize: 18),
-        ),
+        title(),
         heightBox(20),
-        Expanded(
-            child: ListView.builder(
-                padding: EdgeInsets.only(left: 5, right: 5),
-                itemCount: widget.map.length,
-                itemBuilder: (context, index) {
-                  return ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      // ignore: deprecated_member_use
-                      child: FlatButton.icon(
-                        color: widget.map.values.elementAt(index)
-                            ? Colors.grey[300]
-                            : Colors.blueGrey[600],
-                        icon: Icon(
-                            widget.map.values.elementAt(index)
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: Colors.white),
-                        label: Text(
-                            widget.map.values.elementAt(index)
-                                ? "Un save in " +
-                                    widget.map.keys.elementAt(index).groupName
-                                : "Save in " +
-                                    widget.map.keys.elementAt(index).groupName,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'DescriptionFont')),
-                        onPressed: () {
-                          if (widget.map.values.elementAt(index)) {
-                            setState(() {
-                              widget.isCheck[index] = false;
-                              widget.colors[index] = Colors.blueGrey[400];
-                              widget.map.update(
-                                  widget.map.keys.elementAt(index),
-                                  (value) => false);
-                            });
-                            unPublishGroup(index);
-                          } else {
-                            publishInGroup(index);
-                            setState(() {
-                              widget.isCheck[index] = true;
-                              widget.colors[index] = Colors.grey;
-                              widget.map.update(
-                                  widget.map.keys.elementAt(index),
-                                  (value) => true);
-                            });
-                          }
-                        },
-                      ));
-                }))
+        groupsList()
       ]);
     }
+  }
+
+  Widget title() {
+    return Text(
+      'Choose group to save this recipe:',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w900,
+          fontFamily: 'Raleway',
+          fontSize: 18),
+    );
+  }
+
+  Widget groupsList() {
+    return Expanded(
+        child: ListView.builder(
+            padding: EdgeInsets.only(left: 5, right: 5),
+            itemCount: widget.map.length,
+            itemBuilder: (context, index) {
+              return ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  // ignore: deprecated_member_use
+                  child: FlatButton.icon(
+                    color: widget.map.values.elementAt(index)
+                        ? Colors.grey[300]
+                        : Colors.blueGrey[600],
+                    icon: Icon(
+                        widget.map.values.elementAt(index)
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: Colors.white),
+                    label: saveOrUnsave(index),
+                    onPressed: () => pressedOnGroup(index),
+                  ));
+            }));
+  }
+
+  Widget saveOrUnsave(int index) {
+    return Text(
+        widget.map.values.elementAt(index)
+            ? "Un save in " + widget.map.keys.elementAt(index).groupName
+            : "Save in " + widget.map.keys.elementAt(index).groupName,
+        style: TextStyle(color: Colors.white, fontFamily: 'DescriptionFont'));
   }
 
   Widget saveToYourself() {
@@ -153,19 +105,31 @@ class _SaveGroupState extends State<SaveGroup> {
         borderRadius: BorderRadius.circular(10),
         // ignore: deprecated_member_use
         child: FlatButton.icon(
-            color: widget.saveColor,
+            color: mainButtonColor,
             icon: Icon(widget.iconSave, color: Colors.white),
             label: Text('Save to yourself & Choose directory',
                 style: TextStyle(color: Colors.white)),
             onPressed: () {
               saveRecipe();
-
-              setState(() {
-                // widget.iconSave = Icons.favorite;
-                // widget.saveString = "un save for yourself";
-                // widget.saveColor = Colors.grey[300];
-              });
             }));
+  }
+
+  void pressedOnGroup(int index) {
+    if (widget.map.values.elementAt(index)) {
+      setState(() {
+        widget.isCheck[index] = false;
+        widget.colors[index] = Colors.blueGrey[400];
+        widget.map.update(widget.map.keys.elementAt(index), (value) => false);
+      });
+      unPublishGroup(index);
+    } else {
+      publishInGroup(index);
+      setState(() {
+        widget.isCheck[index] = true;
+        widget.colors[index] = Colors.grey;
+        widget.map.update(widget.map.keys.elementAt(index), (value) => true);
+      });
+    }
   }
 
   void publishInGroup(int index) async {
@@ -266,42 +230,31 @@ class _SaveGroupState extends State<SaveGroup> {
     _showSavedGroup();
   }
 
-  // Future<void> unSaveRecipe() async {
-  //   final db = Firestore.instance;
-  //   QuerySnapshot allDocuments = await db
-  //       .collection('users')
-  //       .document(widget.uid)
-  //       .collection('saved recipe')
-  //       .getDocuments();
-  //   String delete;
-  //   allDocuments.documents.forEach((doc) {
-  //     if (doc.data['recipeID'] == widget.recipe.id) {
-  //       delete = doc.documentID.toString();
-  //     }
-  //     db
-  //         .collection('users')
-  //         .document(widget.uid)
-  //         .collection('saved recipe')
-  //         .document(delete)
-  //         .delete();
-  //   });
-
-  //   String id;
-  //   QuerySnapshot snap =
-  //       await Firestore.instance.collection('publish recipe').getDocuments();
-  //   snap.documents.forEach((element) async {
-  //     if (element.data['recipeId'] == widget.recipe.id) {
-  //       id = element.documentID;
-  //       var currentRecipe2 =
-  //           await db.collection('publish recipe').document(id).get();
-  //       List publishGroup = [];
-  //       List loadList = currentRecipe2.data['saveUser'] ?? [];
-  //       publishGroup.addAll(loadList);
-  //       publishGroup.remove(widget.uid);
-  //       db
-  //           .collection('publish recipe')
-  //           .document(id)
-  //           .updateData({'saveUser': publishGroup});
-  //     }
-  //   });
+  Future<void> getGroups() async {
+    QuerySnapshot snap = await GroupFromDB.getUserGroups(widget.uid);
+    for (int i = 0; i < snap.documents.length; i++) {
+      Pair p = Pair(snap.documents[i].data['groupId'],
+          snap.documents[i].data['groupName']);
+      widget.map.addAll({p: false});
+      widget.isCheck.add(false);
+      widget.colors.add(Colors.blueGrey[400]);
+      String id = snap.documents[i].data['groupId'] ?? "";
+      QuerySnapshot snap2 = await Firestore.instance
+          .collection('Group')
+          .document(id)
+          .collection('recipes')
+          .getDocuments();
+      if (snap2.documents.length != 0) {
+        snap2.documents.forEach((element2) async {
+          if (element2.data['recipeId'] == widget.recipeId) {
+            widget.map.update(p, (value) => true);
+            widget.publish.add(snap.documents[i].data['groupName']);
+          }
+        });
+      }
+    }
+    setState(() {
+      widget.doneLoad = true;
+    });
+  }
 }

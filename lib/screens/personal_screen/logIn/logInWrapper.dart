@@ -1,3 +1,5 @@
+/// take the current user from database with stream ///
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/services/auth.dart';

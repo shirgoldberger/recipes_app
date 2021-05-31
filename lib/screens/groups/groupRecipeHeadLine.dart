@@ -1,3 +1,5 @@
+/// row with details about the recipe (int the group recipes list) ///
+
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 import '../../shared_screen/config.dart';
@@ -9,6 +11,10 @@ class GroupRecipeHeadLine extends StatefulWidget {
   Recipe recipe;
   String groupId;
   String imagePath = "";
+  Color circleColor;
+  String level;
+  String time;
+  NetworkImage image;
 
   GroupRecipeHeadLine(Recipe r, String _groupId) {
     this.recipe = r;
@@ -27,62 +33,6 @@ class _GroupRecipeHeadLineState extends State<GroupRecipeHeadLine> {
     setTimeText();
   }
 
-  Color circleColor;
-
-  String level;
-
-  String time;
-
-  NetworkImage image;
-
-  setLevelColor() {
-    switch (widget.recipe.level) {
-      case 1:
-        circleColor = Colors.green[400];
-        level = 'easy';
-        break;
-      case 2:
-        circleColor = Colors.yellow[400];
-        level = 'medium';
-        break;
-      case 3:
-        circleColor = Colors.pink[400];
-        level = 'hard';
-        break;
-      case 0:
-        circleColor = Colors.grey[400];
-        level = 'easy';
-        break;
-    }
-  }
-
-  setTimeText() {
-    switch (widget.recipe.time) {
-      case 1:
-        time = 'Until half-hour';
-        break;
-      case 2:
-        time = 'Until hour';
-        break;
-      case 3:
-        time = 'Over an hour';
-        break;
-    }
-  }
-
-  Future<void> getImage(BuildContext context) async {
-    if (widget.imagePath == "" || image != null) {
-      return;
-    }
-    await FireStorageService.loadFromStorage(
-            context, "uploads/" + widget.imagePath)
-        .then((downloadUrl) {
-      setState(() {
-        image = NetworkImage(downloadUrl.toString());
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     getImage(context);
@@ -94,8 +44,8 @@ class _GroupRecipeHeadLineState extends State<GroupRecipeHeadLine> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      WatchRecipeGroup(widget.recipe, widget.groupId, image)));
+                  builder: (context) => WatchRecipeGroup(
+                      widget.recipe, widget.groupId, widget.image)));
         },
         child: recipeRow(context),
       ),
@@ -134,7 +84,8 @@ class _GroupRecipeHeadLineState extends State<GroupRecipeHeadLine> {
 
   Widget recipeImage(BuildContext context) {
     return CircleAvatar(
-      backgroundImage: (image == null) ? ExactAssetImage(noImagePath) : image,
+      backgroundImage:
+          (widget.image == null) ? ExactAssetImage(noImagePath) : widget.image,
       radius: 35.0,
     );
   }
@@ -166,12 +117,12 @@ class _GroupRecipeHeadLineState extends State<GroupRecipeHeadLine> {
       width: 80.0,
       height: 20.0,
       decoration: BoxDecoration(
-        color: circleColor,
+        color: widget.circleColor,
         borderRadius: BorderRadius.circular(30.0),
       ),
       alignment: Alignment.center,
       child: Text(
-        level,
+        widget.level,
         style: TextStyle(
           color: Colors.black,
           fontSize: 12.0,
@@ -183,12 +134,62 @@ class _GroupRecipeHeadLineState extends State<GroupRecipeHeadLine> {
 
   Widget recipeTime() {
     return Text(
-      time,
+      widget.time,
       style: TextStyle(
         color: Colors.grey,
         fontSize: 10.0,
         fontWeight: FontWeight.bold,
       ),
     );
+  }
+
+  setLevelColor() {
+    switch (widget.recipe.level) {
+      case 1:
+        widget.circleColor = Colors.green[400];
+        widget.level = 'easy';
+        break;
+      case 2:
+        widget.circleColor = Colors.yellow[400];
+        widget.level = 'medium';
+        break;
+      case 3:
+        widget.circleColor = Colors.pink[400];
+        widget.level = 'hard';
+        break;
+      case 0:
+        widget.circleColor = Colors.grey[400];
+        widget.level = 'easy';
+        break;
+    }
+  }
+
+  setTimeText() {
+    switch (widget.recipe.time) {
+      case 1:
+        widget.time = 'Until half-hour';
+        break;
+      case 2:
+        widget.time = 'Until hour';
+        break;
+      case 3:
+        widget.time = 'Over an hour';
+        break;
+    }
+  }
+
+  Future<void> getImage(BuildContext context) async {
+    if (widget.imagePath == "" || widget.image != null) {
+      return;
+    }
+    await FireStorageService.loadFromStorage(
+            context, "uploads/" + widget.imagePath)
+        .then((downloadUrl) {
+      if (downloadUrl != null) {
+        setState(() {
+          widget.image = NetworkImage(downloadUrl.toString());
+        });
+      }
+    });
   }
 }

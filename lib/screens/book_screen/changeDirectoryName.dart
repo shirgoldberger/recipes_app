@@ -48,6 +48,7 @@ class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
 
   Widget nameBox() {
     return TextFormField(
+      initialValue: widget.directory.name,
       decoration: InputDecoration(
         hintText: widget.directory.name,
       ),

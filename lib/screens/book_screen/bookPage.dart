@@ -31,6 +31,7 @@ class RecipesBookPage extends StatefulWidget {
 class _RecipesBookPageState extends State<RecipesBookPage> {
   @override
   Widget build(BuildContext context) {
+    // no user connected
     if (widget.user == "") {
       return Scaffold(
           backgroundColor: backgroundColor,
@@ -185,7 +186,8 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => DirectoryRecipesList(
-                        Directory(recipes: widget.myRecipe, name: name),
+                        Directory(
+                            recipes: widget.myRecipe, name: name, id: '0'),
                         widget.user,
                         false,
                         "")));
@@ -264,7 +266,6 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
           widget.savedRecipe.add(r);
         });
       }
-      i++;
       if ((i) == savedRecipes.documents.length) {
         setState(() {
           widget.doneLoadSavedRecipe++;

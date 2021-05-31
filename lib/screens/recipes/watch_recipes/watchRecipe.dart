@@ -75,8 +75,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
   Widget build(BuildContext context) {
     setLevels();
     if (!widget.done) {
-      //  getuser();
-      // changeState();
       return Loading();
     } else {
       if (widget.home) {

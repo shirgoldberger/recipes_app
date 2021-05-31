@@ -1,3 +1,5 @@
+/// list of all the recipes in the group ///
+
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
@@ -10,7 +12,6 @@ import 'package:recipes_app/services/userFromDB.dart';
 import '../../shared_screen/config.dart';
 import 'ParticipentsWatch.dart';
 import 'addParticipent.dart';
-import '../personal_screen/homeLogIn.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
 // ignore: must_be_immutable
@@ -21,12 +22,12 @@ class GroupRecipeList extends StatefulWidget {
   List<Recipe> recipes = [];
   List usersName = [];
   List userId = [];
-  String myUid;
+  String uid;
   bool doneLoad = false;
 
-  GroupRecipeList(String _groupId, String _groupName, String _myUid) {
+  GroupRecipeList(String _groupId, String _groupName, String _uid) {
     this.groupId = _groupId;
-    this.myUid = _myUid;
+    this.uid = _uid;
     this.groupName = _groupName;
   }
 
@@ -119,7 +120,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
               "delete me",
               style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
             ),
-            onPressed: delete));
+            onPressed: () => delete(context)));
   }
 
   Widget people() {
@@ -221,21 +222,6 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
             style: TextStyle(fontSize: 15, fontFamily: 'frik')));
   }
 
-  Future<void> makeList() async {
-    // get the participents in this group
-    List user = await GroupFromDB.getUsersGroup(widget.groupId);
-    widget.userId = user;
-    for (int i = 0; i < user.length; i++) {
-      String firstName = await UserFromDB.getUserFirstName(user[i]);
-      String lastName = await UserFromDB.getUserLastName(user[i]);
-      widget.usersName.add(firstName + " " + lastName);
-    }
-    widget.recipes.addAll(await GroupFromDB.getGroupRecipes(widget.groupId));
-    setState(() {
-      widget.doneLoad = true;
-    });
-  }
-
   Future<void> showParticipents() async {
     showModalBottomSheet(
         context: context,
@@ -259,7 +245,7 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
             builder: (context) => Container(
-                height: MediaQuery.of(context).size.height * 0.4,
+                height: MediaQuery.of(context).size.height * 0.3,
                 decoration: new BoxDecoration(
                   color: Colors.blueGrey[50],
                   borderRadius: new BorderRadius.only(
@@ -291,10 +277,44 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
         .then((value) => updateName(value));
   }
 
-  void delete() async {
-    await GroupFromDB.deleteUserFromGroup(widget.myUid, widget.groupId);
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => HomeLogIn(widget.myUid)));
+  void delete(BuildContext context1) async {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'You\'re sure you want to delete yourself from this group?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('yes- delete'),
+              onPressed: () async {
+                await GroupFromDB.deleteUserFromGroup(
+                    widget.uid, widget.groupId);
+                Navigator.of(context).pop();
+                int count = 0;
+                Navigator.of(context1).popUntil((route) {
+                  return count++ == 3;
+                });
+              },
+            ),
+            TextButton(
+              child: Text('no- go back'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> updateName(var value) async {
@@ -303,8 +323,32 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
         setState(() {
           widget.groupName = value;
         });
+      }
+    }
+  }
+
+  Future<void> cameBack(var value) async {
+    if (value != null) {
+      if (value["a"] != null) {
+        if (widget.userId.toString() != value["a"].toString()) {
+          setState(() {
+            widget.userId = value["a"];
+          });
+          String firstName = await UserFromDB.getUserFirstName(
+              widget.userId[widget.userId.length - 1]);
+          String lastName = await UserFromDB.getUserLastName(
+              widget.userId[widget.userId.length - 1]);
+          setState(() {
+            widget.usersName.add(firstName + " " + lastName);
+          });
+        }
+      }
+
+      if (value["b"] != widget.groupName) {
         final db = Firestore.instance;
-        // await GroupFromDB.updateGroupName(widget.groupId, value, widget.userId);
+        setState(() {
+          widget.groupName = value["b"];
+        });
         db
             .collection('Group')
             .document(widget.groupId)
@@ -331,49 +375,18 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
     }
   }
 
-  Future<void> cameBack(var value) async {
-    if (value["a"] != null) {
-      if (widget.userId.toString() != value["a"].toString()) {
-        setState(() {
-          widget.userId = value["a"];
-        });
-        String firstName = await UserFromDB.getUserFirstName(
-            widget.userId[widget.userId.length - 1]);
-        String lastName = await UserFromDB.getUserLastName(
-            widget.userId[widget.userId.length - 1]);
-        setState(() {
-          widget.usersName.add(firstName + " " + lastName);
-        });
-      }
+  Future<void> makeList() async {
+    // get the participents in this group
+    List user = await GroupFromDB.getUsersGroup(widget.groupId);
+    widget.userId = user;
+    for (int i = 0; i < user.length; i++) {
+      String firstName = await UserFromDB.getUserFirstName(user[i]);
+      String lastName = await UserFromDB.getUserLastName(user[i]);
+      widget.usersName.add(firstName + " " + lastName);
     }
-
-    if (value["b"] != widget.groupName) {
-      final db = Firestore.instance;
-      setState(() {
-        widget.groupName = value["b"];
-      });
-      db
-          .collection('Group')
-          .document(widget.groupId)
-          .updateData({'groupName': widget.groupName});
-
-      for (int i = 0; i < widget.userId.length; i++) {
-        QuerySnapshot a = await Firestore.instance
-            .collection('users')
-            .document(widget.userId[i])
-            .collection('groups')
-            .getDocuments();
-        a.documents.forEach((element) {
-          if (element.data['groupId'] == widget.groupId) {
-            db
-                .collection('users')
-                .document(widget.userId[i])
-                .collection('groups')
-                .document(element.documentID)
-                .updateData({'groupName': widget.groupName});
-          }
-        });
-      }
-    }
+    widget.recipes.addAll(await GroupFromDB.getGroupRecipes(widget.groupId));
+    setState(() {
+      widget.doneLoad = true;
+    });
   }
 }

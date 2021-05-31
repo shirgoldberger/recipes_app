@@ -1,6 +1,6 @@
-import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/services/groupFromDB.dart';
 import '../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
@@ -79,7 +79,6 @@ class _AddParticipentState extends State<AddParticipent> {
 
   // database function //
   Future<void> saveUser(String email) async {
-    final db = Firestore.instance;
     String mailCheck;
     QuerySnapshot snap =
         await Firestore.instance.collection('users').getDocuments();
@@ -91,20 +90,12 @@ class _AddParticipentState extends State<AddParticipent> {
           findUser = true;
 
           widget.userId.add(element.documentID);
-
-          await db
-              .collection('Group')
-              .document(widget.groupId)
-              .updateData({'users': widget.userId});
-          await db
-              .collection('users')
-              .document(element.documentID)
-              .collection('groups')
-              .add({'groupName': widget.groupName, 'groupId': widget.groupId});
+          GroupFromDB.addUserToGroup(element.documentID, widget.groupId,
+              widget.groupName, widget.userId);
           Navigator.pop(context, {'a': widget.userId, 'b': widget.groupName});
         } else {
           setState(() {
-            error = "this user alrady exicst";
+            error = "this user alrady exist";
           });
           findUser = true;
         }

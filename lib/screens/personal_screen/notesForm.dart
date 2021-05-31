@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/shared_screen/config.dart';
 
 // ignore: must_be_immutable
@@ -30,28 +31,33 @@ class NotesForm extends StatefulWidget {
 class _NotesFormState extends State<NotesForm> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Form(
-          child: Column(children: <Widget>[
-        TextFormField(
-          decoration: InputDecoration(
-            labelText: 'Add new note:',
-            hintStyle: TextStyle(
-              fontFamily: ralewayFont,
-              fontSize: 18,
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Container(
+        child: Form(
+            child: Column(children: <Widget>[
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Add new note:',
+              hintStyle: TextStyle(
+                fontFamily: ralewayFont,
+                fontSize: 18,
+              ),
             ),
+            onChanged: (val) {
+              setState(() {
+                widget.newNotes = val;
+              });
+            },
           ),
-          onChanged: (val) {
-            setState(() {
-              widget.newNotes = val;
-            });
-          },
-        ),
-        // ignore: deprecated_member_use
-        saveIcon(),
-        title(),
-        for (int i = 0; i < widget.notes.length; i++) noteText(i),
-      ])),
+          // ignore: deprecated_member_use
+          saveIcon(),
+          title(),
+          for (int i = 0; i < widget.notes.length; i++) noteText(i),
+        ])),
+      ),
     );
   }
 
@@ -64,12 +70,13 @@ class _NotesFormState extends State<NotesForm> {
       }
       widget.newNotes = '';
     });
-    db
-        .collection(usersCollectionName)
-        .document(widget.uid)
-        .collection('saved recipe')
-        .document(widget.docId)
-        .updateData({'notes': widget.notes});
+    RecipeFromDB.saveNotesInRecipe(widget.uid, widget.docId, widget.notes);
+    // db
+    //     .collection(usersCollectionName)
+    //     .document(widget.uid)
+    //     .collection('saved recipe')
+    //     .document(widget.docId)
+    //     .updateData({'notes': widget.notes});
     Navigator.pop(context);
   }
 

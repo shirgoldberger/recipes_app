@@ -5,7 +5,7 @@ import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/screens/book_screen/saveInDirectory.dart';
-import 'package:recipes_app/screens/groups/publishGroup2.dart';
+import 'package:recipes_app/screens/groups/publishGroup.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import 'watchRecipeBody.dart';
 import '../edit_recipe/editRecipe.dart';
@@ -137,7 +137,7 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
                 topRight: const Radius.circular(25.0),
               ),
             ),
-            child: PublishGroup2(
+            child: PublishGroup(
                 widget.uid, widget.currentRecipe.id, widget.currentRecipe)));
   }
 

@@ -100,7 +100,7 @@ class UserFromDB {
             .delete();
       });
     }
-    //delete directory:
+    // delete directory:
     QuerySnapshot d = await db
         .collection('users')
         .document(uid)
@@ -114,7 +114,7 @@ class UserFromDB {
           .document(d.documents[i].documentID)
           .delete();
     }
-    //delete groups:
+    // delete groups:
     QuerySnapshot g = await db
         .collection('users')
         .document(uid)
@@ -128,7 +128,7 @@ class UserFromDB {
           .document(g.documents[i].documentID)
           .delete();
     }
-    //delete recipes:
+    // delete recipes:
     QuerySnapshot r = await db
         .collection('users')
         .document(uid)

@@ -423,7 +423,7 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
             builder: (context) => Container(
-                height: MediaQuery.of(context).size.height * 0.75,
+                height: MediaQuery.of(context).size.height * 0.7,
                 decoration: new BoxDecoration(
                   color: Colors.blueGrey[50],
                   borderRadius: new BorderRadius.only(

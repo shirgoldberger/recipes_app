@@ -1,5 +1,8 @@
+/// see list of all yout groups ///
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/services/groupFromDB.dart';
 import 'groupRecipeList.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import 'package:recipes_app/shared_screen/config.dart';
@@ -63,37 +66,36 @@ class _GroupListState extends State<GroupList> {
       padding: const EdgeInsets.all(10.0),
       child: Stack(children: <Widget>[
         InkWell(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => GroupRecipeList(widget.groupId[index],
+                        widget.groupName[index], widget.uid))).then((value) => {
+                  if (value != null)
+                    {
+                      setState(() {
+                        widget.groupName[index] = value;
+                      })
+                    }
+                });
+          },
           borderRadius: BorderRadius.circular(10),
           child: GestureDetector(
-              child: Container(
-                  width: 400,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.black,
-                    image: DecorationImage(
-                        image: AssetImage('lib/images/group (' +
-                            pictureIndex.toString() +
-                            ').JPG'),
-                        fit: BoxFit.cover),
-                    // button text
-                  )),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => GroupRecipeList(
-                            widget.groupId[index],
-                            widget.groupName[index],
-                            widget.uid))).then((value) => {
-                      if (value != null)
-                        {
-                          setState(() {
-                            widget.groupName[index] = value;
-                          })
-                        }
-                    });
-              }),
+            child: Container(
+                width: 400,
+                height: 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.black,
+                  image: DecorationImage(
+                      image: AssetImage('lib/images/group (' +
+                          pictureIndex.toString() +
+                          ').JPG'),
+                      fit: BoxFit.cover),
+                  // button text
+                )),
+          ),
         ),
         Column(
           children: [
@@ -114,25 +116,6 @@ class _GroupListState extends State<GroupList> {
         ),
       ]),
     );
-    // return Padding(
-    //   padding: const EdgeInsets.all(8.0),
-    //   // ignore: deprecated_member_use
-    //   child: RaisedButton(
-    //     shape: RoundedRectangleBorder(
-    //         borderRadius: BorderRadius.circular(18.0),
-    //         side: BorderSide(color: Colors.white)),
-    //     onPressed: () {
-    //       Navigator.push(
-    //           context,
-    //           MaterialPageRoute(
-    //               builder: (context) => GroupRecipeList(widget.groupId[index],
-    //                   widget.groupName[index], widget.uid)));
-    //     },
-    //     padding: EdgeInsets.all(20.0),
-    //     textColor: Colors.white,
-    //     child: groupName(index),
-    //   ),
-    // );
   }
 
   Widget emptyMessage() {
@@ -141,36 +124,9 @@ class _GroupListState extends State<GroupList> {
         style: TextStyle(fontSize: 25, fontFamily: 'Raleway'));
   }
 
-  Widget groupName(int index) {
-    return MaterialButton(
-      padding: EdgeInsets.all(8.0),
-      textColor: Colors.white,
-      splashColor: Colors.greenAccent,
-      elevation: 8.0,
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('lib/images/group1.JPG'), fit: BoxFit.cover),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text("SIGN OUT"),
-        ),
-      ),
-      // ),
-      onPressed: () {},
-    );
-    // return Text(widget.groupName[index],
-    //     style: TextStyle(fontSize: 25, fontFamily: 'Raleway'));
-  }
-
   // database function //
   Future<void> getGroups() async {
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(widget.uid)
-        .collection('groups')
-        .getDocuments();
+    QuerySnapshot snap = await GroupFromDB.getUserGroups(widget.uid);
     snap.documents.forEach((element) async {
       setState(() {
         widget.groupId.add(element.data['groupId']);

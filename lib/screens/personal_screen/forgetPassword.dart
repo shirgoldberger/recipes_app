@@ -1,3 +1,5 @@
+/// here user can reset his password ///
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:recipes_app/services/auth.dart';
@@ -16,6 +18,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   final _formKey = GlobalKey<FormState>();
   String email = '';
   String _warning;
+  String error = "";
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +35,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                   box,
                   box,
                   emailField(),
+                  errorText(),
                   box,
                   resetPassword(),
                   box,
@@ -47,6 +51,13 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       title: Text(appName, style: TextStyle(fontFamily: logoFont)),
       backgroundColor: appBarBackgroundColor,
       elevation: 0.0,
+    );
+  }
+
+  Widget errorText() {
+    return Text(
+      error,
+      style: TextStyle(color: Colors.red),
     );
   }
 
@@ -67,6 +78,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   }
 
   Widget resetPassword() {
+    error = "";
     return SizedBox(
       width: 320,
       height: 30.0,
@@ -87,7 +99,16 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   }
 
   void reset() async {
-    await widget.auth.sendPasswordResetEmail(email);
+    try {
+      await widget.auth.sendPasswordResetEmail(email);
+    } catch (e) {
+      if (e.toString() == errorHasNoUser) {
+        setState(() {
+          error = "There is no user with this mail.";
+        });
+      }
+      return;
+    }
     setState(() {
       _warning = "A password reset link has been sent to $email";
     });

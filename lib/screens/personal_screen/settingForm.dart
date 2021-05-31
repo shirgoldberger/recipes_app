@@ -1,13 +1,11 @@
-import 'dart:io';
+/// user can change here his details ///
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/user.dart';
 import 'package:recipes_app/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
-import 'package:recipes_app/services/userFromDB.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../shared_screen/config.dart';
 import 'uploadImage.dart';
@@ -34,7 +32,6 @@ class _SettingFormState extends State<SettingForm> {
   String _currentPhone;
   String _currentEmail;
   int _currentAge;
-  String _warning;
 
   @override
   void initState() {

@@ -1,16 +1,16 @@
-import 'dart:ui';
+/// row with user data ///
 
+import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:recipes_app/screens/userRecipeList.dart';
+import 'package:recipes_app/screens/search_screen/userRecipeList.dart';
 import 'package:recipes_app/services/mobileStorage.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
+import '../../shared_screen/config.dart';
 
-import '../shared_screen/config.dart';
-
+// ignore: must_be_immutable
 class UserHeadLine extends StatefulWidget {
   UserHeadLine(String _uid) {
-    print(_uid);
     this.uid = _uid;
   }
   String uid;
@@ -31,7 +31,6 @@ class _UserHeadLineState extends State<UserHeadLine> {
   }
 
   Future<void> getUserdata() async {
-    print("get user data");
     DocumentSnapshot snap =
         await Firestore.instance.collection('users').document(widget.uid).get();
     setState(() {
@@ -45,8 +44,6 @@ class _UserHeadLineState extends State<UserHeadLine> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.firstName);
-    print(widget.done);
     if (!widget.done) {
       _getImage(context);
       getUserdata();
@@ -65,12 +62,6 @@ class _UserHeadLineState extends State<UserHeadLine> {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    // CircleAvatar(
-                    //   backgroundImage: (widget.image == "")
-                    //       ? ExactAssetImage(noImagePath)
-                    //       : NetworkImage(widget.image),
-                    //   radius: 35.0,
-                    // ),
                     Row(children: <Widget>[
                       ClipRRect(
                         borderRadius: BorderRadius.only(

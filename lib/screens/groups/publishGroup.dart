@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
+import 'package:recipes_app/services/groupFromDB.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
-
 import '../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
-class PublishGroup2 extends StatefulWidget {
+class PublishGroup extends StatefulWidget {
   String uid;
   String recipeId;
   List<String> groupName = [];
@@ -22,66 +22,17 @@ class PublishGroup2 extends StatefulWidget {
   String stringPublish;
   Color colorPublish;
 
-  PublishGroup2(String _uid, String _recipeId, Recipe _recipe) {
+  PublishGroup(String _uid, String _recipeId, Recipe _recipe) {
     this.uid = _uid;
     this.recipeId = _recipeId;
     this.recipe = _recipe;
   }
 
   @override
-  _PublishGroup2State createState() => _PublishGroup2State();
+  _PublishGroupState createState() => _PublishGroupState();
 }
 
-class _PublishGroup2State extends State<PublishGroup2> {
-  Future<void> getGroups() async {
-    if (widget.recipe.publish == '') {
-      widget.iconPublish = Icons.public;
-      widget.stringPublish = "Publish the recipe to everyone";
-
-      widget.colorPublish = Colors.blueGrey;
-    } else {
-      widget.iconPublish = Icons.public_off;
-      widget.stringPublish = "Un publish the recipe to everyone";
-      widget.colorPublish = Colors.grey[350];
-    }
-
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(widget.uid)
-        .collection('groups')
-        .getDocuments();
-    snap.documents.forEach((element) async {
-      setState(() {
-        widget.groupId.add(element.data['groupId']);
-        widget.groupName.add(element.data['groupName']);
-        widget.map.addAll({element.data['groupName']: false});
-        widget.isCheck.add(false);
-        widget.colors.add(Colors.blueGrey);
-      });
-
-      QuerySnapshot snap2 = await Firestore.instance
-          .collection('Group')
-          .document(element.data['groupId'])
-          .collection('recipes')
-          .getDocuments();
-
-      if (snap2.documents.length != 0) {
-        snap2.documents.forEach((element2) async {
-          if (element2.data['recipeId'] == widget.recipeId) {
-            setState(() {
-              widget.map.update(element.data['groupName'], (value) => true);
-              widget.publish.add(element.data['groupName']);
-            });
-          }
-        });
-      }
-    });
-
-    setState(() {
-      widget.doneLoad = true;
-    });
-  }
-
+class _PublishGroupState extends State<PublishGroup> {
   @override
   Widget build(BuildContext context) {
     if (!widget.doneLoad) {
@@ -90,26 +41,34 @@ class _PublishGroup2State extends State<PublishGroup2> {
     } else {
       return Column(children: <Widget>[
         Padding(padding: EdgeInsets.only(top: 20.0)),
-        Text(
-          'Choose where to publish your recipe:',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w900,
-              fontFamily: 'Raleway',
-              fontSize: 18),
-        ),
+        title(),
         box,
         publishEveryone(),
-        Expanded(
-            child: ListView.builder(
-                padding: EdgeInsets.only(left: 5, right: 5),
-                itemCount: widget.map.length,
-                itemBuilder: (context, index) {
-                  return publishInGroupWidget(index);
-                }))
+        groupsList()
       ]);
     }
+  }
+
+  Widget title() {
+    return Text(
+      'Choose where to publish your recipe:',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w900,
+          fontFamily: 'Raleway',
+          fontSize: 18),
+    );
+  }
+
+  Widget groupsList() {
+    return Expanded(
+        child: ListView.builder(
+            padding: EdgeInsets.only(left: 5, right: 5),
+            itemCount: widget.map.length,
+            itemBuilder: (context, index) {
+              return publishInGroupWidget(index);
+            }));
   }
 
   Widget publishInGroupWidget(int index) {
@@ -238,27 +197,10 @@ class _PublishGroup2State extends State<PublishGroup2> {
   }
 
   Future<void> unPublishGroup(int index) async {
+    await GroupFromDB.unPublishInGroup(widget.groupId[index], widget.recipeId);
     setState(() {
       widget.isCheck[index] = false;
       widget.colors[index] = Colors.blueGrey;
-    });
-
-    final db = Firestore.instance;
-
-    QuerySnapshot snap = await Firestore.instance
-        .collection('Group')
-        .document(widget.groupId[index])
-        .collection('recipes')
-        .getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.recipeId) {
-        db
-            .collection('Group')
-            .document(widget.groupId[index])
-            .collection('recipes')
-            .document(element.documentID)
-            .delete();
-      }
     });
   }
 
@@ -321,5 +263,54 @@ class _PublishGroup2State extends State<PublishGroup2> {
         .collection('recipes')
         .document(widget.recipeId)
         .updateData(widget.recipe.toJson());
+  }
+
+  Future<void> getGroups() async {
+    if (widget.recipe.publish == '') {
+      widget.iconPublish = Icons.public;
+      widget.stringPublish = "Publish the recipe to everyone";
+
+      widget.colorPublish = Colors.blueGrey;
+    } else {
+      widget.iconPublish = Icons.public_off;
+      widget.stringPublish = "Un publish the recipe to everyone";
+      widget.colorPublish = Colors.grey[350];
+    }
+
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .collection('groups')
+        .getDocuments();
+    snap.documents.forEach((element) async {
+      setState(() {
+        widget.groupId.add(element.data['groupId']);
+        widget.groupName.add(element.data['groupName']);
+        widget.map.addAll({element.data['groupName']: false});
+        widget.isCheck.add(false);
+        widget.colors.add(Colors.blueGrey);
+      });
+
+      QuerySnapshot snap2 = await Firestore.instance
+          .collection('Group')
+          .document(element.data['groupId'])
+          .collection('recipes')
+          .getDocuments();
+
+      if (snap2.documents.length != 0) {
+        snap2.documents.forEach((element2) async {
+          if (element2.data['recipeId'] == widget.recipeId) {
+            setState(() {
+              widget.map.update(element.data['groupName'], (value) => true);
+              widget.publish.add(element.data['groupName']);
+            });
+          }
+        });
+      }
+    });
+
+    setState(() {
+      widget.doneLoad = true;
+    });
   }
 }

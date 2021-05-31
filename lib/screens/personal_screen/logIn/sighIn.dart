@@ -1,7 +1,8 @@
+/// sign in page ///
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:recipes_app/screens/personal_screen/homeLogIn.dart';
 import 'package:recipes_app/services/auth.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../../shared_screen/config.dart';
@@ -44,6 +45,8 @@ class _SignInState extends State<SignIn> {
       });
       // try log in
       dynamic result = await _auth.signInWithEmailAndPass(email, password);
+
+      // chack errors:
       if (result == errorNetworkRequestFaild) {
         setState(() {
           loading = false;
@@ -110,7 +113,6 @@ class _SignInState extends State<SignIn> {
                       errorText(),
                       box,
                       forgetPassword(),
-                      // signInWithGoogleButton(),
                       box,
                       registerButton(),
                       box,

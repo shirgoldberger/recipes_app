@@ -1,8 +1,9 @@
+/// upload image to furebase ///
+
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import '../../shared_screen/config.dart';
@@ -32,6 +33,9 @@ class _UploadingImageToFirebaseStorageState
 
   Future chooseImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    if (pickedFile == null) {
+      return;
+    }
     setState(() {
       _imageFile = File(pickedFile.path);
     });

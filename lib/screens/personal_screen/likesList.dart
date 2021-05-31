@@ -1,7 +1,8 @@
+// list of the users who liked the recipe ///
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
-import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../shared_screen/config.dart';
@@ -48,8 +49,6 @@ class _LikesListState extends State<LikesList> {
 
   Future<void> getLikesList() async {
     List likes;
-    // likes =
-    //     await RecipeFromDB.getLikesPublishRecipe(widget.currentRecipe.publish);
     final db = Firestore.instance;
     var publishRecipe = await db
         .collection(publishCollectionName)

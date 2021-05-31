@@ -7,7 +7,6 @@ import 'package:recipes_app/models/directory.dart';
 class NewDirectory extends StatefulWidget {
   String uid;
   List<Directory> directories;
-  String error2 = "";
   String errorDirectoryName = '';
 
   NewDirectory(String _uid, List<Directory> _directories) {
@@ -24,7 +23,6 @@ class _NewDirectoryState extends State<NewDirectory> {
   List<String> userFullNames = [];
   String directoryName = "";
   String error = '';
-  //String errorDirectoryName = '';
   bool findUser = false;
   String emailTocheck;
   final _formKey = GlobalKey<FormState>();
@@ -76,7 +74,7 @@ class _NewDirectoryState extends State<NewDirectory> {
 
   Widget title() {
     return Text(
-      'let\'s create a new directory!',
+      'Let\'s create a new directory!',
       style: TextStyle(
           fontFamily: 'Raleway', fontSize: 20, color: Colors.blueGrey[800]),
       textAlign: TextAlign.center,
@@ -119,7 +117,8 @@ class _NewDirectoryState extends State<NewDirectory> {
   Widget saveDirectoryWidget() {
     if (directoryName.length > 20) {
       setState(() {
-        widget.errorDirectoryName = 'Group name is limited to 20 characters';
+        widget.errorDirectoryName =
+            'Directory name is limited to 20 characters';
       });
       return FlatButton.icon(
           icon: Icon(
@@ -129,9 +128,6 @@ class _NewDirectoryState extends State<NewDirectory> {
           label: Text('SAVE', style: TextStyle(color: Colors.white)),
           onPressed: null);
     } else {
-      // setState(() {
-      //   widget.errorDirectoryName = '';
-      // });
       return FlatButton.icon(
           icon: Icon(
             Icons.save,

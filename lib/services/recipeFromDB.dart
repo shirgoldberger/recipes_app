@@ -475,4 +475,55 @@ class RecipeFromDB {
         .get();
     return publishRecipe;
   }
+
+  static void saveRecipe(
+      String uid, String recipeId, String writerId, bool saveInUser) async {
+    QuerySnapshot savedRecipes = await Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection('saved recipe')
+        .getDocuments();
+    bool found = false;
+    for (int i = 0; i < savedRecipes.documents.length; i++) {
+      String id = savedRecipes.documents[i].data['recipeID'];
+      String userID = savedRecipes.documents[i].data['userID'];
+      if ((id == recipeId) && (userID == writerId)) {
+        found = true;
+      }
+    }
+    if (!found) {
+      final db = Firestore.instance;
+      db.collection('users').document(uid).collection('saved recipe').add(
+          {'saveInUser': saveInUser, 'recipeID': recipeId, 'userID': writerId});
+
+      String id;
+      QuerySnapshot snap =
+          await Firestore.instance.collection('publish recipe').getDocuments();
+      for (int i = 0; i < snap.documents.length; i++) {
+        if (snap.documents[i].data['recipeId'] == recipeId) {
+          id = snap.documents[i].documentID;
+          var currentRecipe2 =
+              await db.collection('publish recipe').document(id).get();
+          List publishUsers = [];
+          List loadList = currentRecipe2.data['saveUser'] ?? [];
+          publishUsers.addAll(loadList);
+          publishUsers.add(uid);
+          await db
+              .collection('publish recipe')
+              .document(id)
+              .updateData({'saveUser': publishUsers});
+        }
+      }
+    }
+  }
+
+  static saveNotesInRecipe(
+      String uid, String saveRecipeId, List<String> notes) async {
+    await db
+        .collection(usersCollectionName)
+        .document(uid)
+        .collection('saved recipe')
+        .document(saveRecipeId)
+        .updateData({'notes': notes});
+  }
 }

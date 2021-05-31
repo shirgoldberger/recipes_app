@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+/// create new group ///
 import 'package:flutter/material.dart';
 import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/services/groupFromDB.dart';
@@ -7,7 +7,6 @@ import 'package:recipes_app/services/userFromDB.dart';
 // ignore: must_be_immutable
 class NewGroup extends StatefulWidget {
   String uid;
-  String error2;
 
   NewGroup(String _uid) {
     this.uid = _uid;

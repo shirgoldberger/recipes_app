@@ -7,7 +7,7 @@ import 'package:recipes_app/screens/personal_screen/likesList.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../../shared_screen/config.dart';
-import '../../userRecipeList.dart';
+import '../../search_screen/userRecipeList.dart';
 
 // ignore: must_be_immutable
 class WatchRecipeBody extends StatefulWidget {
@@ -113,6 +113,9 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
       String downloadUrl = await FireStorageService.loadFromStorage(
           context, "uploads/" + widget.imagePath);
       if (downloadUrl != null) {
+        if (!mounted) {
+          return;
+        }
         setState(() {
           widget.userImage = NetworkImage(downloadUrl);
           widget.isGettingImage = true;
@@ -139,13 +142,9 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   }
 
   void sortStages() {
-    List<Stages> stageCopy = [];
-    stageCopy.addAll(widget.stages);
-    for (int i = 0; i < stageCopy.length; i++) {
-      setState(() {
-        widget.stages[stageCopy[i].i] = stageCopy[i];
-      });
-    }
+    setState(() {
+      widget.stages.sort((a, b) => a.i.compareTo(b.i));
+    });
   }
 
   void sortIngredients() {

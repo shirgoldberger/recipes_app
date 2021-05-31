@@ -1,3 +1,5 @@
+/// register page ///
+
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/services/auth.dart';
@@ -51,6 +53,7 @@ class _RegisterState extends State<Register> {
       // create new user
       dynamic result =
           await _auth.registerWithEmailAndPass(email, password, name);
+
       // check errors:
       if (result == errorInvalidEmail) {
         setState(() {

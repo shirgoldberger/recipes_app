@@ -1,3 +1,5 @@
+/// register or sign in page ///
+
 import 'package:flutter/material.dart';
 import 'sighIn.dart';
 import 'register.dart';

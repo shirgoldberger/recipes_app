@@ -105,26 +105,25 @@ class GroupFromDB {
   }
 
   static Future<void> updateGroupName(
-      String groupId, String newName, List<String> membersIds) async {
-    // update name in group
-    db.collection('Group').document(groupId).updateData({'groupName': newName});
-    // update name in group's members
-    for (int i = 0; i < membersIds.length; i++) {
-      // take all groups of the user
-      QuerySnapshot userGroups = await Firestore.instance
+      String groupId, String groupName, List userId) async {
+    db
+        .collection('Group')
+        .document(groupId)
+        .updateData({'groupName': groupName});
+    for (int i = 0; i < userId.length; i++) {
+      QuerySnapshot a = await Firestore.instance
           .collection('users')
-          .document(membersIds[i])
+          .document(userId[i])
           .collection('groups')
           .getDocuments();
-      for (int j = 0; j < userGroups.documents.length; i++) {
-        if (userGroups.documents[j].data['groupId'] == groupId) {
-          // update name of the specific group
+      for (int j = 0; j < a.documents.length; j++) {
+        if (a.documents[j].data['groupId'] == groupId) {
           db
               .collection('users')
-              .document(membersIds[i])
+              .document(userId[i])
               .collection('groups')
-              .document(userGroups.documents[j].documentID)
-              .updateData({'groupName': newName});
+              .document(a.documents[j].documentID)
+              .updateData({'groupName': groupName});
         }
       }
     }
@@ -162,5 +161,33 @@ class GroupFromDB {
         .collection('groups')
         .getDocuments();
     return groups;
+  }
+
+  static Future addUserToGroup(
+      String uid, String groupId, String groupName, List users) async {
+    await db.collection('Group').document(groupId).updateData({'users': users});
+    await db
+        .collection('users')
+        .document(uid)
+        .collection('groups')
+        .add({'groupName': groupName, 'groupId': groupId});
+  }
+
+  static Future<void> unPublishInGroup(String groupId, String recipeId) async {
+    QuerySnapshot snap = await Firestore.instance
+        .collection('Group')
+        .document(groupId)
+        .collection('recipes')
+        .getDocuments();
+    for (int i = 0; i < snap.documents.length; i++) {
+      if (snap.documents[i].data['recipeId'] == recipeId) {
+        db
+            .collection('Group')
+            .document(groupId)
+            .collection('recipes')
+            .document(snap.documents[i].documentID)
+            .delete();
+      }
+    }
   }
 }

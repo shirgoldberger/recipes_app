@@ -1,6 +1,6 @@
-import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/services/groupFromDB.dart';
 import '../../shared_screen/config.dart';
 
 // ignore: must_be_immutable
@@ -41,7 +41,6 @@ class _ChangeNameGroupState extends State<ChangeNameGroup> {
 
   Widget nameBox() {
     return TextFormField(
-      initialValue: widget.groupName,
       decoration: InputDecoration(
         hintText: widget.groupName,
       ),
@@ -67,36 +66,16 @@ class _ChangeNameGroupState extends State<ChangeNameGroup> {
         child: Text('Update name',
             style: TextStyle(fontSize: 16.0, color: Colors.white)),
         onPressed: () {
-          saveUser(emailTocheck);
+          saveName(emailTocheck);
         });
   }
 
   // database function //
-  Future<void> saveUser(String email) async {
-    final db = Firestore.instance;
+  Future<void> saveName(String email) async {
     if (widget.groupName != null) {
       if (widget.done) {
-        db
-            .collection('Group')
-            .document(widget.groupId)
-            .updateData({'groupName': widget.groupName});
-        for (int i = 0; i < widget.userId.length; i++) {
-          QuerySnapshot a = await Firestore.instance
-              .collection('users')
-              .document(widget.userId[i])
-              .collection('groups')
-              .getDocuments();
-          a.documents.forEach((element) {
-            if (element.data['groupId'] == widget.groupId) {
-              db
-                  .collection('users')
-                  .document(widget.userId[i])
-                  .collection('groups')
-                  .document(element.documentID)
-                  .updateData({'groupName': widget.groupName});
-            }
-          });
-        }
+        await GroupFromDB.updateGroupName(
+            widget.groupId, widget.groupName, widget.userId);
       }
       Navigator.pop(context, widget.groupName);
     }

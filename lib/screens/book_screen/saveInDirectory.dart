@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/models/recipe.dart';
@@ -35,64 +36,10 @@ class SaveInDirectory extends StatefulWidget {
 }
 
 class _SaveInDirectoryState extends State<SaveInDirectory> {
-  getGroups() async {
-    setState(() {
-      widget.directorys = [];
-      widget.isCheck = [];
-      widget.colors = [];
-    });
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(widget.uid)
-        .collection('Directory')
-        .getDocuments();
-
-    snap.documents.forEach((element) async {
-      String name = element.data['name'] ?? '';
-      Map<dynamic, dynamic> recipes = element.data['Recipes'] ?? {};
-      Directory d = Directory(name: name, recipesId: recipes);
-      setState(() {
-        widget.directorys.add(d);
-      });
-      if (recipes.keys.contains(widget.recipe.id)) {
-        setState(() {
-          widget.isCheck.add(true);
-          widget.colors.add(Colors.grey[400]);
-        });
-      } else {
-        setState(() {
-          widget.isCheck.add(false);
-          widget.colors.add(Colors.blueGrey[400]);
-        });
-      }
-    });
-    setState(() {
-      widget.doneLoad = true;
-    });
-  }
-
-  initFavotite() async {
-    QuerySnapshot snap = await Firestore.instance
-        .collection('users')
-        .document(widget.uid)
-        .collection('saved recipe')
-        .getDocuments();
-    snap.documents.forEach((element) async {
-      String recipe = element.data['recipeID'];
-      String user = element.data['userID'];
-      if ((recipe == widget.recipe.id) && (user == widget.recipe.writerUid)) {
-        setState(() {
-          widget.iconSave = Icons.favorite;
-          widget.saveColor = Colors.grey[300];
-        });
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     if (!widget.doneLoad) {
-      getGroups();
+      getDirectories();
       initFavotite();
       if (!widget.isMyRecipe) {
         saveRecipe();
@@ -112,7 +59,7 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
         ),
         heightBox(10),
         Text(
-          'This recipe will save automatically in your favorites group',
+          'This recipe will save automatically in your favorites directory',
           textAlign: TextAlign.center,
           style: new TextStyle(
             color: Colors.green,
@@ -167,6 +114,8 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
   }
 
   void saveRecipe() async {
+    // RecipeFromDB.saveRecipe(widget.uid, widget.recipe.id,
+    //     widget.recipe.writerUid, widget.recipe.saveInUser);
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(widget.uid)
@@ -239,7 +188,7 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
       }
     });
     if (!found) {
-      getGroups();
+      getDirectories();
       _showAlertDialogError('Something worng. this directory maybe deleted');
     }
   }
@@ -295,8 +244,62 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
       }
     });
     if (!found) {
-      getGroups();
+      getDirectories();
       _showAlertDialogError('Something worng. this directory maybe deleted');
     }
+  }
+
+  getDirectories() async {
+    setState(() {
+      widget.directorys = [];
+      widget.isCheck = [];
+      widget.colors = [];
+    });
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .collection('Directory')
+        .getDocuments();
+
+    snap.documents.forEach((element) async {
+      String name = element.data['name'] ?? '';
+      Map<dynamic, dynamic> recipes = element.data['Recipes'] ?? {};
+      Directory d = Directory(name: name, recipesId: recipes);
+      setState(() {
+        widget.directorys.add(d);
+      });
+      if (recipes.keys.contains(widget.recipe.id)) {
+        setState(() {
+          widget.isCheck.add(true);
+          widget.colors.add(Colors.grey[400]);
+        });
+      } else {
+        setState(() {
+          widget.isCheck.add(false);
+          widget.colors.add(Colors.blueGrey[400]);
+        });
+      }
+    });
+    setState(() {
+      widget.doneLoad = true;
+    });
+  }
+
+  initFavotite() async {
+    QuerySnapshot snap = await Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .collection('saved recipe')
+        .getDocuments();
+    snap.documents.forEach((element) async {
+      String recipe = element.data['recipeID'];
+      String user = element.data['userID'];
+      if ((recipe == widget.recipe.id) && (user == widget.recipe.writerUid)) {
+        setState(() {
+          widget.iconSave = Icons.favorite;
+          widget.saveColor = Colors.grey[300];
+        });
+      }
+    });
   }
 }

@@ -1,3 +1,5 @@
+/// the home page of the user - here he can create new recipe, create new group and watch his groups ///
+
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/screens/groups/GroupList.dart';
@@ -78,20 +80,18 @@ class _HomeLogInState extends State<HomeLogIn> {
             child: ListView(children: <Widget>[
               title(),
               box,
+              box,
               newRecipeButtom(),
               box,
               Column(children: [
-                coffe1(),
-                //   newGroupButtom2(),
+                newGroupButton(),
                 box,
                 widthBox(70),
-                coffe2(),
-                //  watchGroupButtom2(),
+                watchGroupsButton(),
               ]),
             ])),
       );
     }
-    // floatingActionButton: addNewRecipe());
   }
 
   Widget newRecipeButtom() {
@@ -123,7 +123,7 @@ class _HomeLogInState extends State<HomeLogIn> {
         ));
   }
 
-  Widget coffe1() {
+  Widget newGroupButton() {
     return InkWell(
         customBorder: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -151,7 +151,7 @@ class _HomeLogInState extends State<HomeLogIn> {
         ));
   }
 
-  Widget coffe2() {
+  Widget watchGroupsButton() {
     return InkWell(
         customBorder: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -287,17 +287,12 @@ class _HomeLogInState extends State<HomeLogIn> {
       icon: Icon(Icons.person),
       label: Text('Delete Account'),
       onPressed: () async {
-        _showAlertDialog();
-        // await _auth.deleteAccount();
-        // await UserFromDB.deleteUser(widget.uid);
-        // await RecipeFromDB.deletePublushRecipesOfUser(widget.uid);
-        // await GroupFromDB.deleteUserFromAllGroups(widget.uid);
-        // Phoenix.rebirth(context);
+        _showAlertDialog(context);
       },
     );
   }
 
-  Future<void> _showAlertDialog() async {
+  Future<void> _showAlertDialog(BuildContext context1) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -308,7 +303,7 @@ class _HomeLogInState extends State<HomeLogIn> {
             child: ListBody(
               children: <Widget>[
                 Text(
-                    'You\'re sure you want to delete your account permanently ?'),
+                    'You\'re sure you want to delete your account permanently?'),
               ],
             ),
           ),
@@ -321,7 +316,7 @@ class _HomeLogInState extends State<HomeLogIn> {
                 await UserFromDB.deleteUser(widget.uid);
                 await _auth.deleteAccount();
 
-                Phoenix.rebirth(context);
+                Phoenix.rebirth(context1);
               },
             ),
             TextButton(
@@ -346,151 +341,6 @@ class _HomeLogInState extends State<HomeLogIn> {
             fontWeight: FontWeight.w900,
             //fontStyle: FontStyle.italic,
             fontFamily: 'Raleway',
-            fontSize: 40));
-  }
-
-  Widget addNewRecipe() {
-    return FloatingActionButton(
-      backgroundColor: mainButtonColor,
-      onPressed: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MainCreateRecipe(name, widget.uid)));
-      },
-      tooltip: 'Add New Recipe',
-      child: Icon(Icons.add),
-    );
-  }
-
-  Widget newGroupButtom2() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: InkWell(
-        child: TextButton(
-          style: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all(Colors.grey), //Background Color
-            elevation: MaterialStateProperty.all(8), //Defines Elevation
-            shadowColor:
-                MaterialStateProperty.all(Colors.grey), //Defines shadowColor
-          ),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => NewGroup(widget.uid)));
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text('   Create Group     ',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontStyle: FontStyle.italic,
-                    fontFamily: 'Raleway',
-                    fontSize: 27)),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget watchGroupButtom2() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: InkWell(
-        child: TextButton(
-          style: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all(Colors.grey), //Background Color
-            elevation: MaterialStateProperty.all(8), //Defines Elevation
-            shadowColor:
-                MaterialStateProperty.all(Colors.grey), //Defines shadowColor
-          ),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => GroupList(widget.uid)));
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text('Watch your Group',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontStyle: FontStyle.italic,
-                    fontFamily: 'Raleway',
-                    fontSize: 27)),
-          ),
-        ),
-      ),
-    );
-
-    // return Padding(
-    //     padding: const EdgeInsets.all(0),
-    //     // ignore: deprecated_member_use
-    //     child: RaisedButton(
-    //         shape: RoundedRectangleBorder(
-    //             borderRadius: BorderRadius.circular(18.0),
-    //             side: BorderSide(color: subButtonColor)),
-    //         onPressed: () {
-    //           Navigator.push(
-    //               context,
-    //               MaterialPageRoute(
-    //                   builder: (context) => GroupList(widget.uid)));
-    //         },
-    //         padding: EdgeInsets.all(20.0),
-    //         color: Colors.grey,
-    //         textColor: Colors.white,
-    //         child: Center(
-    //           child: Text(
-    //             'Watch ypur Group',
-    //             textAlign: TextAlign.center,
-    //             style: TextStyle(
-    //                 color: Colors.white,
-    //                 fontWeight: FontWeight.w900,
-    //                 fontStyle: FontStyle.italic,
-    //                 fontFamily: 'Raleway',
-    //                 fontSize: 27),
-    //           ),
-    //         )));
-  }
-
-  Widget newGroupButton() {
-    return Container(
-      width: 120,
-      height: 100,
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              image: ExactAssetImage(createGroupPath), fit: BoxFit.fill),
-          borderRadius: BorderRadius.all(Radius.circular(15.0))),
-      // ignore: deprecated_member_use
-      child: TextButton(
-        onPressed: () async {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => NewGroup(widget.uid)));
-        },
-        child: null,
-      ),
-    );
-  }
-
-  Widget watchGroupButton() {
-    return Container(
-      width: 100,
-      height: 98,
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              image: ExactAssetImage(yourGroupsPath), fit: BoxFit.fill),
-          borderRadius: BorderRadius.all(Radius.circular(15.0))),
-      // ignore: deprecated_member_use
-      child: TextButton(
-        onPressed: () async {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => GroupList(widget.uid)));
-        },
-        child: null,
-      ),
-    );
+            fontSize: 20));
   }
 }
