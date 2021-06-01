@@ -336,7 +336,8 @@ class _SearchPage extends State<SearchPage> {
 
   Widget searchUsersWidget() {
     return Container(
-        height: (((widget.usersId.length * 150)) - 300).toDouble(),
+        height: max((((widget.usersId.length * 150)) - 300).toDouble(),
+            (((widget.usersId.length * 150))).toDouble()),
         child: ListView.builder(
             shrinkWrap: true,
             physics: ScrollPhysics(),
@@ -367,7 +368,8 @@ class _SearchPage extends State<SearchPage> {
   Widget searcRecipesWidget() {
     // recipes
     return Container(
-        height: (widget.recipesSearch.length * 150).toDouble(),
+        height: max((((widget.recipesSearch.length * 150)) - 300).toDouble(),
+            (((widget.recipesSearch.length * 150))).toDouble()),
         child: ListView.builder(
             shrinkWrap: true,
             physics: ScrollPhysics(),

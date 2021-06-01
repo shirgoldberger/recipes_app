@@ -207,6 +207,11 @@ class _EditRecipeIngredientsState extends State<EditRecipeIngredients> {
   }
 
   Widget saveButton() {
+    for (int i = 0; i < widget.ingredients.length; i++) {
+      setState(() {
+        widget.ingredients[i].setIndex(i);
+      });
+    }
     return FloatingActionButton(
       heroTag: null,
       backgroundColor:
@@ -224,7 +229,7 @@ class _EditRecipeIngredientsState extends State<EditRecipeIngredients> {
           Navigator.pop(context, widget.ingredients);
         } else {
           setState(() {
-            error = "Add some ingredients to your recipe";
+            error = "check your ingredients is not zero";
           });
         }
       },

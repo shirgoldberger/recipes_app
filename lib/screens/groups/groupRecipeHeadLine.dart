@@ -13,7 +13,7 @@ class GroupRecipeHeadLine extends StatefulWidget {
   String imagePath = "";
   Color circleColor;
   String level;
-  String time;
+  String time = '';
   NetworkImage image;
 
   GroupRecipeHeadLine(Recipe r, String _groupId) {

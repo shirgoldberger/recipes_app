@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/screens/personal_screen/noresEditForm.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/shared_screen/config.dart';
 
@@ -37,26 +38,22 @@ class _NotesFormState extends State<NotesForm> {
       },
       child: Container(
         child: Form(
-            child: Column(children: <Widget>[
-          TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Add new note:',
-              hintStyle: TextStyle(
-                fontFamily: ralewayFont,
-                fontSize: 18,
-              ),
-            ),
-            onChanged: (val) {
-              setState(() {
-                widget.newNotes = val;
-              });
-            },
-          ),
-          // ignore: deprecated_member_use
-          saveIcon(),
-          title(),
-          for (int i = 0; i < widget.notes.length; i++) noteText(i),
-        ])),
+            child: SingleChildScrollView(
+          child: Column(children: <Widget>[
+            // ignore: deprecated_member_use
+            //saveIcon(),
+            editIcon(),
+            title(),
+            ListView.builder(
+                physics: ScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: widget.notes.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return noteText(index);
+                })
+          ]),
+        )),
       ),
     );
   }
@@ -97,6 +94,29 @@ class _NotesFormState extends State<NotesForm> {
         onPressed: saveIconPressed);
   }
 
+  Widget editIcon() {
+    // ignore: deprecated_member_use
+    return FlatButton.icon(
+        color: Colors.blueGrey[400],
+        disabledColor: Colors.blueGrey[400],
+        icon: Icon(Icons.edit),
+        label: Text(
+          'edit',
+          style: TextStyle(
+            fontFamily: ralewayFont,
+            fontSize: 18,
+          ),
+          textAlign: TextAlign.left,
+        ),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => NotesEditForm(widget.notes, widget.uid,
+                      widget.docId, widget.currentId)));
+        });
+  }
+
   Widget title() {
     return Text(
       'your notes on this recipe:',
@@ -114,5 +134,23 @@ class _NotesFormState extends State<NotesForm> {
       ),
       textAlign: TextAlign.left,
     );
+  }
+
+  Future<void> _showNotesPanel() async {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.7,
+            decoration: new BoxDecoration(
+              color: Colors.blueGrey[50],
+              borderRadius: new BorderRadius.only(
+                topLeft: const Radius.circular(25.0),
+                topRight: const Radius.circular(25.0),
+              ),
+            ),
+            child: NotesEditForm(
+                widget.notes, widget.uid, widget.docId, widget.currentId)));
   }
 }

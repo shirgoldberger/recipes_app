@@ -193,8 +193,11 @@ class _SettingFormState extends State<SettingForm> {
               changeNameInRecipes(userData);
             }
 
-            Navigator.pop(
-                context, {"path": widget.imagePath, "image": widget.m});
+            Navigator.pop(context, {
+              "path": widget.imagePath,
+              "image": widget.m,
+              "name": _currentFirstName
+            });
           }
         });
   }

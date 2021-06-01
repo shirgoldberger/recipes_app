@@ -263,6 +263,8 @@ class _HomeLogInState extends State<HomeLogIn> {
               .then((value) => setState(() {
                     imagePath = value["path"];
                     image = value["image"];
+
+                    name = value["name"];
                   }));
         });
   }
