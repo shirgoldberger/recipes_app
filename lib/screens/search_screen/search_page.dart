@@ -168,6 +168,7 @@ class _SearchPage extends State<SearchPage> {
           child: GridView.count(
             physics: ScrollPhysics(),
             crossAxisCount: 3,
+            // ignore: missing_return
             children: List.generate(widget.recipes.length, (index) {
               if (!widget.searchMode) {
                 return Container(
@@ -211,6 +212,7 @@ class _SearchPage extends State<SearchPage> {
                               : snapshot.data,
                           fit: BoxFit.cover),
                     ),
+                    // ignore: deprecated_member_use
                     child: FlatButton(
                       onPressed: () async {
                         widget.recipes[index] =
@@ -256,6 +258,7 @@ class _SearchPage extends State<SearchPage> {
                   child: SizedBox(
                     height: 50,
                     width: 120,
+                    // ignore: deprecated_member_use
                     child: FlatButton(
                       onPressed: () => {
                         setState(() {
@@ -297,6 +300,7 @@ class _SearchPage extends State<SearchPage> {
                   child: SizedBox(
                     width: 120,
                     height: 50,
+                    // ignore: deprecated_member_use
                     child: FlatButton(
                       onPressed: () => {
                         setState(() {
@@ -736,6 +740,7 @@ class _SearchPage extends State<SearchPage> {
     bool doneLiles = false;
     bool doneGroups = false;
     bool doneUsers = false;
+
     int i = 0;
     while ((!doneUsers) || (!doneGroups) || (!doneLiles)) {
       if (i < widget.friendsRecipes.length) {

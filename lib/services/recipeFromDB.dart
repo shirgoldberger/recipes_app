@@ -107,7 +107,44 @@ class RecipeFromDB {
         .collection('recipes')
         .document(recipeId)
         .get();
-    return convertSnapshotToRecipe(recipe);
+    var id = recipe.documentID;
+    String name = recipe.data['name'] ?? '';
+    String description = recipe.data['description'] ?? '';
+    String level = recipe.data['level'] ?? '0';
+    int levelInt = int.parse(level);
+    String time = recipe.data['time'] ?? '0';
+    int timeInt = int.parse(time);
+    String writer = recipe.data['writer'] ?? '';
+    String writerUid = recipe.data['writerUid'] ?? '';
+    String publish = recipe.data['publishID'] ?? '';
+    String imagePath = recipe.data['imagePath'] ?? '';
+
+    // tags
+    var tags = recipe.data['tags'] ?? [];
+    String tagString = tags.toString();
+    List<String> l = [];
+    if (tagString != "[]") {
+      String tag = tagString.substring(1, tagString.length - 1);
+      l = tag.split(',');
+      for (int i = 0; i < l.length; i++) {
+        if (l[i][0] == ' ') {
+          l[i] = l[i].substring(1, l[i].length);
+        }
+      }
+    }
+
+    // notes
+    List nList = recipe.data['notes'];
+    List<String> noteList = [];
+    for (int i = 0; i < nList.length; i++) {
+      String note = nList[i].toString();
+      noteList.add(note);
+    }
+
+    Recipe r = Recipe(name, description, l, levelInt, noteList, writer,
+        writerUid, timeInt, true, id, publish, imagePath);
+    r.setId(id);
+    return r;
   }
 
   static Future<List<String>> getLikesPublishRecipe(String publishId) async {
@@ -215,7 +252,6 @@ class RecipeFromDB {
 
     //remove recipe from list
     Map<String, String> copyRecipe = new Map<dynamic, dynamic>.from(recipes);
-    ;
     copyRecipe.remove(recipeUserid);
     Firestore.instance
         .collection('users')
@@ -525,5 +561,97 @@ class RecipeFromDB {
         .collection('saved recipe')
         .document(saveRecipeId)
         .updateData({'notes': notes});
+  }
+
+  static Future<String> like(String publishId, String uid) async {
+    DocumentSnapshot currentRecipe = await Firestore.instance
+        .collection('publish recipe')
+        .document(publishId)
+        .get();
+
+    // user likes
+    DocumentSnapshot currentUser = await Firestore.instance
+        .collection('users')
+        .document(uid.toString())
+        .get();
+    List likes = [];
+    List loadList = currentUser.data['likes'] ?? [];
+    likes.addAll(loadList);
+    likes.add(publishId);
+    db
+        .collection('users')
+        .document(uid.toString())
+        .updateData({'likes': likes});
+
+    // recipe likes
+    likes = [];
+    loadList = currentRecipe.data['likes'] ?? [];
+    likes.addAll(loadList);
+    likes.add(uid.toString());
+    db
+        .collection('publish recipe')
+        .document(publishId)
+        .updateData({'likes': likes});
+    return currentUser.data['Email'] ?? "";
+  }
+
+  static Future<void> unlike(String publishId, String uid) async {
+    DocumentSnapshot currentRecipe = await Firestore.instance
+        .collection('publish recipe')
+        .document(publishId)
+        .get();
+
+    // user likes
+    DocumentSnapshot currentUser = await Firestore.instance
+        .collection('users')
+        .document(uid.toString())
+        .get();
+    List likes = [];
+    List loadList = currentUser.data['likes'] ?? [];
+    likes.addAll(loadList);
+    likes.remove(publishId);
+    db
+        .collection('users')
+        .document(uid.toString())
+        .updateData({'likes': likes});
+
+    // recipe likes
+    likes = [];
+    loadList = currentRecipe.data['likes'] ?? [];
+    likes.addAll(loadList);
+    likes.remove(uid.toString());
+    db
+        .collection('publish recipe')
+        .document(publishId)
+        .updateData({'likes': likes});
+    return currentUser.data['Email'] ?? "";
+  }
+
+  static deleteUserFromPublishRecipe(String uid) async {
+    QuerySnapshot publishRecipes =
+        await db.collection('publish recipe').getDocuments();
+    for (int i = 0; i < publishRecipes.documents.length; i++) {
+      List likes = publishRecipes.documents[i].data['likes'] ?? [];
+      List copy = [];
+      copy.addAll(likes);
+      if (copy.contains(uid)) {
+        copy.remove(uid);
+      }
+      await db
+          .collection('publish recipe')
+          .document(publishRecipes.documents[i].documentID)
+          .updateData({'likes': copy});
+
+      List users = publishRecipes.documents[i].data['saveUser'] ?? [];
+      copy = [];
+      copy.addAll(users);
+      if (copy.contains(uid)) {
+        copy.remove(uid);
+      }
+      await db
+          .collection('publish recipe')
+          .document(publishRecipes.documents[i].documentID)
+          .updateData({'saveUser': copy});
+    }
   }
 }

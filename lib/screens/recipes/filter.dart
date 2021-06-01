@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
-
 import '../../shared_screen/config.dart';
 
+// ignore: must_be_immutable
 class Filter extends StatefulWidget {
   String easyButtom = 'easy';
   Color easyButtomColor = Colors.green[100];

@@ -1,15 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/screens/recipes/watch_recipes/watchRecipeBody.dart';
-import 'package:recipes_app/shared_screen/loading.dart';
 import '../../groups/saveGroup.dart';
 import '../../personal_screen/likesList.dart';
 
+// ignore: must_be_immutable
 class WatchPublishRecipe extends StatefulWidget {
   // true if the user like this recipe
   bool isLikeRecipe = false;
@@ -26,7 +26,7 @@ class WatchPublishRecipe extends StatefulWidget {
   String levelString;
   // username and id that like current recipe
   Map<String, String> usersLikes = {};
-  //
+
   String publishRecipeId;
   bool doneLoadLikeList = false;
 
@@ -59,7 +59,6 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
   void initState() {
     super.initState();
     getuser();
-    // makeList();
     if (widget.uid != null) {
       initLikeIcon();
     }
@@ -87,11 +86,6 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
             ),
             backgroundColor: appBarBackgroundColor,
             actions: <Widget>[
-              // like icon
-              //likeIcon(),
-              // show likes button
-              // showLikesIcon(),
-              // save icon
               saveIcon(),
             ]),
         body: WatchRecipeBody(
@@ -104,25 +98,14 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
             widget.image));
   }
 
-  initLikeIcon() async {
-    var publishRecipes =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    publishRecipes.documents.forEach((element) async {
-      // the current publish recipe
-      if (element.data['recipeId'] == widget.currentRecipe.id) {
-        widget.publishRecipeId = element.documentID.toString();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection("users")
-            .document(widget.uid)
-            .get();
-        List userLikes = currentUser.data['likes'] ?? [];
-        if (userLikes.contains(widget.publishRecipeId)) {
-          setState(() {
-            widget.isLikeRecipe = true;
-          });
-        }
-      }
-    });
+  void initLikeIcon() async {
+    List likes =
+        await RecipeFromDB.getLikesPublishRecipe(widget.currentRecipe.publish);
+    if (likes.contains(widget.uid)) {
+      setState(() {
+        widget.isLikeRecipe = true;
+      });
+    }
   }
 
   Future<void> _showLikesList() async {
@@ -172,83 +155,22 @@ class _WatchPublishRecipeState extends State<WatchPublishRecipe> {
   }
 
   Future<void> like() async {
-    String id;
-    final db = Firestore.instance;
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.currentRecipe.id) {
-        id = element.documentID.toString();
-        // go to specific publish recipe
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection('users')
-            .document(widget.uid.toString())
-            .get();
-        List likes = [];
-        List loadList = currentUser.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.add(id);
-        db
-            .collection('users')
-            .document(widget.uid.toString())
-            .updateData({'likes': likes});
-        likes = [];
-        loadList = currentRecipe2.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.add(widget.uid.toString());
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'likes': likes});
-        setState(() {
-          widget.isLikeRecipe = !widget.isLikeRecipe;
-          // add to likes list
-          widget.usersLikes[currentUser.data['Email']] =
-              currentUser.documentID.toString();
-        });
-      }
+    String email =
+        await RecipeFromDB.like(widget.currentRecipe.publish, widget.uid);
+    setState(() {
+      widget.isLikeRecipe = !widget.isLikeRecipe;
+      // add to likes list
+      widget.usersLikes[email] = widget.uid;
     });
   }
 
   Future<void> unlike() async {
-    String id;
-    final db = Firestore.instance;
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.currentRecipe.id) {
-        id = element.documentID.toString();
-        // go to specific publish recipe
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection('users')
-            .document(widget.uid.toString())
-            .get();
-        List likes = [];
-        List loadList = currentUser.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.remove(id);
-        db
-            .collection('users')
-            .document(widget.uid.toString())
-            .updateData({'likes': likes});
-        likes = [];
-        loadList = currentRecipe2.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.remove(widget.uid.toString());
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'likes': likes});
-        setState(() {
-          widget.isLikeRecipe = !widget.isLikeRecipe;
-          // remove from likes list
-          widget.usersLikes.remove([currentUser.data['Email']]);
-        });
-      }
+    String email =
+        await RecipeFromDB.like(widget.currentRecipe.publish, widget.uid);
+    setState(() {
+      widget.isLikeRecipe = !widget.isLikeRecipe;
+      // remove from likes list
+      widget.usersLikes.remove(email);
     });
   }
 

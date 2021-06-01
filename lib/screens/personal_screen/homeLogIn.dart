@@ -111,6 +111,7 @@ class _HomeLogInState extends State<HomeLogIn> {
                 image: ExactAssetImage('lib/images/aaa.JPG'),
                 fit: BoxFit.cover),
           ),
+          // ignore: deprecated_member_use
           child: FlatButton(
             onPressed: () async {
               Navigator.push(
@@ -140,6 +141,7 @@ class _HomeLogInState extends State<HomeLogIn> {
                 image: ExactAssetImage('lib/images/coffe1.JPG'),
                 fit: BoxFit.cover),
           ),
+          // ignore: missing_required_param
           child: FlatButton(
             onPressed: () async {
               Navigator.push(
@@ -168,6 +170,7 @@ class _HomeLogInState extends State<HomeLogIn> {
                 image: ExactAssetImage('lib/images/coffe2.JPG'),
                 fit: BoxFit.cover),
           ),
+          // ignore: deprecated_member_use
           child: FlatButton(
             onPressed: () async {
               Navigator.push(
@@ -191,6 +194,7 @@ class _HomeLogInState extends State<HomeLogIn> {
   }
 
   Widget convertsIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
       icon: Icon(
         Icons.change_circle,
@@ -313,11 +317,31 @@ class _HomeLogInState extends State<HomeLogIn> {
             TextButton(
               child: Text('yes- delete'),
               onPressed: () async {
+                BuildContext dialogContext;
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    dialogContext = context;
+                    return WillPopScope(
+                        onWillPop: () async => false,
+                        child: AlertDialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.0))),
+                            backgroundColor: Colors.black87,
+                            content: loadingIndicator()));
+                  },
+                );
                 await GroupFromDB.deleteUserFromAllGroups(widget.uid);
                 await RecipeFromDB.deletePublushRecipesOfUser(widget.uid);
+                await RecipeFromDB.deleteUserFromPublishRecipe(widget.uid);
                 await UserFromDB.deleteUser(widget.uid);
                 await _auth.deleteAccount();
-
+                if (dialogContext != null) {
+                  Navigator.pop(dialogContext);
+                  Navigator.of(context).pop();
+                }
                 Phoenix.rebirth(context1);
               },
             ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'sighIn.dart';
 import 'register.dart';
 
+// ignore: must_be_immutable
 class Authentication extends StatefulWidget {
   bool showSignIn = true;
   Authentication({this.showSignIn});

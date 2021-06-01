@@ -63,6 +63,9 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
   void getuser() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final FirebaseUser user = await auth.currentUser();
+    if (!mounted) {
+      return;
+    }
     setState(() {
       widget.uid = user.uid;
     });
@@ -119,24 +122,13 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
   }
 
   void initLikeIcon() async {
-    var publishRecipes =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    publishRecipes.documents.forEach((element) async {
-      // the current publish recipe
-      if (element.data['recipeId'] == widget.currentRecipe.id) {
-        widget.publishRecipeId = element.documentID.toString();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection("users")
-            .document(widget.uid)
-            .get();
-        List userLikes = currentUser.data['likes'] ?? [];
-        if (userLikes.contains(widget.publishRecipeId)) {
-          setState(() {
-            widget.isLikeRecipe = true;
-          });
-        }
-      }
-    });
+    List likes =
+        await RecipeFromDB.getLikesPublishRecipe(widget.currentRecipe.publish);
+    if (likes.contains(widget.uid)) {
+      setState(() {
+        widget.isLikeRecipe = true;
+      });
+    }
   }
 
   Future<void> _showLikesList() async {
@@ -198,85 +190,22 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
   }
 
   Future<void> like() async {
-    String id;
-    final db = Firestore.instance;
-    // final user = Provider.of<User>(context);
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      //id = element.documentID;
-      if (element.data['recipeId'] == widget.currentRecipe.id) {
-        id = element.documentID.toString();
-        // go to specific publish recipe
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection('users')
-            .document(widget.uid.toString())
-            .get();
-        List likes = [];
-        List loadList = currentUser.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.add(id);
-        db
-            .collection('users')
-            .document(widget.uid.toString())
-            .updateData({'likes': likes});
-        likes = [];
-        loadList = currentRecipe2.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.add(widget.uid.toString());
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'likes': likes});
-        setState(() {
-          widget.isLikeRecipe = !widget.isLikeRecipe;
-          // add to likes list
-          widget.usersLikes[currentUser.data['Email']] =
-              currentUser.documentID.toString();
-        });
-      }
+    String email =
+        await RecipeFromDB.like(widget.currentRecipe.publish, widget.uid);
+    setState(() {
+      widget.isLikeRecipe = !widget.isLikeRecipe;
+      // add to likes list
+      widget.usersLikes[email] = widget.uid;
     });
   }
 
   Future<void> unlike() async {
-    String id;
-    final db = Firestore.instance;
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.currentRecipe.id) {
-        id = element.documentID.toString();
-        // go to specific publish recipe
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection('users')
-            .document(widget.uid.toString())
-            .get();
-        List likes = [];
-        List loadList = currentUser.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.remove(id);
-        db
-            .collection('users')
-            .document(widget.uid.toString())
-            .updateData({'likes': likes});
-        likes = [];
-        loadList = currentRecipe2.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.remove(widget.uid.toString());
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'likes': likes});
-        setState(() {
-          widget.isLikeRecipe = !widget.isLikeRecipe;
-          // remove from likes list
-          widget.usersLikes.remove(currentUser.data['Email']);
-        });
-      }
+    String email =
+        await RecipeFromDB.like(widget.currentRecipe.publish, widget.uid);
+    setState(() {
+      widget.isLikeRecipe = !widget.isLikeRecipe;
+      // remove from likes list
+      widget.usersLikes.remove(email);
     });
   }
 
@@ -309,7 +238,7 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
     AlertDialog alert = AlertDialog(
       title: Text("need to sign in"),
       content: Text(
-          "you can not save this recipe - please first register or sign in to this app, do this in the personal page"),
+          "You can not save this recipe - please first register or sign in to this app, do this in the personal page"),
       actions: [
         cancelButton,
       ],
@@ -379,6 +308,7 @@ class _WatchSaveRecipeState extends State<WatchSaveRecipe> {
     // ignore: deprecated_member_use
     return Visibility(
       visible: widget.uid != widget.currentRecipe.writerUid,
+      // ignore: deprecated_member_use
       child: FlatButton.icon(
           icon: Icon(
             Icons.note_add,

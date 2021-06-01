@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:recipes_app/services/auth.dart';
 import '../../shared_screen/config.dart';
 
+// ignore: must_be_immutable
 class ForgetPassword extends StatefulWidget {
   AuthService auth;
   ForgetPassword(AuthService _auth) {
@@ -115,6 +116,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
   }
 
   Widget goToSignIn() {
+    // ignore: deprecated_member_use
     return FlatButton(
       onPressed: () {
         Navigator.pop(context);

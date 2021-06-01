@@ -5,7 +5,7 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/screens/personal_screen/likesList.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
-import 'package:recipes_app/shared_screen/loading.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import '../../../shared_screen/config.dart';
 import '../../search_screen/userRecipeList.dart';
 
@@ -244,6 +244,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     // there is no image yet
     if (widget.imagePath == "") {
       return CircleAvatar(
+          // ignore: missing_required_param
           child: TextButton(
               onPressed: () => Navigator.push(
                   context,
@@ -256,6 +257,7 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
     } else {
       if (widget.userImage != null) {
         return CircleAvatar(
+            // ignore: missing_required_param
             child: TextButton(
                 onPressed: () => Navigator.push(
                     context,
@@ -273,13 +275,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   }
 
   Widget recipePicture() {
-    // there is no image yet
-    // if (widget.current.imagePath == "") {
-    //   return CircleAvatar(
-    //       backgroundColor: backgroundColor,
-    //       radius: 120,
-    //       backgroundImage: ExactAssetImage(noImagePath));
-    // } else {
     if (widget.recipeImage != null) {
       return CircleAvatar(
           backgroundColor: backgroundColor,
@@ -291,7 +286,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
           radius: 120,
           backgroundImage: ExactAssetImage(noImagePath));
     }
-    // }
   }
 
   Widget description() {
@@ -364,7 +358,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.w900,
-                  // fontStyle: FontStyle.italic,
                   fontFamily: 'Raleway',
                   fontSize: 27),
             ),
@@ -613,98 +606,20 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
   }
 
   Future<void> like() async {
-    DocumentSnapshot currentUser = await Firestore.instance
-        .collection('users')
-        .document(widget.uid.toString())
-        .get();
+    String email = await RecipeFromDB.like(widget.current.publish, widget.uid);
     setState(() {
-      widget.usersLikes[currentUser.data['Email']] = widget.uid;
-    });
-    String id;
-    final db = Firestore.instance;
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.current.id) {
-        id = element.documentID.toString();
-        // go to specific publish recipe
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection('users')
-            .document(widget.uid.toString())
-            .get();
-        List likes = [];
-        List loadList = currentUser.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.add(id);
-        db
-            .collection('users')
-            .document(widget.uid.toString())
-            .updateData({'likes': likes});
-        likes = [];
-        loadList = currentRecipe2.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.add(widget.uid.toString());
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'likes': likes});
-        setState(() {
-          widget.isLikeRecipe = !widget.isLikeRecipe;
-          // add to likes list
-          widget.usersLikes[currentUser.data['Email']] =
-              currentUser.documentID.toString();
-        });
-      }
+      widget.isLikeRecipe = !widget.isLikeRecipe;
+      // add to likes list
+      widget.usersLikes[email] = widget.uid;
     });
   }
 
   Future<void> unlike() async {
-    DocumentSnapshot currentUser = await Firestore.instance
-        .collection('users')
-        .document(widget.uid.toString())
-        .get();
-
+    String email = await RecipeFromDB.like(widget.current.publish, widget.uid);
     setState(() {
-      widget.usersLikes.remove(currentUser.data['Email']);
-    });
-    String id;
-    final db = Firestore.instance;
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.current.id) {
-        id = element.documentID.toString();
-        // go to specific publish recipe
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection('users')
-            .document(widget.uid.toString())
-            .get();
-        List likes = [];
-        List loadList = currentUser.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.remove(id);
-        db
-            .collection('users')
-            .document(widget.uid.toString())
-            .updateData({'likes': likes});
-        likes = [];
-        loadList = currentRecipe2.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.remove(widget.uid.toString());
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'likes': likes});
-        setState(() {
-          widget.isLikeRecipe = !widget.isLikeRecipe;
-          // remove from likes list
-          widget.usersLikes.remove([currentUser.data['Email']]);
-        });
-      }
+      widget.isLikeRecipe = !widget.isLikeRecipe;
+      // remove from likes list
+      widget.usersLikes.remove(email);
     });
   }
 

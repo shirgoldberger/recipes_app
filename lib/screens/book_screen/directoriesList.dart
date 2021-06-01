@@ -88,7 +88,7 @@ class _DirectoriesListState extends State<DirectoriesList> {
                       content: loadingIndicator()));
             },
           );
-          await getDirectoryRecipes(d);
+          getDirectoryRecipes(d);
           Navigator.pop(dialogContext);
 
           Navigator.push(

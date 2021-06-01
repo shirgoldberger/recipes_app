@@ -4,15 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
-import 'package:recipes_app/screens/personal_screen/homeLogIn.dart';
 import 'package:recipes_app/screens/recipes/watch_recipes/watchRecipeBody.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
-//הסבר כללי לגבי העמוד הזה-
-// העמוד מקבל מתכון ומציג אותו למשתמש כאשר הוא מחולק ל 3 מצבים:
-// מצב ראשןן - במקרה ואנחנו צופים במתכון שאנחנו כתבנו - ניתן לערוך את המתכון, למחוק אותו ולפרסם אותו.
-//  לכן אפשר רק למחוק אותו, נמחק רק אצלי, או להוסיף עליו הערות אישיות שלי. (עשינו לו save )  מצב שני - אנחנו צופים במתכון ששמרנו אותו
-// מצב שלישי - צפיה במתכון מתוך העמוד הכללי - ניתן רק לשמור מתכון.
+// ignore: must_be_immutable
 class WatchRecipeGroup extends StatefulWidget {
   WatchRecipeGroup(Recipe r, String _groupId, NetworkImage _image) {
     this.current = r;
@@ -32,8 +27,6 @@ class WatchRecipeGroup extends StatefulWidget {
   Color levelColor;
   String levelString = '';
   var uid;
-  IconData iconPublish = Icons.public;
-  String publishString = "publish this recipe";
   String saveRecipe = '';
   IconData iconSave = Icons.favorite_border;
   String saveString = 'save';
@@ -51,14 +44,6 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
     super.initState();
     getuser();
     makeList();
-
-    if (widget.current.publish == '') {
-      widget.iconPublish = Icons.public;
-      widget.publishString = "publish";
-    } else {
-      widget.iconPublish = Icons.public_off;
-      widget.publishString = "un publish";
-    }
   }
 
   void getuser() async {
@@ -111,6 +96,7 @@ class _WatchRecipeGroupState extends State<WatchRecipeGroup> {
                     fontFamily: 'Raleway', color: Colors.white, fontSize: 20),
               ),
               actions: <Widget>[
+                // ignore: deprecated_member_use
                 FlatButton.icon(
                     icon: Icon(
                       Icons.delete,

@@ -1,31 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:recipes_app/models/directory.dart';
-import 'package:recipes_app/screens/MyConnectivity.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 
 class UserFromDB {
   static final db = Firestore.instance;
-  // Map _source = {ConnectivityResult.none: false};
-  // MyConnectivity _connectivity = MyConnectivity.instance;
-  // UserFromDB() {
-  //   _connectivity.initialise();
-  //   _connectivity.myStream.listen((source) {
-  //     _source = source;
-  //   });
-  // }
-  // bool checkConnection() {
-  //   switch (_source.keys.toList()[0]) {
-  //     case ConnectivityResult.none:
-  //       return true;
-  //       break;
-  //     case ConnectivityResult.mobile:
-  //       return false;
-  //       break;
-  //     case ConnectivityResult.wifi:
-  //       return true;
-  //   }
-  // }
 
   static Future<String> getUserFirstName(String uid) async {
     DocumentSnapshot user =
@@ -45,7 +23,7 @@ class UserFromDB {
     return user.data['Email'] ?? "";
   }
 
-  static Future<String> setUserEmail(String uid, String email) async {
+  static setUserEmail(String uid, String email) async {
     await Firestore.instance
         .collection('users')
         .document(uid)
@@ -107,13 +85,13 @@ class UserFromDB {
   }
 
   static Future deleteUser(String uid) async {
-    QuerySnapshot saved_recipe = await Firestore.instance
+    QuerySnapshot savedRecipe = await Firestore.instance
         .collection('users')
         .document(uid)
         .collection('saved recipe')
         .getDocuments();
-    if (saved_recipe.documents.length > 0) {
-      saved_recipe.documents.forEach((element) async {
+    if (savedRecipe.documents.length > 0) {
+      savedRecipe.documents.forEach((element) async {
         await db
             .collection('users')
             .document(uid)

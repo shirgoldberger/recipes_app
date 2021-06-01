@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/ingredient.dart';
@@ -6,10 +5,8 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/screens/book_screen/saveInDirectory.dart';
 import 'package:recipes_app/screens/groups/publishGroup.dart';
-import 'package:recipes_app/shared_screen/loading.dart';
 import 'watchRecipeBody.dart';
 import '../edit_recipe/editRecipe.dart';
-
 import '../../../services/recipeFromDB.dart';
 
 // ignore: must_be_immutable
@@ -223,12 +220,12 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
   }
 
   Future<void> _showAlertDialog(BuildContext context1) async {
-    BuildContext dialogContenst;
+    BuildContext dialogContext;
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        dialogContenst = context;
+        dialogContext = context;
         return AlertDialog(
           title: Text('Delete'),
           content: SingleChildScrollView(
@@ -245,7 +242,7 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
               onPressed: () async {
                 delete();
                 int count = 0;
-                Navigator.pop(dialogContenst);
+                Navigator.pop(dialogContext);
                 Navigator.of(context1).pop();
                 Navigator.popUntil(context1, (route) {
                   return count++ == 2;
@@ -311,32 +308,5 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
         onPressed: () {
           _showAlertDialog(context);
         });
-  }
-
-  Future<void> _showAlertDialog2(String message) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(message),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Ok'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

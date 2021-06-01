@@ -3,8 +3,6 @@ import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/services/userFromDB.dart';
 
-import '../shared_screen/config.dart';
-
 class GroupFromDB {
   static final db = Firestore.instance;
 

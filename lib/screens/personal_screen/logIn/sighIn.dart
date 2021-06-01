@@ -263,6 +263,7 @@ class _SignInState extends State<SignIn> {
   }
 
   Widget forgetPassword() {
+    // ignore: deprecated_member_use
     return FlatButton(
       onPressed: () {
         Navigator.push(context,

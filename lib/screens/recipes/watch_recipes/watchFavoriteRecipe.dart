@@ -6,7 +6,6 @@ import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
 import 'package:recipes_app/screens/book_screen/saveInDirectory.dart';
-import 'package:recipes_app/screens/groups/saveGroup.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'watchRecipeBody.dart';
 import '../../personal_screen/likesList.dart';
@@ -119,24 +118,13 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
   }
 
   void initLikeIcon() async {
-    var publishRecipes =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    publishRecipes.documents.forEach((element) async {
-      // the current publish recipe
-      if (element.data['recipeId'] == widget.currentRecipe.id) {
-        widget.publishRecipeId = element.documentID.toString();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection("users")
-            .document(widget.uid)
-            .get();
-        List userLikes = currentUser.data['likes'] ?? [];
-        if (userLikes.contains(widget.publishRecipeId)) {
-          setState(() {
-            widget.isLikeRecipe = true;
-          });
-        }
-      }
-    });
+    List likes =
+        await RecipeFromDB.getLikesPublishRecipe(widget.currentRecipe.publish);
+    if (likes.contains(widget.uid)) {
+      setState(() {
+        widget.isLikeRecipe = true;
+      });
+    }
   }
 
   Future<void> _showLikesList() async {
@@ -168,110 +156,30 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
   }
 
   Future<void> like() async {
-    String id;
-    final db = Firestore.instance;
-    // final user = Provider.of<User>(context);
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      //id = element.documentID;
-      if (element.data['recipeId'] == widget.currentRecipe.id) {
-        id = element.documentID.toString();
-        // go to specific publish recipe
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection('users')
-            .document(widget.uid.toString())
-            .get();
-        List likes = [];
-        List loadList = currentUser.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.add(id);
-        db
-            .collection('users')
-            .document(widget.uid.toString())
-            .updateData({'likes': likes});
-        likes = [];
-        loadList = currentRecipe2.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.add(widget.uid.toString());
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'likes': likes});
-        setState(() {
-          widget.isLikeRecipe = !widget.isLikeRecipe;
-          // add to likes list
-          widget.usersLikes[currentUser.data['Email']] =
-              currentUser.documentID.toString();
-        });
-      }
+    String email =
+        await RecipeFromDB.like(widget.currentRecipe.publish, widget.uid);
+    setState(() {
+      widget.isLikeRecipe = !widget.isLikeRecipe;
+      // add to likes list
+      widget.usersLikes[email] = widget.uid;
     });
   }
 
   Future<void> unlike() async {
-    String id;
-    final db = Firestore.instance;
-    QuerySnapshot snap =
-        await Firestore.instance.collection('publish recipe').getDocuments();
-    snap.documents.forEach((element) async {
-      if (element.data['recipeId'] == widget.currentRecipe.id) {
-        id = element.documentID.toString();
-        // go to specific publish recipe
-        var currentRecipe2 =
-            await db.collection('publish recipe').document(id).get();
-        DocumentSnapshot currentUser = await Firestore.instance
-            .collection('users')
-            .document(widget.uid.toString())
-            .get();
-        List likes = [];
-        List loadList = currentUser.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.remove(id);
-        db
-            .collection('users')
-            .document(widget.uid.toString())
-            .updateData({'likes': likes});
-        likes = [];
-        loadList = currentRecipe2.data['likes'] ?? [];
-        likes.addAll(loadList);
-        likes.remove(widget.uid.toString());
-        db
-            .collection('publish recipe')
-            .document(id)
-            .updateData({'likes': likes});
-        setState(() {
-          widget.isLikeRecipe = !widget.isLikeRecipe;
-          // remove from likes list
-          widget.usersLikes.remove(currentUser.data['Email']);
-        });
-      }
+    String email =
+        await RecipeFromDB.like(widget.currentRecipe.publish, widget.uid);
+    setState(() {
+      widget.isLikeRecipe = !widget.isLikeRecipe;
+      // remove from likes list
+      widget.usersLikes.remove(email);
     });
   }
 
   Future<void> deleteFromSavedRecipe(
     String id,
   ) async {
-    final db = Firestore.instance;
     await RecipeFromDB.deleteFromFavoriteRecipe(
         widget.uid, widget.currentRecipe.writerUid, widget.currentRecipe.id);
-    // QuerySnapshot snap = await Firestore.instance
-    //     .collection('users')
-    //     .document(id)
-    //     .collection('saved recipe')
-    //     .getDocuments();
-    // snap.documents.forEach((element) async {
-    //   String recipeIdfromSnap = element.data['recipeID'];
-    //   if (recipeIdfromSnap == widget.currentRecipe.id) {
-    //     db
-    //         .collection('users')
-    //         .document(id)
-    //         .collection('saved recipe')
-    //         .document(element.documentID)
-    //         .delete();
-    //   }
-    // });
     int count = 0;
     Navigator.popUntil(context, (route) {
       return count++ == 3;
@@ -435,32 +343,5 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
                     widget.currentRecipe.id)));
       }
     }
-  }
-
-  Future<void> _showAlertDialog2(String message) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(message),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Ok'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

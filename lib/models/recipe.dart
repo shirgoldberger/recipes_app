@@ -54,6 +54,11 @@ class Recipe {
     this.imagePath = _path;
   }
 
+  Recipe.forStream(String _id, String uid) {
+    this.id = _id;
+    this.writerUid = uid;
+  }
+
   void setId(var id) {
     this.id = id;
   }

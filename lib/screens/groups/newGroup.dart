@@ -188,6 +188,7 @@ class _NewGroupState extends State<NewGroup> {
       setState(() {
         errorGroupName = 'Group name is limited to 20 characters';
       });
+      // ignore: deprecated_member_use
       return FlatButton.icon(
           icon: Icon(
             Icons.save,
@@ -199,6 +200,7 @@ class _NewGroupState extends State<NewGroup> {
       setState(() {
         errorGroupName = '';
       });
+      // ignore: deprecated_member_use
       return FlatButton.icon(
           icon: Icon(
             Icons.save,

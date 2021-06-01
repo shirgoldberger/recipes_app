@@ -1,12 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/screens/recipes/filter.dart';
 import 'package:recipes_app/screens/recipes/recipeHeadLine.dart';
-
 import '../../shared_screen/config.dart';
 
+// ignore: must_be_immutable
 class RecipeList extends StatefulWidget {
   RecipeList(Map<String, List> map, String head, bool home) {
     this.head = head;
@@ -63,39 +61,13 @@ class _RecipeListState extends State<RecipeList> {
   }
 
   Widget build(BuildContext context) {
-    Widget tags(int index) {
-      return Card(
-        clipBehavior: Clip.antiAlias,
-        child: Row(
-          children: [
-            Flexible(
-              child: Text(
-                widget.myTags[index],
-                style: TextStyle(
-                    fontFamily: 'Raleway', color: Colors.black, fontSize: 13),
-              ),
-            ),
-            Expanded(
-              child: FlatButton(
-                child: Icon(Icons.cancel, size: 20),
-                onPressed: () {
-                  deleteTag(widget.myTags[index]);
-                },
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    String selectedSubject;
-
     return Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
           title: Text(
             widget.head + " recipes:",
-            style: TextStyle(fontFamily: 'Raleway', color: Colors.white),
+            style: TextStyle(
+                fontFamily: 'Raleway', color: Colors.white, fontSize: 15),
           ),
           backgroundColor: appBarBackgroundColor,
           elevation: 0.0,
@@ -198,6 +170,7 @@ class _RecipeListState extends State<RecipeList> {
   }
 
   Widget filtterIcon() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
         icon: Icon(
           Icons.filter_alt_sharp,

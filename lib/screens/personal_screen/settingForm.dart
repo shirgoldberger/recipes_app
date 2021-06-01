@@ -8,7 +8,7 @@ import 'package:recipes_app/services/fireStorageService.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../shared_screen/config.dart';
-import 'uploadImage.dart';
+import '../../shared_screen/uploadImage.dart';
 
 // ignore: must_be_immutable
 class SettingForm extends StatefulWidget {

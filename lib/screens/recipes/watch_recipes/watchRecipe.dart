@@ -10,11 +10,6 @@ import 'watchPublishRecipe.dart';
 import 'watchDirectoryRecipe.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 
-//הסבר כללי לגבי העמוד הזה-
-// העמוד מקבל מתכון ומציג אותו למשתמש כאשר הוא מחולק ל 3 מצבים:
-// מצב ראשןן - במקרה ואנחנו צופים במתכון שאנחנו כתבנו - ניתן לערוך את המתכון, למחוק אותו ולפרסם אותו.
-//  לכן אפשר רק למחוק אותו, נמחק רק אצלי, או להוסיף עליו הערות אישיות שלי. (עשינו לו save )  מצב שני - אנחנו צופים במתכון ששמרנו אותו
-// מצב שלישי - צפיה במתכון מתוך העמוד הכללי - ניתן רק לשמור מתכון.
 // ignore: must_be_immutable
 class WatchRecipe extends StatefulWidget {
   WatchRecipe(Recipe r, bool home, NetworkImage _image, String _directory) {
@@ -44,7 +39,6 @@ class WatchRecipe extends StatefulWidget {
 }
 
 class _WatchRecipeState extends State<WatchRecipe> {
-  var i;
   @override
   initState() {
     super.initState();
@@ -63,12 +57,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
         widget.uid = user.uid;
       });
     }
-  }
-
-  changeState() async {
-    await getuser();
-    await makeList();
-    setLevels();
   }
 
   @override
@@ -132,7 +120,6 @@ class _WatchRecipeState extends State<WatchRecipe> {
     switch (widget.current.time) {
       case 1:
         widget.timeString = 'Until half-hour';
-        // widget.timeColor = Colors.
         break;
       case 2:
         widget.timeString = 'Until hour';

@@ -156,6 +156,7 @@ class _PublishGroupState extends State<PublishGroup> {
 
       child: SizedBox(
         width: 400,
+        // ignore: deprecated_member_use
         child: RaisedButton.icon(
             color: widget.colorPublish,
             icon: Icon(widget.iconPublish, color: Colors.white),
@@ -253,6 +254,21 @@ class _PublishGroupState extends State<PublishGroup> {
           .document('xt0XXXOLgprfkO3QiANs')
           .updateData({widget.recipe.tags[i]: copyTag});
     }
+
+    // QuerySnapshot users =
+    //     await Firestore.instance.collection('users').getDocuments();
+    // for (int i = 0; i < users.documents.length; i++) {
+    //   List<String> likes = users.documents[i].data['likes'] ?? [];
+    //   List<String> copy = [];
+    //   copy.addAll(likes);
+    //   if (copy.contains(widget.recipe.publish)) {
+    //     copy.remove(widget.recipe.publish);
+    //   }
+    //   db
+    //       .collection('users')
+    //       .document(users.documents[i].documentID)
+    //       .updateData({'likes': copy});
+    // }
 
     db.collection('publish recipe').document(widget.recipe.publish).delete();
     widget.recipe.publishThisRecipe('');

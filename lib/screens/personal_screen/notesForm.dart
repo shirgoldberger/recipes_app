@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/screens/personal_screen/noresEditForm.dart';
 import 'package:recipes_app/services/recipeFromDB.dart';
@@ -59,7 +58,6 @@ class _NotesFormState extends State<NotesForm> {
   }
 
   void saveIconPressed() {
-    final db = Firestore.instance;
     setState(() {
       widget.notes.toList();
       if (widget.newNotes != null) {

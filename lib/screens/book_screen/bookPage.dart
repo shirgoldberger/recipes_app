@@ -113,6 +113,7 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
             image: DecorationImage(
                 image: ExactAssetImage(image), fit: BoxFit.cover),
           ),
+          // ignore: missing_required_param
           child: FlatButton(onPressed: () async {
             BuildContext dialogContext;
             showDialog(
@@ -163,6 +164,7 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
             image: DecorationImage(
                 image: ExactAssetImage(image), fit: BoxFit.cover),
           ),
+          // ignore: deprecated_member_use
           child: FlatButton(onPressed: () async {
             BuildContext dialogContext;
             showDialog(
@@ -181,7 +183,9 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
               },
             );
             await loadCreatesdRecipe();
-            Navigator.pop(dialogContext);
+            if (dialogContext != null) {
+              Navigator.pop(dialogContext);
+            }
             Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -275,6 +279,7 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
   }
 
   Widget addDirectory() {
+    // ignore: deprecated_member_use
     return FlatButton.icon(
       icon: Icon(Icons.create_new_folder, color: Colors.grey[700]),
       label: Text('Plus', style: TextStyle(color: Colors.grey[700])),

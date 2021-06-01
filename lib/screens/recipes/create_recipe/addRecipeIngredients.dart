@@ -1,3 +1,5 @@
+/// add ingredients to user's recipe ///
+
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -115,7 +117,7 @@ class _AddRecipeIngredientsState extends State<AddRecipeIngredients> {
         hintText: 'Name',
       ),
       validator: (val) =>
-          val.length < 2 ? 'Enter a description with 2 letter at least' : null,
+          val.length < 2 ? 'Enter a name with 2 letter at least' : null,
       onChanged: (val) {
         setState(() => ingredients[i].name = val);
       },

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:recipes_app/screens/personal_screen/uploadImage.dart';
+import 'package:recipes_app/shared_screen/uploadImage.dart';
 import 'package:recipes_app/screens/recipes/create_recipe/addRecipeIngredients.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
 import '../../../shared_screen/config.dart';

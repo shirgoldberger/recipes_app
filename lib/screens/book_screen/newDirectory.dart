@@ -120,6 +120,7 @@ class _NewDirectoryState extends State<NewDirectory> {
         widget.errorDirectoryName =
             'Directory name is limited to 20 characters';
       });
+      // ignore: deprecated_member_use
       return FlatButton.icon(
           icon: Icon(
             Icons.save,
@@ -128,6 +129,7 @@ class _NewDirectoryState extends State<NewDirectory> {
           label: Text('SAVE', style: TextStyle(color: Colors.white)),
           onPressed: null);
     } else {
+      // ignore: deprecated_member_use
       return FlatButton.icon(
           icon: Icon(
             Icons.save,

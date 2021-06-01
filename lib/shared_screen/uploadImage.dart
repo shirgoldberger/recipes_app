@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
-import '../../shared_screen/config.dart';
+import 'config.dart';
 
 class UploadingImageToFirebaseStorage extends StatefulWidget {
   @override

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:recipes_app/models/ingredient.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/models/stage.dart';
-import 'package:recipes_app/screens/personal_screen/uploadImage.dart';
+import 'package:recipes_app/shared_screen/uploadImage.dart';
 import 'package:recipes_app/screens/recipes/edit_recipe/editRecipeIngredients.dart';
 import 'package:recipes_app/screens/recipes/edit_recipe/editRecipeLevel.dart';
 import 'package:recipes_app/services/fireStorageService.dart';
@@ -311,6 +311,7 @@ class _EditRecipeState extends State<EditRecipe> {
           backgroundColor: backgroundColor,
           radius: 30,
           backgroundImage: ExactAssetImage(noImagePath),
+          // ignore: missing_required_param
           child: FlatButton(onPressed: uploadImagePressed));
     } else {
       if (widget.recipeImage != null) {
@@ -318,6 +319,7 @@ class _EditRecipeState extends State<EditRecipe> {
             backgroundColor: backgroundColor,
             radius: 30,
             backgroundImage: widget.recipeImage,
+            // ignore: missing_required_param
             child: FlatButton(onPressed: uploadImagePressed));
       } else {
         return Container(
@@ -373,6 +375,7 @@ class _EditRecipeState extends State<EditRecipe> {
       children: [
         picture(),
         SizedBox(width: 20),
+        // ignore: deprecated_member_use
         RaisedButton(
           color: widget.levelColor,
           child: Text(

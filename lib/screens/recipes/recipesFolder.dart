@@ -7,6 +7,7 @@ import 'package:recipes_app/screens/recipes/recipeList.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import 'recipeList.dart';
 
+// ignore: must_be_immutable
 class RecipeFolder extends StatefulWidget {
   bool home;
   List<Recipe> publishRecipe = [];
@@ -171,6 +172,7 @@ class _RecipeFolderDynamicState extends State<RecipeFolder> {
               image: ExactAssetImage('lib/images/' + cat + ".JPG"),
               fit: BoxFit.fill),
         ),
+        // ignore: deprecated_member_use
         child: FlatButton(onPressed: () async {
           if (widget.uid != null) {
             DocumentSnapshot snap = await Firestore.instance

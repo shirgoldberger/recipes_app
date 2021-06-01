@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:recipes_app/screens/MyConnectivity.dart';
+import 'package:recipes_app/shared_screen/MyConnectivity.dart';
 import 'package:recipes_app/screens/book_screen/bookPage.dart';
 import 'package:recipes_app/screens/home.dart';
 import 'package:recipes_app/screens/personal_screen/logIn/logInWrapper.dart';
@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
 }
 
 /// This is the stateful widget that the main application instantiates.
+// ignore: must_be_immutable
 class MyStatefulWidget extends StatefulWidget {
   bool internetConnection = false;
   MyStatefulWidget({Key key}) : super(key: key);
@@ -262,41 +263,3 @@ class A extends StatelessWidget {
     }
   }
 }
-
-// class MyConnectivity {
-//   MyConnectivity._internal();
-
-//   static final MyConnectivity _instance = MyConnectivity._internal();
-
-//   static MyConnectivity get instance => _instance;
-
-//   Connectivity connectivity = Connectivity();
-
-//   StreamController controller = StreamController.broadcast();
-
-//   Stream get myStream => controller.stream;
-
-//   void initialise() async {
-//     ConnectivityResult result = await connectivity.checkConnectivity();
-//     _checkStatus(result);
-//     connectivity.onConnectivityChanged.listen((result) {
-//       _checkStatus(result);
-//     });
-//   }
-
-//   void _checkStatus(ConnectivityResult result) async {
-//     bool isOnline = false;
-//     try {
-//       final result = await InternetAddress.lookup('example.com');
-//       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-//         isOnline = true;
-//       } else
-//         isOnline = false;
-//     } on SocketException catch (_) {
-//       isOnline = false;
-//     }
-//     controller.sink.add({result: isOnline});
-//   }
-
-//   void disposeStream() => controller.close();
-// }
