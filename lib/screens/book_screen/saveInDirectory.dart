@@ -113,8 +113,6 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
   }
 
   void saveRecipe() async {
-    // RecipeFromDB.saveRecipe(widget.uid, widget.recipe.id,
-    //     widget.recipe.writerUid, widget.recipe.saveInUser);
     QuerySnapshot snap = await Firestore.instance
         .collection('users')
         .document(widget.uid)

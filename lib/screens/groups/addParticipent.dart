@@ -53,7 +53,7 @@ class _AddParticipentState extends State<AddParticipent> {
       ),
       validator: (val) => val.isEmpty ? '' : null,
       onChanged: (val) {
-        setState(() => emailTocheck = val);
+        emailTocheck = val;
       },
     );
   }
@@ -95,7 +95,7 @@ class _AddParticipentState extends State<AddParticipent> {
           Navigator.pop(context, {'a': widget.userId, 'b': widget.groupName});
         } else {
           setState(() {
-            error = "this user alrady exist";
+            error = "this user already exist";
           });
           findUser = true;
         }

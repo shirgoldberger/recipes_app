@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/shared_screen/config.dart';
 import 'package:recipes_app/models/recipe.dart';
@@ -88,7 +89,7 @@ class _DirectoriesListState extends State<DirectoriesList> {
                       content: loadingIndicator()));
             },
           );
-          getDirectoryRecipes(d);
+          await getDirectoryRecipes(d);
           Navigator.pop(dialogContext);
 
           Navigator.push(
@@ -128,14 +129,42 @@ class _DirectoriesListState extends State<DirectoriesList> {
   }
 
   void getDirectoryRecipes(Directory d) async {
-    String id =
-        widget.directories.firstWhere((element) => element.id == d.id).id ??
-            null;
-    List<Recipe> recipes =
-        await RecipeFromDB.getDirectoryRecipesList(widget.uid, id);
-    widget.directories
-        .firstWhere((element) => element.id == d.id)
-        .initRecipes(recipes);
+    BuildContext context1 = context;
+    try {
+      String id =
+          widget.directories.firstWhere((element) => element.id == d.id).id ??
+              null;
+      List<Recipe> recipes =
+          await RecipeFromDB.getDirectoryRecipesList(widget.uid, id);
+      widget.directories
+          .firstWhere((element) => element.id == d.id)
+          .initRecipes(recipes);
+    } on Exception catch (error) {
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Something wrong.'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Phoenix.rebirth(context1);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Widget emptyMessage() {

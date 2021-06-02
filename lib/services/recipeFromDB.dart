@@ -147,7 +147,7 @@ class RecipeFromDB {
     return r;
   }
 
-  static Future<List<String>> getLikesPublishRecipe(String publishId) async {
+  static Future<List> getLikesPublishRecipe(String publishId) async {
     var publishRecipe =
         await db.collection(publishCollectionName).document(publishId).get();
     return await publishRecipe.data['likes'] ?? [];
@@ -251,8 +251,8 @@ class RecipeFromDB {
     Map<dynamic, dynamic> recipes = directory.data['Recipes'] ?? {};
 
     //remove recipe from list
-    Map<String, String> copyRecipe = new Map<dynamic, dynamic>.from(recipes);
-    copyRecipe.remove(recipeUserid);
+    Map<dynamic, dynamic> copyRecipe = new Map<dynamic, dynamic>.from(recipes);
+    copyRecipe.remove(recipeId);
     Firestore.instance
         .collection('users')
         .document(uid)

@@ -49,18 +49,20 @@ class _GroupRecipeListState extends State<GroupRecipeList> {
       return Loading();
     } else {
       return Scaffold(
-          backgroundColor: backgroundColor,
-          appBar: appBar(),
-          drawerDragStartBehavior: DragStartBehavior.down,
-          endDrawer: leftMenu(),
-          body: Column(
-              children: (widget.recipes.length == 0)
-                  ? <Widget>[box, noRecipesText()]
-                  : [
-                      Expanded(
-                        child: recipesList(),
-                      )
-                    ]));
+        backgroundColor: backgroundColor,
+        appBar: appBar(),
+        drawerDragStartBehavior: DragStartBehavior.down,
+        endDrawer: leftMenu(),
+        body: Column(
+            children: (widget.recipes.length == 0)
+                ? <Widget>[box, noRecipesText()]
+                : [
+                    Expanded(
+                      child: recipesList(),
+                    )
+                  ]),
+        resizeToAvoidBottomInset: false,
+      );
     }
   }
 

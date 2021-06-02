@@ -57,6 +57,9 @@ class _HomeLogInState extends State<HomeLogIn> {
     String downloadUrl = await FireStorageService.loadFromStorage(
         context, "uploads/" + imagePath);
     if (downloadUrl != null) {
+      if (!mounted) {
+        return;
+      }
       setState(() {
         imagePath = downloadUrl.toString();
         image = NetworkImage(imagePath);

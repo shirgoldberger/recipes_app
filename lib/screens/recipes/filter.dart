@@ -116,7 +116,7 @@ class _FilterState extends State<Filter> {
         Row(children: [
           widthBox(20),
           Column(children: [
-            Text("Choose level of hardness:",
+            Text("Choose time:",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
             time1Button(),
             time2Button(),
@@ -125,7 +125,7 @@ class _FilterState extends State<Filter> {
           widthBox(30),
           Column(children: [
             Text(
-              "Choose time:",
+              "Choose level of hardness:",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
             easyButton(),

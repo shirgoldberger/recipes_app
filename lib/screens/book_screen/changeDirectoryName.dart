@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:recipes_app/models/directory.dart';
 import 'package:recipes_app/services/userFromDB.dart';
 import '../../shared_screen/config.dart';
@@ -79,34 +80,62 @@ class _ChangeDirectoryNameState extends State<ChangeDirectoryName> {
   }
 
   Future<void> saveName() async {
-    bool found = false;
-    if (widget.directory.name == widget.originalName) {
-      found = true;
-      setState(() {
-        widget.error = "this is the same name";
-      });
-      return;
-    }
-    if (widget.directory.name != "") {
-      if (widget.done) {
-        QuerySnapshot directories =
-            await UserFromDB.getUserDirectories(widget.uid);
-        for (int i = 0; i < directories.documents.length; i++) {
-          String name = directories.documents[i].data['name'] ?? '';
-          if (name == widget.directory.name) {
-            found = true;
-            setState(() {
-              widget.error = "You have directory with this name";
-              return;
-            });
+    BuildContext context1 = context;
+    try {
+      bool found = false;
+      if (widget.directory.name == widget.originalName) {
+        found = true;
+        setState(() {
+          widget.error = "this is the same name";
+        });
+        return;
+      }
+      if (widget.directory.name != "") {
+        if (widget.done) {
+          QuerySnapshot directories =
+              await UserFromDB.getUserDirectories(widget.uid);
+          for (int i = 0; i < directories.documents.length; i++) {
+            String name = directories.documents[i].data['name'] ?? '';
+            if (name == widget.directory.name) {
+              found = true;
+              setState(() {
+                widget.error = "You have directory with this name";
+                return;
+              });
+            }
+          }
+          if (!found) {
+            UserFromDB.changeDirectoryName(
+                widget.uid, widget.directory.id, widget.directory.name);
+            Navigator.pop(context, widget.directory);
           }
         }
-        if (!found) {
-          UserFromDB.changeDirectoryName(
-              widget.uid, widget.directory.id, widget.directory.name);
-          Navigator.pop(context, widget.directory);
-        }
       }
+    } catch (e) {
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Something wrong.'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Phoenix.rebirth(context1);
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 }

@@ -128,6 +128,12 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
   }
 
   Future<void> _showLikesList() async {
+    var a = await Firestore.instance
+        .collection('publish recipe')
+        .document(widget.currentRecipe.publish)
+        .get();
+    if (a == null) {}
+
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,

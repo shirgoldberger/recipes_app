@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipes_app/models/recipe.dart';
 import 'package:recipes_app/services/groupFromDB.dart';
+import 'package:recipes_app/services/recipeFromDB.dart';
 import 'package:recipes_app/shared_screen/loading.dart';
 import '../../shared_screen/config.dart';
 
@@ -169,14 +170,52 @@ class _PublishGroupState extends State<PublishGroup> {
             ),
             onPressed: () async {
               if (widget.recipe.publish == '') {
+                BuildContext dialogContext;
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    dialogContext = context;
+                    return WillPopScope(
+                        onWillPop: () async => false,
+                        child: AlertDialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.0))),
+                            backgroundColor: Colors.black87,
+                            content: loadingIndicator()));
+                  },
+                );
                 await publishRecipe();
+                if (dialogContext != null) {
+                  Navigator.pop(dialogContext);
+                }
                 setState(() {
                   widget.iconPublish = Icons.public_off;
                   widget.stringPublish = "Un publish the recipe to everyone";
                   widget.colorPublish = Colors.grey[350];
                 });
               } else {
+                BuildContext dialogContext;
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    dialogContext = context;
+                    return WillPopScope(
+                        onWillPop: () async => false,
+                        child: AlertDialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.0))),
+                            backgroundColor: Colors.black87,
+                            content: loadingIndicator()));
+                  },
+                );
                 await unPublishRecipe();
+                if (dialogContext != null) {
+                  Navigator.pop(dialogContext);
+                }
                 setState(() {
                   widget.iconPublish = Icons.public;
                   widget.stringPublish = "Publish the recipe to everyone";
@@ -255,25 +294,35 @@ class _PublishGroupState extends State<PublishGroup> {
           .updateData({widget.recipe.tags[i]: copyTag});
     }
 
-    // QuerySnapshot users =
-    //     await Firestore.instance.collection('users').getDocuments();
-    // for (int i = 0; i < users.documents.length; i++) {
-    //   List<String> likes = users.documents[i].data['likes'] ?? [];
-    //   List<String> copy = [];
-    //   copy.addAll(likes);
-    //   if (copy.contains(widget.recipe.publish)) {
-    //     copy.remove(widget.recipe.publish);
-    //   }
-    //   db
-    //       .collection('users')
-    //       .document(users.documents[i].documentID)
-    //       .updateData({'likes': copy});
-    // }
+    QuerySnapshot users =
+        await Firestore.instance.collection('users').getDocuments();
+    for (int i = 0; i < users.documents.length; i++) {
+      List likes = users.documents[i].data['likes'] ?? [];
+      List copy = [];
+      copy.addAll(likes);
+      if (copy.contains(widget.recipe.publish)) {
+        copy.remove(widget.recipe.publish);
+      }
+      db
+          .collection('users')
+          .document(users.documents[i].documentID)
+          .updateData({'likes': copy});
+    }
+    DocumentSnapshot publishRecipe = await db
+        .collection('publish recipe')
+        .document(widget.recipe.publish)
+        .get();
+    List userSave = publishRecipe.data['saveUser'] ?? [];
+    RecipeFromDB.deleteRecipeFromAllUsers(
+        userSave, widget.recipe.id, widget.recipe.writerUid);
 
-    db.collection('publish recipe').document(widget.recipe.publish).delete();
+    await db
+        .collection('publish recipe')
+        .document(widget.recipe.publish)
+        .delete();
     widget.recipe.publishThisRecipe('');
 
-    db
+    await db
         .collection('users')
         .document(widget.uid)
         .collection('recipes')

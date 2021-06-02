@@ -20,6 +20,43 @@ class GroupRecipeHeadLine extends StatefulWidget {
     this.recipe = r;
     this.groupId = _groupId;
     imagePath = r.imagePath;
+    setLevelColor();
+    setTimeText();
+  }
+
+  setLevelColor() {
+    switch (recipe.level) {
+      case 1:
+        circleColor = Colors.green[400];
+        level = 'easy';
+        break;
+      case 2:
+        circleColor = Colors.yellow[400];
+        level = 'medium';
+        break;
+      case 3:
+        circleColor = Colors.pink[400];
+        level = 'hard';
+        break;
+      case 0:
+        circleColor = Colors.grey[400];
+        level = 'easy';
+        break;
+    }
+  }
+
+  setTimeText() {
+    switch (recipe.time) {
+      case 1:
+        time = 'Until half-hour';
+        break;
+      case 2:
+        time = 'Until hour';
+        break;
+      case 3:
+        time = 'Over an hour';
+        break;
+    }
   }
 
   @override
@@ -28,9 +65,9 @@ class GroupRecipeHeadLine extends StatefulWidget {
 
 class _GroupRecipeHeadLineState extends State<GroupRecipeHeadLine> {
   void initState() {
+    // setLevelColor();
+    // setTimeText();
     super.initState();
-    setLevelColor();
-    setTimeText();
   }
 
   @override
@@ -180,6 +217,9 @@ class _GroupRecipeHeadLineState extends State<GroupRecipeHeadLine> {
 
   Future<void> getImage(BuildContext context) async {
     if (widget.imagePath == "" || widget.image != null) {
+      return;
+    }
+    if (!mounted) {
       return;
     }
     await FireStorageService.loadFromStorage(

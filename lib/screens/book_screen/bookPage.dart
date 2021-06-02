@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
 import 'package:recipes_app/services/userFromDB.dart';
 import 'package:recipes_app/shared_screen/config.dart';
@@ -219,62 +220,118 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
   }
 
   void getdirectory() async {
-    widget.directorys = [];
-    QuerySnapshot directories =
-        await UserFromDB.getUserDirectories(widget.user);
+    BuildContext context1 = context;
+    try {
+      widget.directorys = [];
+      QuerySnapshot directories =
+          await UserFromDB.getUserDirectories(widget.user);
 
-    for (int i = 0; i < directories.documents.length; i++) {
-      String name = directories.documents[i].data['name'] ?? '';
-      Map<dynamic, dynamic> recipes =
-          directories.documents[i].data['Recipes'] ?? {};
-      String id = directories.documents[i].documentID.toString();
+      for (int i = 0; i < directories.documents.length; i++) {
+        String name = directories.documents[i].data['name'] ?? '';
+        Map<dynamic, dynamic> recipes =
+            directories.documents[i].data['Recipes'] ?? {};
+        String id = directories.documents[i].documentID.toString();
 
-      Directory d = Directory(id: id, name: name, recipesId: recipes);
+        Directory d = Directory(id: id, name: name, recipesId: recipes);
+        setState(() {
+          widget.directorys.add(d);
+        });
+      }
       setState(() {
-        widget.directorys.add(d);
+        widget.done = true;
       });
+    } catch (e) {
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Something wrong.'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Phoenix.rebirth(context1);
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
-    setState(() {
-      widget.done = true;
-    });
   }
 
   Future<void> loadSavedRecipe() async {
-    setState(() {
-      widget.savedRecipe = [];
-    });
-    String uid;
-    String recipeId;
-
-    QuerySnapshot savedRecipes =
-        await UserFromDB.getUserSavedRecipes(widget.user);
-
-    if (savedRecipes.documents.length == 0) {
+    BuildContext context1 = context;
+    try {
       setState(() {
-        widget.doneLoadSavedRecipe = 2;
+        widget.savedRecipe = [];
       });
-    }
-    for (int i = 0; i < savedRecipes.documents.length; i++) {
-      uid = savedRecipes.documents[i].data['userID'] ?? '';
-      recipeId = savedRecipes.documents[i].data['recipeID'] ?? '';
-      Recipe r = await RecipeFromDB.getRecipeOfUser(uid, recipeId);
+      String uid;
+      String recipeId;
 
-      bool check = false;
-      for (int i = 0; i < widget.savedRecipe.length; i++) {
-        if (widget.savedRecipe[i].id == r.id) {
-          check = true;
+      QuerySnapshot savedRecipes =
+          await UserFromDB.getUserSavedRecipes(widget.user);
+
+      if (savedRecipes.documents.length == 0) {
+        setState(() {
+          widget.doneLoadSavedRecipe = 2;
+        });
+      }
+      for (int i = 0; i < savedRecipes.documents.length; i++) {
+        uid = savedRecipes.documents[i].data['userID'] ?? '';
+        recipeId = savedRecipes.documents[i].data['recipeID'] ?? '';
+        Recipe r = await RecipeFromDB.getRecipeOfUser(uid, recipeId);
+
+        bool check = false;
+        for (int i = 0; i < widget.savedRecipe.length; i++) {
+          if (widget.savedRecipe[i].id == r.id) {
+            check = true;
+          }
+        }
+        if (!check) {
+          setState(() {
+            widget.savedRecipe.add(r);
+          });
+        }
+        if ((i) == savedRecipes.documents.length) {
+          setState(() {
+            widget.doneLoadSavedRecipe++;
+          });
         }
       }
-      if (!check) {
-        setState(() {
-          widget.savedRecipe.add(r);
-        });
-      }
-      if ((i) == savedRecipes.documents.length) {
-        setState(() {
-          widget.doneLoadSavedRecipe++;
-        });
-      }
+    } catch (e) {
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Something wrong.'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Phoenix.rebirth(context1);
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -295,15 +352,43 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
   }
 
   Future<void> loadCreatesdRecipe() async {
-    setState(() {
-      widget.myRecipe = [];
-    });
-    QuerySnapshot recipes = await UserFromDB.getUserRecipes(widget.user);
-    for (int i = 0; i < recipes.documents.length; i++) {
-      Recipe r = RecipeFromDB.convertSnapshotToRecipe(recipes.documents[i]);
+    BuildContext context1 = context;
+    try {
       setState(() {
-        widget.myRecipe.add(r);
+        widget.myRecipe = [];
       });
+      QuerySnapshot recipes = await UserFromDB.getUserRecipes(widget.user);
+      for (int i = 0; i < recipes.documents.length; i++) {
+        Recipe r = RecipeFromDB.convertSnapshotToRecipe(recipes.documents[i]);
+        setState(() {
+          widget.myRecipe.add(r);
+        });
+      }
+    } catch (e) {
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Something wrong.'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Phoenix.rebirth(context1);
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 }
