@@ -1,16 +1,16 @@
-# recipes_app
+# Recipes App - Cook Book
 
-A new Flutter project.
+Our app is a recipes app - Cook Book. place that you can share, write and save recipes in easy way.
 
-## Getting Started
+## What you can find here?
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+In Cook - Book app you can do a lot of things:
+* create recipes and save them in your recipes book - you can arrange them in directories to make it easier for you to find them later.
+* create a group with your friends or family and share with them your recipes or a publish recipe in the app.
+* you can find recipe that can suit for you un the search page (with our algorithm).
+* you can search recipes in in a variety of ways -
+  - choose tag form the list in the home page.
+  - filter recipes by time, level.
+  - see recipes with tags you want to see.
+  - search a name of writer and see all his publish recipes.
+* and more.... :)
