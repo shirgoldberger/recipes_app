@@ -63,7 +63,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     getProfileImage();
     _connectivity.initialise();
     _connectivity.myStream.listen((source) {
-      setState(() => _source = source);
+      if (mounted) {
+        setState(() => _source = source);
+      }
     });
   }
 
@@ -232,8 +234,12 @@ class Home extends StatelessWidget {
 class Search extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SearchPage(),
+    // ignore: missing_required_param
+    return StreamProvider<User>.value(
+      value: AuthService().user,
+      child: MaterialApp(
+        home: B(),
+      ),
     );
   }
 }
@@ -260,6 +266,19 @@ class A extends StatelessWidget {
       return RecipesBookPage("");
     } else {
       return RecipesBookPage(user.uid);
+    }
+  }
+}
+
+class B extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
+    // if the user is null - no user us cinnect
+    if (user == null) {
+      return SearchPage("");
+    } else {
+      return SearchPage(user.uid);
     }
   }
 }

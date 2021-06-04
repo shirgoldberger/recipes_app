@@ -48,6 +48,10 @@ class SearchPage extends StatefulWidget {
   bool doneTags = false;
   bool donePopular = false;
 
+  SearchPage(String _uid) {
+    uid = _uid;
+  }
+
   @override
   _SearchPage createState() => _SearchPage();
 }
@@ -66,27 +70,51 @@ class _SearchPage extends State<SearchPage> {
       widget.tagsRecipes = [];
       widget.popularRecipes = [];
     });
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    await auth.currentUser().then((value) async {
-      if (!mounted) {
-        return;
-      }
-      if (value != null) {
-        setState(() {
-          widget.uid = value.uid;
-          widget.getUser = true;
-          changeState();
-        });
-      } else {
-        await getPopularRecipes().then((value) {
-          if (!mounted) {
-            return;
-          }
-        });
-        unitRecipesList();
-      }
-    });
+
+    if (widget.uid != "") {
+      setState(() {
+        widget.getUser = true;
+        changeState();
+      });
+    } else {
+      await getPopularRecipes().then((value) {
+        if (!mounted) {
+          return;
+        }
+      });
+      unitRecipesList();
+    }
   }
+
+  // void getuser() async {
+  //   setState(() {
+  //     widget.doneLoadCounter = false;
+  //     widget.recipes = [];
+  //     widget.friendsRecipes = [];
+  //     widget.tagsRecipes = [];
+  //     widget.popularRecipes = [];
+  //   });
+  //   final FirebaseAuth auth = FirebaseAuth.instance;
+  //   await auth.currentUser().then((value) async {
+  //     if (!mounted) {
+  //       return;
+  //     }
+  //     if (value != null) {
+  //       setState(() {
+  //         widget.uid = value.uid;
+  //         widget.getUser = true;
+  //         changeState();
+  //       });
+  //     } else {
+  //       await getPopularRecipes().then((value) {
+  //         if (!mounted) {
+  //           return;
+  //         }
+  //       });
+  //       unitRecipesList();
+  //     }
+  //   });
+  // }
 
   Future<void> changeState() async {
     if (widget.getUser) {

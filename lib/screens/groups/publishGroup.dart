@@ -308,13 +308,13 @@ class _PublishGroupState extends State<PublishGroup> {
           .document(users.documents[i].documentID)
           .updateData({'likes': copy});
     }
-    DocumentSnapshot publishRecipe = await db
-        .collection('publish recipe')
-        .document(widget.recipe.publish)
-        .get();
-    List userSave = publishRecipe.data['saveUser'] ?? [];
-    RecipeFromDB.deleteRecipeFromAllUsers(
-        userSave, widget.recipe.id, widget.recipe.writerUid);
+    // DocumentSnapshot publishRecipe = await db
+    //     .collection('publish recipe')
+    //     .document(widget.recipe.publish)
+    //     .get();
+    // List userSave = publishRecipe.data['saveUser'] ?? [];
+    // RecipeFromDB.deleteRecipeFromAllUsers(
+    //     userSave, widget.recipe.id, widget.recipe.writerUid);
 
     await db
         .collection('publish recipe')
