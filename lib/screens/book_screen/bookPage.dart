@@ -233,13 +233,17 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
         String id = directories.documents[i].documentID.toString();
 
         Directory d = Directory(id: id, name: name, recipesId: recipes);
+        if (mounted) {
+          setState(() {
+            widget.directorys.add(d);
+          });
+        }
+      }
+      if (mounted) {
         setState(() {
-          widget.directorys.add(d);
+          widget.done = true;
         });
       }
-      setState(() {
-        widget.done = true;
-      });
     } catch (e) {
       showDialog<void>(
         context: context,
@@ -271,9 +275,11 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
   Future<void> loadSavedRecipe() async {
     BuildContext context1 = context;
     try {
-      setState(() {
-        widget.savedRecipe = [];
-      });
+      if (mounted) {
+        setState(() {
+          widget.savedRecipe = [];
+        });
+      }
       String uid;
       String recipeId;
 
@@ -281,9 +287,11 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
           await UserFromDB.getUserSavedRecipes(widget.user);
 
       if (savedRecipes.documents.length == 0) {
-        setState(() {
-          widget.doneLoadSavedRecipe = 2;
-        });
+        if (mounted) {
+          setState(() {
+            widget.doneLoadSavedRecipe = 2;
+          });
+        }
       }
       for (int i = 0; i < savedRecipes.documents.length; i++) {
         uid = savedRecipes.documents[i].data['userID'] ?? '';
@@ -297,14 +305,18 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
           }
         }
         if (!check) {
-          setState(() {
-            widget.savedRecipe.add(r);
-          });
+          if (mounted) {
+            setState(() {
+              widget.savedRecipe.add(r);
+            });
+          }
         }
         if ((i) == savedRecipes.documents.length) {
-          setState(() {
-            widget.doneLoadSavedRecipe++;
-          });
+          if (mounted) {
+            setState(() {
+              widget.doneLoadSavedRecipe++;
+            });
+          }
         }
       }
     } catch (e) {
@@ -354,15 +366,19 @@ class _RecipesBookPageState extends State<RecipesBookPage> {
   Future<void> loadCreatesdRecipe() async {
     BuildContext context1 = context;
     try {
-      setState(() {
-        widget.myRecipe = [];
-      });
+      if (mounted) {
+        setState(() {
+          widget.myRecipe = [];
+        });
+      }
       QuerySnapshot recipes = await UserFromDB.getUserRecipes(widget.user);
       for (int i = 0; i < recipes.documents.length; i++) {
         Recipe r = RecipeFromDB.convertSnapshotToRecipe(recipes.documents[i]);
-        setState(() {
-          widget.myRecipe.add(r);
-        });
+        if (mounted) {
+          setState(() {
+            widget.myRecipe.add(r);
+          });
+        }
       }
     } catch (e) {
       showDialog<void>(
