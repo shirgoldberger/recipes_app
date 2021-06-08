@@ -263,13 +263,6 @@ class RecipeFromDB {
 
   static Future<void> deleteFromFavoriteRecipe(
       String uid, String recipeUserid, String recipeId) async {
-    DocumentSnapshot publishRecipe = await Firestore.instance
-        .collection('users')
-        .document(recipeUserid)
-        .collection('recipes')
-        .document(recipeId)
-        .get();
-    String publishID = publishRecipe.data['publishID'];
     //find recipe in directory
     QuerySnapshot savedDirectory = await Firestore.instance
         .collection('users')
@@ -277,12 +270,13 @@ class RecipeFromDB {
         .collection('Directory')
         .getDocuments();
     for (int i = 0; i < savedDirectory.documents.length; i++) {
-      List recipes = savedDirectory.documents[i].data['Recipes'];
-      if (recipes.contains(publishID)) {
+      Map<dynamic, dynamic> recipes =
+          savedDirectory.documents[i].data['Recipes'] ?? {};
+      if (recipes.keys.contains(recipeId)) {
         //remove recipe from list
-        List copyRecipe = [];
+        Map<dynamic, dynamic> copyRecipe = {};
         copyRecipe.addAll(recipes);
-        copyRecipe.remove(publishID);
+        copyRecipe.remove(recipeId);
         Firestore.instance
             .collection('users')
             .document(uid)
