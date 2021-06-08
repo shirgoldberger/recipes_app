@@ -144,7 +144,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 5), () async {
+    Future.delayed(Duration(seconds: 10), () async {
       checkConnection();
     });
     return Scaffold(
@@ -235,12 +235,13 @@ class Search extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ignore: missing_required_param
-    return StreamProvider<User>.value(
-      value: AuthService().user,
-      child: MaterialApp(
-        home: B(),
-      ),
-    );
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.lightBlue,
+          fontFamily: 'Nunito',
+        ),
+        home: SearchPage());
   }
 }
 
@@ -266,19 +267,6 @@ class A extends StatelessWidget {
       return RecipesBookPage("");
     } else {
       return RecipesBookPage(user.uid);
-    }
-  }
-}
-
-class B extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
-    // if the user is null - no user us cinnect
-    if (user == null) {
-      return SearchPage("");
-    } else {
-      return SearchPage(user.uid);
     }
   }
 }
