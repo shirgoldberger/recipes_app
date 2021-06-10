@@ -262,7 +262,7 @@ class _HomeLogInState extends State<HomeLogIn> {
           Icons.settings,
         ),
         label: Text(
-          'Setting',
+          'Personal Details',
         ),
         onPressed: () async {
           Navigator.push(
@@ -314,7 +314,7 @@ class _HomeLogInState extends State<HomeLogIn> {
             child: ListBody(
               children: <Widget>[
                 Text(
-                    'You\'re sure you want to delete your account permanently?'),
+                    'Are you sure you want to delete your account permanently?'),
               ],
             ),
           ),
