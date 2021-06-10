@@ -91,7 +91,7 @@ class _NewGroupState extends State<NewGroup> {
 
   Widget title() {
     return Text(
-      'Hey let\'s create a new group!',
+      'Hey let\'s create a new group! In the group you can share recipes with your friends :)',
       style: TextStyle(
           fontFamily: 'Raleway', fontSize: 25, color: Colors.blueGrey[800]),
       textAlign: TextAlign.center,
