@@ -192,6 +192,46 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
     });
   }
 
+  Future<void> _showAlertDialogDelete(BuildContext context1) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    "Are you sure you want to delete this recipe from favorites?\nThe recipe wiil delete from your directories too"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('yes- delete'),
+              onPressed: () async {
+                await RecipeFromDB.deleteFromFavoriteRecipe(widget.uid,
+                    widget.currentRecipe.writerUid, widget.currentRecipe.id);
+                int count = 0;
+                Navigator.pop(context);
+                Navigator.popUntil(context1, (route) {
+                  return count++ == 3;
+                });
+              },
+            ),
+            TextButton(
+              child: Text('no- go back'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   _showAlertDialog() {
     // set up the buttons
     // ignore: deprecated_member_use
@@ -267,7 +307,8 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
           style: TextStyle(fontFamily: 'Raleway'),
         ),
         onPressed: () {
-          deleteFromSavedRecipe(widget.uid);
+          _showAlertDialogDelete(context);
+          // deleteFromSavedRecipe(widget.uid);
         });
   }
 
