@@ -233,7 +233,7 @@ class _FilterState extends State<Filter> {
           color: Colors.black,
         ),
         label: Text(
-          "save",
+          "Show Recipes",
           style: TextStyle(
               fontFamily: 'Raleway', color: Colors.black, fontSize: 20),
         ),
