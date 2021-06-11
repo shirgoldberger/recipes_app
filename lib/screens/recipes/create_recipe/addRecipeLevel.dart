@@ -41,8 +41,8 @@ class AddRecipeLevel extends StatefulWidget {
 class _AddRecipeLevelState extends State<AddRecipeLevel> {
   int level = 0;
   Color easyColor = Colors.green[200];
-  Color midColor = Colors.red[200];
-  Color hardColor = Colors.blue[200];
+  Color midColor = Colors.yellow[200];
+  Color hardColor = Colors.red[200];
   int time = 0;
   Color timeInit1 = Colors.black;
   Color timeInit2 = Colors.black;
@@ -187,8 +187,8 @@ class _AddRecipeLevelState extends State<AddRecipeLevel> {
           setState(() {
             level = 1;
             easyColor = Colors.green[900];
-            midColor = Colors.red[200];
-            hardColor = Colors.blue[200];
+            midColor = Colors.yellow[200];
+            hardColor = Colors.red[200];
           });
         });
   }
@@ -205,8 +205,8 @@ class _AddRecipeLevelState extends State<AddRecipeLevel> {
           setState(() {
             level = 2;
             easyColor = Colors.green[200];
-            midColor = Colors.red[900];
-            hardColor = Colors.blue[200];
+            midColor = Colors.yellow[900];
+            hardColor = Colors.red[200];
           });
         });
   }
@@ -223,8 +223,8 @@ class _AddRecipeLevelState extends State<AddRecipeLevel> {
           setState(() {
             level = 3;
             easyColor = Colors.green[200];
-            midColor = Colors.red[200];
-            hardColor = Colors.blue[900];
+            midColor = Colors.yellow[200];
+            hardColor = Colors.red[900];
           });
         });
   }
