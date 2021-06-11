@@ -344,7 +344,8 @@ class _WatchFavoriteRecipeState extends State<WatchFavoriteRecipe> {
                 topRight: const Radius.circular(25.0),
               ),
             ),
-            child: SaveInDirectory(widget.uid, widget.currentRecipe, false)));
+            child: SaveInDirectory(
+                widget.uid, widget.currentRecipe, false, false)));
   }
 
   Widget addNoteIcon() {
