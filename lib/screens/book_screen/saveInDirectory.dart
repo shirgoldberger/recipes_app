@@ -23,11 +23,14 @@ class SaveInDirectory extends StatefulWidget {
   IconData iconSave = Icons.favorite_border;
   List<Directory> directorys = [];
   bool isMyRecipe;
+  bool isPublish;
 
-  SaveInDirectory(String _uid, Recipe _recipe, bool _isMyRecipe) {
+  SaveInDirectory(
+      String _uid, Recipe _recipe, bool _isMyRecipe, bool _isPublish) {
     this.uid = _uid;
     this.recipe = _recipe;
     this.isMyRecipe = _isMyRecipe;
+    this.isPublish = _isPublish;
   }
 
   @override
@@ -57,14 +60,17 @@ class _SaveInDirectoryState extends State<SaveInDirectory> {
               fontWeight: FontWeight.w700),
         ),
         heightBox(10),
-        Text(
-          'This recipe will save automatically in your favorites directory',
-          textAlign: TextAlign.center,
-          style: new TextStyle(
-            color: Colors.green,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'DescriptionFont',
+        Visibility(
+          visible: widget.isPublish,
+          child: Text(
+            'This recipe will save automatically in your favorites directory',
+            textAlign: TextAlign.center,
+            style: new TextStyle(
+              color: Colors.green,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'DescriptionFont',
+            ),
           ),
         ),
         heightBox(20),
