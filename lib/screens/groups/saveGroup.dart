@@ -222,8 +222,8 @@ class _SaveGroupState extends State<SaveGroup> {
                 topRight: const Radius.circular(25.0),
               ),
             ),
-            child:
-                SaveInDirectory(widget.uid, widget.recipe, widget.isMyRecipe)));
+            child: SaveInDirectory(
+                widget.uid, widget.recipe, widget.isMyRecipe, true)));
   }
 
   void saveRecipe() async {
