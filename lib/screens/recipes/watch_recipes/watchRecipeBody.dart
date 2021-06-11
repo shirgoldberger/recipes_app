@@ -379,11 +379,6 @@ class _WatchRecipeBodyState extends State<WatchRecipeBody> {
                                 widget._isChecked[i] = val;
                               });
                             }),
-                        // Positioned(
-                        //     left: 100.0,
-                        //     child: SizedBox(
-                        //       height: 20,
-                        //     )),
                         Positioned(
                           left: 20,
                           child: Padding(
