@@ -293,7 +293,8 @@ class _WatchMyRecipeState extends State<WatchMyRecipe> {
                 topRight: const Radius.circular(25.0),
               ),
             ),
-            child: SaveInDirectory(widget.uid, widget.currentRecipe, true)));
+            child: SaveInDirectory(
+                widget.uid, widget.currentRecipe, true, false)));
   }
 
   Widget deleteIcon() {
