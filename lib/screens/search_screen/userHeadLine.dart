@@ -33,24 +33,30 @@ class _UserHeadLineState extends State<UserHeadLine> {
   Future<void> getUserdata() async {
     DocumentSnapshot snap =
         await Firestore.instance.collection('users').document(widget.uid).get();
-    setState(() {
-      widget.firstName = snap.data['firstName'] ?? '';
-      widget.lastName = snap.data['lastName'] ?? '';
-      widget.mail = snap.data['Email'] ?? '';
-      widget.imagePath = snap.data['imagePath'] ?? '';
-    });
-    if (widget.imagePath == "" || widget.image != null) {
+    if (mounted) {
       setState(() {
-        widget.done = true;
+        widget.firstName = snap.data['firstName'] ?? '';
+        widget.lastName = snap.data['lastName'] ?? '';
+        widget.mail = snap.data['Email'] ?? '';
+        widget.imagePath = snap.data['imagePath'] ?? '';
       });
+    }
+    if (widget.imagePath == "" || widget.image != null) {
+      if (mounted) {
+        setState(() {
+          widget.done = true;
+        });
+      }
       return;
     }
     String downloadUrl = await FireStorageService.loadFromStorage(
         context, "uploads/" + widget.imagePath);
-    setState(() {
-      widget.image = NetworkImage(downloadUrl);
-      widget.done = true;
-    });
+    if (mounted) {
+      setState(() {
+        widget.image = NetworkImage(downloadUrl);
+        widget.done = true;
+      });
+    }
   }
 
   @override
